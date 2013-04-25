@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="Microsoft.PlayerFramework.Test.MediaPlayerTest"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:mmppf="clr-namespace:Microsoft.PlayerFramework;assembly=Microsoft.PlayerFramework"
+    xmlns:ttml="clr-namespace:Microsoft.PlayerFramework.TimedText;assembly=Microsoft.PlayerFramework.TimedText"
+    xmlns:ads="clr-namespace:Microsoft.PlayerFramework.Advertising;assembly=Microsoft.PlayerFramework.Advertising"
+    xmlns:local="clr-namespace:Microsoft.PlayerFramework.Test"
+    mc:Ignorable="d"
+    d:DesignHeight="800" d:DesignWidth="600">
+
+    <Grid x:Name="LayoutRoot" Background="Black">
+        <mmppf:MediaPlayer x:Name="player" AutoPlay="True" AutoLoad="False" IsCaptionsActive="True"
+                           Source="http://smf.blob.core.windows.net/samples/videos/bigbuck.mp4"
+                           PosterSource="http://smf.blob.core.windows.net/samples/thumbs/BBB/BigBuckBunny_0002.jpg"
+                           />
+    </Grid>
+</UserControl>

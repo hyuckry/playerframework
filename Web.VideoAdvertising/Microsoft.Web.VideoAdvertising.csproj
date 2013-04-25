@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7DED7299-FE47-44EC-A18C-C7B14113703F}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.VideoAdvertising</RootNamespace>
+    <AssemblyName>Microsoft.VideoAdvertising</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Silverlight, Version=1.0.16.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.Extensions.Silverlight.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime, Version=2.5.19.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.1.0.19\lib\sl5\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks, Version=2.5.19.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Bcl.1.0.19\lib\sl5\System.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml.Linq, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Phone.VideoAdvertising\Compatibility\HttpClient.cs">
+      <Link>Compatibility\HttpClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\AdTracking.cs">
+      <Link>AdTracking.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Clips\ClipAdPayloadHandler.cs">
+      <Link>Clips\ClipAdPayloadHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Clips\IClipAdPayload.cs">
+      <Link>Clips\IClipAdPayload.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\DocumentAdPayloadHandler.cs">
+      <Link>DocumentAdPayloadHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Freewheel\FreewheelFactory.cs">
+      <Link>Freewheel\FreewheelFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Freewheel\FreewheelModels.cs">
+      <Link>Freewheel\FreewheelModels.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\Extensions.cs">
+      <Link>Helpers\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\LinqExtensions.cs">
+      <Link>Helpers\LinqExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\MarkerHelper.cs">
+      <Link>Helpers\MarkerHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\VastHelpers.cs">
+      <Link>Helpers\VastHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\XLinqExtensions.cs">
+      <Link>Helpers\XLinqExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\ActiveAdUnit.cs">
+      <Link>Models\ActiveAdUnit.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\ActiveAdUnitEventArgs.cs">
+      <Link>Models\ActiveAdUnitEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\CreativeSources\IDocumentCreativeSource.cs">
+      <Link>Models\CreativeSources\IDocumentCreativeSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\IAdPayloadHandler.cs">
+      <Link>Models\IAdPayloadHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\ICompanionSource.cs">
+      <Link>Models\ICompanionSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Vast\AdModelFactory.cs">
+      <Link>Vast\AdModelFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\AdModels.cs">
+      <Link>Models\AdModels.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\CreativeSources\LinearSource.cs">
+      <Link>Models\CreativeSources\LinearSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\CreativeSources\NonLinearSource.cs">
+      <Link>Models\CreativeSources\NonLinearSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\ICreativeSource.cs">
+      <Link>Models\ICreativeSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\IPlayer.cs">
+      <Link>Models\IPlayer.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Models\IVpaid.cs">
+      <Link>Models\IVpaid.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Vast\AdModelFactory_Vast1.cs">
+      <Link>Vast\AdModelFactory_Vast1.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Vast\VastAdPayloadHandler.cs">
+      <Link>Vast\VastAdPayloadHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Vmap\VmapFactory.cs">
+      <Link>Vmap\VmapFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Vmap\VmapModels.cs">
+      <Link>Vmap\VmapModels.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\VpaidController.cs">
+      <Link>VpaidController.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\TaskHelpers.cs">
+      <Link>Helpers\TaskHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Helpers\VpaidExtensions.cs">
+      <Link>Helpers\VpaidExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\AdHandlerController.cs">
+      <Link>AdHandlerController.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\ConditionManager.cs">
+      <Link>Mast\ConditionManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\Helpers\ConversionHelper.cs">
+      <Link>Mast\Helpers\ConversionHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\Helpers\MastExtensions.cs">
+      <Link>Mast\Helpers\MastExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\IMastAdapter.cs">
+      <Link>Mast\IMastAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\Helpers\LogEntryTypes.cs">
+      <Link>Mast\Helpers\LogEntryTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\Mainsail.cs">
+      <Link>Mast\Mainsail.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\MastModelFactory.cs">
+      <Link>Mast\MastModelFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\MastModels.cs">
+      <Link>Mast\MastModels.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\Helpers\ReflectionHelper.cs">
+      <Link>Mast\Helpers\ReflectionHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\TriggerEventArgs.cs">
+      <Link>Mast\TriggerEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.VideoAdvertising\Mast\TriggerManager.cs">
+      <Link>Mast\TriggerManager.cs</Link>
+    </Compile>
+    <Compile Include="Helpers\WebUtility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Win8.VideoAdvertising\Freewheel\smartAdRequest.xsd">
+      <Link>Freewheel\smartAdRequest.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Win8.VideoAdvertising\Freewheel\smartAdResponse.xsd">
+      <Link>Freewheel\smartAdResponse.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Win8.VideoAdvertising\Vast\vast3_draft.xsd">
+      <SubType>Designer</SubType>
+      <Link>Vast\vast3_draft.xsd</Link>
+    </None>
+    <None Include="..\Win8.VideoAdvertising\Vast\vast_2.0.1.xsd">
+      <Link>Vast\vast_2.0.1.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Win8.VideoAdvertising\Mast\Mast.xsd">
+      <SubType>Designer</SubType>
+      <Link>Mast\Mast.xsd</Link>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.4\tools\Microsoft.Bcl.Build.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
