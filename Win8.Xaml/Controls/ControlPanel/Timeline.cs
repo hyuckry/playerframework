@@ -29,20 +29,13 @@ namespace Microsoft.PlayerFramework
     [TemplatePart(Name = TimelineTemplateParts.DownloadProgressBarElement, Type = typeof(ProgressBar))]
     [TemplatePart(Name = TimelineTemplateParts.ProgressSliderElement, Type = typeof(SeekableSlider))]
     [TemplatePart(Name = TimelineTemplateParts.PositionedItemsControl, Type = typeof(PositionedItemsControl))]
-    public class Timeline : Control
+    public sealed class Timeline : Control
     {
-        /// <summary>
-        /// The download progress bar for non-adaptive video.
-        /// </summary>
-        protected ProgressBar DownloadProgressBarElement { get; private set; }
-        /// <summary>
-        /// The timeline.
-        /// </summary>
-        protected SeekableSlider ProgressSliderElement { get; private set; }
-        /// <summary>
-        /// The marker container.
-        /// </summary>
-        protected PositionedItemsControl PositionedItemsControl { get; private set; }
+        ProgressBar downloadProgressBarElement;
+
+        SeekableSlider progressSliderElement;
+
+        PositionedItemsControl positionedItemsControl;
 
         /// <summary>
         /// Creates a new instance of Timeline
@@ -62,53 +55,53 @@ namespace Microsoft.PlayerFramework
         {
             base.OnApplyTemplate();
 
-            if (ProgressSliderElement != null)
+            if (progressSliderElement != null)
             {
                 // unwire existing event handlers if template was already applied
                 UnwireProgressSliderEvents();
             }
 
-            if (PositionedItemsControl != null)
+            if (positionedItemsControl != null)
             {
-                PositionedItemsControl.ItemLoaded -= PositionedItemsControl_ItemLoaded;
-                PositionedItemsControl.ItemUnloaded -= PositionedItemsControl_ItemUnloaded;
+                positionedItemsControl.ItemLoaded -= PositionedItemsControl_ItemLoaded;
+                positionedItemsControl.ItemUnloaded -= PositionedItemsControl_ItemUnloaded;
             }
 
-            PositionedItemsControl = GetTemplateChild(TimelineTemplateParts.PositionedItemsControl) as PositionedItemsControl;
-            DownloadProgressBarElement = GetTemplateChild(TimelineTemplateParts.DownloadProgressBarElement) as ProgressBar;
-            ProgressSliderElement = GetTemplateChild(TimelineTemplateParts.ProgressSliderElement) as SeekableSlider;
+            positionedItemsControl = GetTemplateChild(TimelineTemplateParts.PositionedItemsControl) as PositionedItemsControl;
+            downloadProgressBarElement = GetTemplateChild(TimelineTemplateParts.DownloadProgressBarElement) as ProgressBar;
+            progressSliderElement = GetTemplateChild(TimelineTemplateParts.ProgressSliderElement) as SeekableSlider;
 
 
-            if (ProgressSliderElement != null)
+            if (progressSliderElement != null)
             {
-                ProgressSliderElement.Style = SliderStyle;
+                progressSliderElement.Style = SliderStyle;
                 // wire up events to bubble
                 WireProgressSliderEvents();
             }
 
             InitializeProgressSlider();
 
-            if (PositionedItemsControl != null)
+            if (positionedItemsControl != null)
             {
-                PositionedItemsControl.ItemLoaded += PositionedItemsControl_ItemLoaded;
-                PositionedItemsControl.ItemUnloaded += PositionedItemsControl_ItemUnloaded;
+                positionedItemsControl.ItemLoaded += PositionedItemsControl_ItemLoaded;
+                positionedItemsControl.ItemUnloaded += PositionedItemsControl_ItemUnloaded;
             }
         }
 
         private void UnwireProgressSliderEvents()
         {
-            ProgressSliderElement.Seeked -= ProgressSliderElement_Seeked;
-            ProgressSliderElement.ScrubbingStarted -= ProgressSliderElement_ScrubbingStarted;
-            ProgressSliderElement.Scrubbing -= ProgressSliderElement_Scrubbing;
-            ProgressSliderElement.ScrubbingCompleted -= ProgressSliderElement_ScrubbingCompleted;
+            progressSliderElement.Seeked -= ProgressSliderElement_Seeked;
+            progressSliderElement.ScrubbingStarted -= ProgressSliderElement_ScrubbingStarted;
+            progressSliderElement.Scrubbing -= ProgressSliderElement_Scrubbing;
+            progressSliderElement.ScrubbingCompleted -= ProgressSliderElement_ScrubbingCompleted;
         }
 
         private void WireProgressSliderEvents()
         {
-            ProgressSliderElement.Seeked += ProgressSliderElement_Seeked;
-            ProgressSliderElement.ScrubbingStarted += ProgressSliderElement_ScrubbingStarted;
-            ProgressSliderElement.Scrubbing += ProgressSliderElement_Scrubbing;
-            ProgressSliderElement.ScrubbingCompleted += ProgressSliderElement_ScrubbingCompleted;
+            progressSliderElement.Seeked += ProgressSliderElement_Seeked;
+            progressSliderElement.ScrubbingStarted += ProgressSliderElement_ScrubbingStarted;
+            progressSliderElement.Scrubbing += ProgressSliderElement_Scrubbing;
+            progressSliderElement.ScrubbingCompleted += ProgressSliderElement_ScrubbingCompleted;
         }
 
         void PositionedItemsControl_ItemUnloaded(object sender, FrameworkElementEventArgs args)
@@ -153,8 +146,8 @@ namespace Microsoft.PlayerFramework
                 vm.Scrub(TimeSpan.FromSeconds(e.Value), out canceled);
                 if (canceled)
                 {
-                    ProgressSliderElement.CancelScrub();
-                    vm.CompleteScrub(TimeSpan.FromSeconds(e.Value), ref canceled);
+                    progressSliderElement.CancelScrub();
+                    vm.CompleteScrub(TimeSpan.FromSeconds(e.Value), canceled, out canceled);
                 }
                 e.Canceled = canceled;
             }
@@ -165,7 +158,7 @@ namespace Microsoft.PlayerFramework
             if (ViewModel != null)
             {
                 bool canceled = false;
-                ViewModel.CompleteScrub(TimeSpan.FromSeconds(e.Value), ref canceled);
+                ViewModel.CompleteScrub(TimeSpan.FromSeconds(e.Value), canceled, out canceled);
                 e.Canceled = canceled;
             }
         }
@@ -179,8 +172,8 @@ namespace Microsoft.PlayerFramework
                 vm.StartScrub(TimeSpan.FromSeconds(e.Value), out canceled);
                 if (canceled)
                 {
-                    ProgressSliderElement.CancelScrub();
-                    vm.CompleteScrub(TimeSpan.FromSeconds(e.Value), ref canceled);
+                    progressSliderElement.CancelScrub();
+                    vm.CompleteScrub(TimeSpan.FromSeconds(e.Value), canceled, out canceled);
                 }
                 e.Canceled = canceled;
             }
@@ -189,7 +182,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaPlayer dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(Timeline), new PropertyMetadata(null, (d, e) => ((Timeline)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(Timeline), new PropertyMetadata(null, (d, e) => ((Timeline)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
@@ -198,25 +192,25 @@ namespace Microsoft.PlayerFramework
 
         private void InitializeProgressSlider()
         {
-            if (ProgressSliderElement != null)
+            if (progressSliderElement != null)
             {
                 UnwireProgressSliderEvents();
 
                 if (ViewModel != null)
                 {
-                    ProgressSliderElement.SetBinding(SeekableSlider.IsEnabledProperty, new Binding() { Path = new PropertyPath("IsScrubbingEnabled"), Source = ViewModel });
-                    ProgressSliderElement.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Position.TotalSeconds"), Source = ViewModel });
-                    ProgressSliderElement.SetBinding(SeekableSlider.MinimumProperty, new Binding() { Path = new PropertyPath("StartTime.TotalSeconds"), Source = ViewModel });
-                    ProgressSliderElement.SetBinding(SeekableSlider.MaximumProperty, new Binding() { Path = new PropertyPath("EndTime.TotalSeconds"), Source = ViewModel });
-                    ProgressSliderElement.SetBinding(SeekableSlider.MaxValueProperty, new Binding() { Path = new PropertyPath("MaxPosition.TotalSeconds"), Source = ViewModel });
+                    progressSliderElement.SetBinding(SeekableSlider.IsEnabledProperty, new Binding() { Path = new PropertyPath("IsScrubbingEnabled"), Source = ViewModel });
+                    progressSliderElement.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Position.TotalSeconds"), Source = ViewModel });
+                    progressSliderElement.SetBinding(SeekableSlider.MinimumProperty, new Binding() { Path = new PropertyPath("StartTime.TotalSeconds"), Source = ViewModel });
+                    progressSliderElement.SetBinding(SeekableSlider.MaximumProperty, new Binding() { Path = new PropertyPath("EndTime.TotalSeconds"), Source = ViewModel });
+                    progressSliderElement.SetBinding(SeekableSlider.MaxValueProperty, new Binding() { Path = new PropertyPath("MaxPosition.TotalSeconds"), Source = ViewModel });
                 }
                 else
                 {
-                    ProgressSliderElement.ClearValue(SeekableSlider.IsEnabledProperty);
-                    ProgressSliderElement.ClearValue(SeekableSlider.ActualValueProperty);
-                    ProgressSliderElement.ClearValue(SeekableSlider.MinimumProperty);
-                    ProgressSliderElement.ClearValue(SeekableSlider.MaximumProperty);
-                    ProgressSliderElement.ClearValue(SeekableSlider.MaxValueProperty);
+                    progressSliderElement.ClearValue(SeekableSlider.IsEnabledProperty);
+                    progressSliderElement.ClearValue(SeekableSlider.ActualValueProperty);
+                    progressSliderElement.ClearValue(SeekableSlider.MinimumProperty);
+                    progressSliderElement.ClearValue(SeekableSlider.MaximumProperty);
+                    progressSliderElement.ClearValue(SeekableSlider.MaxValueProperty);
                 }
 
                 WireProgressSliderEvents();
@@ -236,13 +230,14 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaPlayer dependency property.
         /// </summary>
-        public static readonly DependencyProperty SliderStyleProperty = DependencyProperty.Register("SliderStyle", typeof(Style), typeof(Timeline), new PropertyMetadata(null, (d, e) => ((Timeline)d).OnSliderStyleChanged(e.NewValue as Style)));
+        public static DependencyProperty SliderStyleProperty { get { return sliderStyleProperty; } }
+        static readonly DependencyProperty sliderStyleProperty = DependencyProperty.Register("SliderStyle", typeof(Style), typeof(Timeline), new PropertyMetadata(null, (d, e) => ((Timeline)d).OnSliderStyleChanged(e.NewValue as Style)));
 
         void OnSliderStyleChanged(Style newValue)
         {
-            if (ProgressSliderElement != null)
+            if (progressSliderElement != null)
             {
-                ProgressSliderElement.Style = newValue;
+                progressSliderElement.Style = newValue;
             }
         }
 

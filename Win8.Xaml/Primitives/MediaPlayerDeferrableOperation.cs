@@ -15,7 +15,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides data for a deferrable MediaLoading event.
     /// </summary>
-    public class MediaLoadingEventArgs : MediaPlayerDeferrableEventArgs
+    public sealed class MediaLoadingEventArgs : MediaPlayerDeferrableEventArgs
     {
         internal MediaLoadingEventArgs(MediaPlayerDeferrableOperation deferrableOperation, Uri source)
             : base(deferrableOperation)
@@ -74,7 +74,11 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides data for a deferrable event.
     /// </summary>
+#if SILVERLIGHT
     public class MediaPlayerDeferrableEventArgs : EventArgs
+#else
+    public class MediaPlayerDeferrableEventArgs
+#endif
     {
         internal MediaPlayerDeferrableEventArgs(MediaPlayerDeferrableOperation deferrableOperation)
         {
@@ -90,7 +94,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides info about a deferrable operation.
     /// </summary>
-    public class MediaPlayerDeferrableOperation
+    public sealed class MediaPlayerDeferrableOperation
     {
         readonly CancellationTokenSource cts;
         readonly List<MediaPlayerDeferral> deferrals;
@@ -141,14 +145,14 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Manages a delayed app deferrable operation.
     /// </summary>
-    public class MediaPlayerDeferral
+    public sealed class MediaPlayerDeferral
     {
         readonly TaskCompletionSource<bool> tcs;
 
         internal MediaPlayerDeferral(CancellationToken cancellationToken)
         {
             tcs = new TaskCompletionSource<bool>();
-            CancellationToken = cancellationToken;
+            cancellationToken.Register(OnCancel);
         }
 
         internal Task<bool> Task
@@ -160,9 +164,18 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <summary>
-        /// Gets the CancellationToken associated with this class.
+        /// Indicates that the deferral should be cancelled ASAP.
         /// </summary>
-        public CancellationToken CancellationToken { get; private set; }
+#if SILVERLIGHT
+        public event EventHandler Canceled;
+#else
+        public event EventHandler<object> Canceled;
+#endif
+
+        void OnCancel()
+        {
+            if (Canceled != null) Canceled(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Notifies the MediaPlayer that the operation is complete.

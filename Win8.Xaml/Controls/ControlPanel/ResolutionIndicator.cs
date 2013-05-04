@@ -17,7 +17,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control to display the signal strength for adaptive streaming.
     /// </summary>
-    public class ResolutionIndicator : Control
+    public sealed class ResolutionIndicator : Control
     {
         /// <summary>
         /// Creates a new instance of ResolutionIndicator
@@ -46,14 +46,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaQuality dependency property.
         /// </summary>
-        public static readonly DependencyProperty MediaQualityProperty = DependencyProperty.Register("MediaQuality", typeof(MediaQuality), typeof(ResolutionIndicator), new PropertyMetadata(MediaQuality.HighDefinition, (d, e) => ((ResolutionIndicator)d).OnMediaQualityChanged((MediaQuality)e.OldValue, (MediaQuality)e.NewValue)));
+        public static DependencyProperty MediaQualityProperty { get { return mediaQualityProperty; } }
+        static readonly DependencyProperty mediaQualityProperty = DependencyProperty.Register("MediaQuality", typeof(MediaQuality), typeof(ResolutionIndicator), new PropertyMetadata(MediaQuality.HighDefinition, (d, e) => ((ResolutionIndicator)d).OnMediaQualityChanged((MediaQuality)e.OldValue, (MediaQuality)e.NewValue)));
 
         /// <summary>
         /// Provides notification that the MediaQuality has changed.
         /// </summary>
         /// <param name="oldValue">The previous media quality.</param>
         /// <param name="newValue">The new media quality.</param>
-        protected virtual void OnMediaQualityChanged(MediaQuality oldValue, MediaQuality newValue)
+        void OnMediaQualityChanged(MediaQuality oldValue, MediaQuality newValue)
         {
             switch (newValue)
             {

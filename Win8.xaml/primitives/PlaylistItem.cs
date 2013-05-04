@@ -20,9 +20,9 @@ namespace Microsoft.PlayerFramework
     /// Represents a media item in a playlist.
     /// </summary>
 #if SILVERLIGHT
-    public class PlaylistItem : DependencyObject, IMediaSource
+    public sealed class PlaylistItem : DependencyObject, IMediaSource
 #else
-    public class PlaylistItem : DependencyObject, IMediaSource
+    public sealed class PlaylistItem : DependencyObject, IMediaSource
 #endif
     {
         /// <summary>
@@ -40,11 +40,12 @@ namespace Microsoft.PlayerFramework
         public LicenseAcquirer LicenseAcquirer { get; set; }
 
 #else
-        
+
         /// <summary>
         /// Identifies the ProtectionManager dependency property.
         /// </summary>
-        public static readonly DependencyProperty ProtectionManagerProperty = DependencyProperty.Register("ProtectionManager", typeof(MediaProtectionManager), typeof(PlaylistItem), null);
+        public static DependencyProperty ProtectionManagerProperty { get { return protectionManagerProperty; } }
+        static readonly DependencyProperty protectionManagerProperty = DependencyProperty.Register("ProtectionManager", typeof(MediaProtectionManager), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the dedicated object for media content protection that is associated with this PlaylistItem.
@@ -54,11 +55,12 @@ namespace Microsoft.PlayerFramework
             get { return GetValue(ProtectionManagerProperty) as MediaProtectionManager; }
             set { SetValue(ProtectionManagerProperty, value); }
         }
-        
+
         /// <summary>
         /// Identifies the Stereo3DVideoPackingMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty Stereo3DVideoPackingModeProperty = DependencyProperty.Register("Stereo3DVideoPackingMode", typeof(Stereo3DVideoPackingMode), typeof(PlaylistItem), new PropertyMetadata(Stereo3DVideoPackingMode.None));
+        public static DependencyProperty Stereo3DVideoPackingModeProperty { get { return stereo3DVideoPackingModeProperty; } }
+        static readonly DependencyProperty stereo3DVideoPackingModeProperty = DependencyProperty.Register("Stereo3DVideoPackingMode", typeof(Stereo3DVideoPackingMode), typeof(PlaylistItem), new PropertyMetadata(Stereo3DVideoPackingMode.None));
 
         /// <summary>
         /// Gets or sets the stereo video mode to use for display.
@@ -72,7 +74,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Stereo3DVideoRenderMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty Stereo3DVideoRenderModeProperty = DependencyProperty.Register("Stereo3DVideoRenderMode", typeof(Stereo3DVideoRenderMode), typeof(PlaylistItem), new PropertyMetadata(Stereo3DVideoRenderMode.Mono));
+        public static DependencyProperty Stereo3DVideoRenderModeProperty { get { return stereo3DVideoRenderModeProperty; } }
+        static readonly DependencyProperty stereo3DVideoRenderModeProperty = DependencyProperty.Register("Stereo3DVideoRenderMode", typeof(Stereo3DVideoRenderMode), typeof(PlaylistItem), new PropertyMetadata(Stereo3DVideoRenderMode.Mono));
 
         /// <summary>
         /// Gets or sets the stereo video mode to use for display.
@@ -86,7 +89,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PosterSource dependency property.
         /// </summary>
-        public static readonly DependencyProperty PosterSourceProperty = DependencyProperty.Register("PosterSource", typeof(ImageSource), typeof(PlaylistItem), null);
+        public static DependencyProperty PosterSourceProperty { get { return posterSourceProperty; } }
+        static readonly DependencyProperty posterSourceProperty = DependencyProperty.Register("PosterSource", typeof(ImageSource), typeof(PlaylistItem), null);
 
         /// <inheritdoc /> 
         public ImageSource PosterSource
@@ -98,7 +102,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoLoad dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoLoadProperty = DependencyProperty.Register("AutoLoad", typeof(bool), typeof(PlaylistItem), new PropertyMetadata(true));
+        public static DependencyProperty AutoLoadProperty { get { return autoLoadProperty; } }
+        static readonly DependencyProperty autoLoadProperty = DependencyProperty.Register("AutoLoad", typeof(bool), typeof(PlaylistItem), new PropertyMetadata(true));
 
         /// <inheritdoc /> 
         public bool AutoLoad
@@ -110,7 +115,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoPlay dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlaylistItem), new PropertyMetadata(true));
+        public static DependencyProperty AutoPlayProperty { get { return autoPlayProperty; } }
+        static readonly DependencyProperty autoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlaylistItem), new PropertyMetadata(true));
 
         /// <inheritdoc /> 
         public bool AutoPlay
@@ -122,7 +128,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the StartupPosition dependency property.
         /// </summary>
-        public static readonly DependencyProperty StartupPositionProperty = DependencyProperty.Register("StartupPosition", typeof(TimeSpan?), typeof(PlaylistItem), new PropertyMetadata((TimeSpan?)null));
+        public static DependencyProperty StartupPositionProperty { get { return startupPositionProperty; } }
+        static readonly DependencyProperty startupPositionProperty = DependencyProperty.Register("StartupPosition", typeof(TimeSpan?), typeof(PlaylistItem), new PropertyMetadata((TimeSpan?)null));
 
         /// <inheritdoc /> 
         public TimeSpan? StartupPosition
@@ -134,7 +141,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Source dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(Uri), typeof(PlaylistItem), new PropertyMetadata(null, (d, e) => ((PlaylistItem)d).OnSourceChanged(e.OldValue as Uri, e.NewValue as Uri)));
+        public static DependencyProperty SourceProperty { get { return sourceProperty; } }
+        static readonly DependencyProperty sourceProperty = DependencyProperty.Register("Source", typeof(Uri), typeof(PlaylistItem), new PropertyMetadata(null, (d, e) => ((PlaylistItem)d).OnSourceChanged(e.OldValue as Uri, e.NewValue as Uri)));
 
         void OnSourceChanged(Uri oldSource, Uri newSource)
         {
@@ -151,7 +159,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Source dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceUriProperty = DependencyProperty.Register("SourceUri", typeof(string), typeof(PlaylistItem), new PropertyMetadata(null, (d, e) => ((PlaylistItem)d).OnSourceUriChanged(e.OldValue as string, e.NewValue as string)));
+        public static DependencyProperty SourceUriProperty { get { return sourceUriProperty; } }
+        static readonly DependencyProperty sourceUriProperty = DependencyProperty.Register("SourceUri", typeof(string), typeof(PlaylistItem), new PropertyMetadata(null, (d, e) => ((PlaylistItem)d).OnSourceUriChanged(e.OldValue as string, e.NewValue as string)));
 
         void OnSourceUriChanged(string oldSourceUri, string newSourceUri)
         {
@@ -169,7 +178,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SourceStream dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceStreamProperty = DependencyProperty.Register("SourceStream", typeof(IRandomAccessStream), typeof(PlaylistItem), null);
+        public static DependencyProperty SourceStreamProperty { get { return sourceStreamProperty; } }
+        static readonly DependencyProperty sourceStreamProperty = DependencyProperty.Register("SourceStream", typeof(IRandomAccessStream), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the source stream for the playlistitem
@@ -183,7 +193,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MimeType dependency property.
         /// </summary>
-        public static readonly DependencyProperty MimeTypeProperty = DependencyProperty.Register("MimeType", typeof(string), typeof(PlaylistItem), null);
+        public static DependencyProperty MimeTypeProperty { get { return mimeTypeProperty; } }
+        static readonly DependencyProperty mimeTypeProperty = DependencyProperty.Register("MimeType", typeof(string), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the mime type for the playlistitem. Only applicable when SourceStream is set.
@@ -197,7 +208,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SourceStream dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceStreamProperty = DependencyProperty.Register("SourceStream", typeof(Stream), typeof(PlaylistItem), null);
+        public static DependencyProperty SourceStreamProperty { get { return sourceStreamProperty; } }
+        static readonly DependencyProperty sourceStreamProperty = DependencyProperty.Register("SourceStream", typeof(Stream), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the source stream for the playlistitem
@@ -211,7 +223,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaStreamSource dependency property.
         /// </summary>
-        public static readonly DependencyProperty MediaStreamSourceProperty = DependencyProperty.Register("MediaStreamSource", typeof(MediaStreamSource), typeof(PlaylistItem), null);
+        public static DependencyProperty MediaStreamSourceProperty { get { return mediaStreamSourceProperty; } }
+        static readonly DependencyProperty mediaStreamSourceProperty = DependencyProperty.Register("MediaStreamSource", typeof(MediaStreamSource), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the source MediaStreamSource for the playlistitem
@@ -226,59 +239,44 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AudioStreamNames dependency property.
         /// </summary>
-        public static readonly DependencyProperty AvailableAudioStreamsProperty = DependencyProperty.Register("AvailableAudioStreams", typeof(List<AudioStream>), typeof(PlaylistItem), null);
+        public static DependencyProperty AvailableAudioStreamsProperty { get { return availableAudioStreamsProperty; } }
+        static readonly DependencyProperty availableAudioStreamsProperty = DependencyProperty.Register("AvailableAudioStreams", typeof(IList<AudioStream>), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the list of audio stream names.
         /// </summary>
-        public List<AudioStream> AvailableAudioStreams
+        public IList<AudioStream> AvailableAudioStreams
         {
-            get { return GetValue(AvailableAudioStreamsProperty) as List<AudioStream>; }
-        }
-
-        /// <inheritdoc /> 
-        ICollection<AudioStream> IMediaSource.AvailableAudioStreams
-        {
-            get { return AvailableAudioStreams; }
+            get { return GetValue(AvailableAudioStreamsProperty) as IList<AudioStream>; }
         }
 
         /// <summary>
         /// Identifies the VisualMarkers dependency property.
         /// </summary>
-        public static readonly DependencyProperty VisualMarkersProperty = DependencyProperty.Register("VisualMarkers", typeof(List<VisualMarker>), typeof(PlaylistItem), null);
+        public static DependencyProperty VisualMarkersProperty { get { return visualMarkersProperty; } }
+        static readonly DependencyProperty visualMarkersProperty = DependencyProperty.Register("VisualMarkers", typeof(IList<VisualMarker>), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the list of timeline markers to display in the timeline.
         /// </summary>
-        public List<VisualMarker> VisualMarkers
+        public IList<VisualMarker> VisualMarkers
         {
-            get { return GetValue(VisualMarkersProperty) as List<VisualMarker>; }
-        }
-
-        /// <inheritdoc /> 
-        ICollection<VisualMarker> IMediaSource.VisualMarkers
-        {
-            get { return VisualMarkers; }
+            get { return GetValue(VisualMarkersProperty) as IList<VisualMarker>; }
         }
 
         #region AvailableCaptions
         /// <summary>
         /// Identifies the AvailableCaptions dependency property.
         /// </summary>
-        public static readonly DependencyProperty AvailableCaptionsProperty = DependencyProperty.Register("AvailableCaptions", typeof(List<Caption>), typeof(PlaylistItem), null);
+        public static DependencyProperty AvailableCaptionsProperty { get { return availableCaptionsProperty; } }
+        static readonly DependencyProperty availableCaptionsProperty = DependencyProperty.Register("AvailableCaptions", typeof(IList<Caption>), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the list of captions that can be chosen by the user.
         /// </summary>
-        public List<Caption> AvailableCaptions
+        public IList<Caption> AvailableCaptions
         {
-            get { return GetValue(AvailableCaptionsProperty) as List<Caption>; }
-        }
-
-        /// <inheritdoc /> 
-        ICollection<Caption> IMediaSource.AvailableCaptions
-        {
-            get { return AvailableCaptions; }
+            get { return GetValue(AvailableCaptionsProperty) as IList<Caption>; }
         }
         #endregion
 

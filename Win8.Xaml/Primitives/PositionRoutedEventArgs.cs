@@ -26,7 +26,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// EventArgs associated with a Position in the media.
     /// </summary>
-    public class SeekRoutedEventArgs : PositionRoutedEventArgs
+    public sealed class SeekRoutedEventArgs : PositionRoutedEventArgs
     {
         internal SeekRoutedEventArgs(TimeSpan previousPosition, TimeSpan newPosition) : base(newPosition)
         {
@@ -47,7 +47,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// EventArgs associated with a skip operation.
     /// </summary>
-    public class SkipRoutedEventArgs : PositionRoutedEventArgs
+    public sealed class SkipRoutedEventArgs : PositionRoutedEventArgs
     {
         internal SkipRoutedEventArgs(TimeSpan position)
             : base(position)
@@ -93,7 +93,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// EventArgs associated with a scrubbing operation that is in progress.
     /// </summary>
-    public class ScrubProgressRoutedEventArgs : ScrubRoutedEventArgs
+    public sealed class ScrubProgressRoutedEventArgs : ScrubRoutedEventArgs
     {
         internal ScrubProgressRoutedEventArgs(TimeSpan startPosition, TimeSpan newPosition)
             : base(newPosition)

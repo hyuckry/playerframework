@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using Windows.Media;
 using Windows.UI.Xaml;
@@ -8,7 +9,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A plugin used to connect the Windows 8 media controls with the current media.
     /// </summary>
-    public class MediaControlPlugin: PluginBase
+    public sealed class MediaControlPlugin : PluginBase
     {
         /// <inheritdoc /> 
         protected override bool OnActivate()
@@ -24,7 +25,10 @@ namespace Microsoft.PlayerFramework
 
             if (PlaylistPlugin != null)
             {
-                PlaylistPlugin.Playlist.CollectionChanged += Playlist_CollectionChanged;
+                if (PlaylistPlugin.Playlist is INotifyCollectionChanged)
+                {
+                    ((INotifyCollectionChanged)PlaylistPlugin.Playlist).CollectionChanged += Playlist_CollectionChanged;
+                }
                 PlaylistPlugin.CurrentPlaylistItemChanged += PlaylistPlugin_CurrentPlaylistItemChanged;
             }
             if (MediaPlayer.InteractiveViewModel != null)
@@ -41,7 +45,10 @@ namespace Microsoft.PlayerFramework
         {
             if (PlaylistPlugin != null)
             {
-                PlaylistPlugin.Playlist.CollectionChanged -= Playlist_CollectionChanged;
+                if (PlaylistPlugin.Playlist is INotifyCollectionChanged)
+                {
+                    ((INotifyCollectionChanged)PlaylistPlugin.Playlist).CollectionChanged -= Playlist_CollectionChanged;
+                }
                 PlaylistPlugin.CurrentPlaylistItemChanged -= PlaylistPlugin_CurrentPlaylistItemChanged;
             }
 
@@ -65,7 +72,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Refreshes the next and previous track buttons based on whether a next or previous track exists.
         /// </summary>
-        protected void RefreshTrackButtonStates()
+        void RefreshTrackButtonStates()
         {
             IsNextTrackEnabled = NextTrackExists;
             IsPreviousTrackEnabled = PreviousTrackExists;
@@ -115,7 +122,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets if a next track currently exists in the playlist.
         /// </summary>
-        protected virtual bool NextTrackExists
+        bool NextTrackExists
         {
             get 
             {
@@ -126,7 +133,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets if a previous track currently exists in the playlist.
         /// </summary>
-        protected virtual bool PreviousTrackExists
+        bool PreviousTrackExists
         {
             get
             {
@@ -134,7 +141,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void PlaylistPlugin_CurrentPlaylistItemChanged(object sender, EventArgs e)
+        void PlaylistPlugin_CurrentPlaylistItemChanged(object sender, object e)
         {
             RefreshTrackButtonStates();
         }
@@ -152,7 +159,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void MediaPlayer_InteractiveViewModelChanged(object sender, RoutedPropertyChangedEventArgs<IInteractiveViewModel> e)
+        void MediaPlayer_InteractiveViewModelChanged(object sender, InteractiveViewModelChangedEventArgs e)
         {
             if (e.OldValue != null)
             {

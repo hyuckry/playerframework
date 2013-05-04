@@ -13,13 +13,13 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// IValueConverter used to help Xaml flip the value when binding a boolean to a boolean.
     /// </summary>
-    public class NotConverter : IValueConverter
+    public sealed class NotConverter : IValueConverter
     {
         /// <inheritdoc /> 
 #if SILVERLIGHT
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object Convert(object value, Type targetType, object parameter, string culture)
+        public object Convert(object value, Type targetType, object parameter, string language)
 #endif
         {
             return !((bool)value);
@@ -29,7 +29,7 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object ConvertBack(object value, Type targetType, object parameter, string culture)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
 #endif
         {
             return !((bool)value);

@@ -16,14 +16,14 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A plugin used to help track when specific events occur during playback.
     /// </summary>
-    public abstract class TrackingPluginBase<T> : PluginBase, IEventTracker where T : TrackingEventBase
+    public class TrackingPluginBase : PluginBase, IEventTracker
     {
         /// <summary>
         /// Creates a new instance of TrackingPlugin.
         /// </summary>
-        public TrackingPluginBase()
+        internal TrackingPluginBase()
         {
-            TrackingEvents = new ObservableCollection<T>();
+            TrackingEvents = new ObservableCollection<TrackingEventBase>();
         }
 
         /// <inheritdoc /> 
@@ -32,9 +32,10 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PreloadTime dependency property.
         /// </summary>
-        public static readonly DependencyProperty TrackingEventsProperty = DependencyProperty.Register("TrackingEvents", typeof(IList<T>), typeof(TrackingPluginBase<T>), new PropertyMetadata(null, (d, e) => ((TrackingPluginBase<T>)d).OnTrackingEventsChanged(e.OldValue as IList<T>, e.NewValue as IList<T>)));
+        public static DependencyProperty TrackingEventsProperty { get { return trackingEventsProperty; } }
+        static readonly DependencyProperty trackingEventsProperty = DependencyProperty.Register("TrackingEvents", typeof(IList<TrackingEventBase>), typeof(TrackingPluginBase), new PropertyMetadata(null, (d, e) => ((TrackingPluginBase)d).OnTrackingEventsChanged(e.OldValue as IList<TrackingEventBase>, e.NewValue as IList<TrackingEventBase>)));
 
-        void OnTrackingEventsChanged(IList<T> oldValue, IList<T> newValue)
+        void OnTrackingEventsChanged(IList<TrackingEventBase> oldValue, IList<TrackingEventBase> newValue)
         {
             if (oldValue != null)
             {
@@ -58,26 +59,26 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the amount of time before an ad will occur that preloading will begin. Set to null to disable preloading. Default is 5 seconds.
         /// </summary>
-        public IList<T> TrackingEvents
+        public IList<TrackingEventBase> TrackingEvents
         {
-            get { return GetValue(TrackingEventsProperty) as IList<T>; }
+            get { return GetValue(TrackingEventsProperty) as IList<TrackingEventBase>; }
             set { SetValue(TrackingEventsProperty, value); }
         }
-        
+
         private void TrackingPlugin_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (MediaPlayer != null && MediaPlayer.PlayerState == PlayerState.Started) // make sure we're started. If not, wait until MediaStarted fires
             {
                 if (e.OldItems != null)
                 {
-                    foreach (var item in e.OldItems.Cast<T>())
+                    foreach (var item in e.OldItems.Cast<TrackingEventBase>())
                     {
                         UninitializeTrackingEvent(item);
                     }
                 }
                 if (e.NewItems != null)
                 {
-                    foreach (var item in e.NewItems.Cast<T>())
+                    foreach (var item in e.NewItems.Cast<TrackingEventBase>())
                     {
                         InitializeTrackingEvent(item);
                     }
@@ -97,7 +98,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Unsubscribes all tracking events.
         /// </summary>
-        protected virtual void UninitializeTrackingEvents(IList<T> trackingEvents)
+        protected virtual void UninitializeTrackingEvents(IList<TrackingEventBase> trackingEvents)
         {
             foreach (var trackingEvent in trackingEvents)
             {
@@ -108,7 +109,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Subscribes all tracking events.
         /// </summary>
-        protected virtual void InitializeTrackingEvents(IList<T> trackingEvents)
+        protected virtual void InitializeTrackingEvents(IList<TrackingEventBase> trackingEvents)
         {
             foreach (var trackingEvent in trackingEvents)
             {
@@ -120,18 +121,18 @@ namespace Microsoft.PlayerFramework
         /// Provides an opportunity to initialize an individual tracking event.
         /// </summary>
         /// <param name="trackingEvent">The tracking event being subscribed to.</param>
-        protected virtual void InitializeTrackingEvent(T trackingEvent) { }
+        protected virtual void InitializeTrackingEvent(TrackingEventBase trackingEvent) { }
 
         /// <summary>
         /// Provides an opportunity to uninitialize an individual tracking event.
         /// </summary>
         /// <param name="trackingEvent">The tracking event being unsubscribed.</param>
-        protected virtual void UninitializeTrackingEvent(T trackingEvent) { }
-        
+        protected virtual void UninitializeTrackingEvent(TrackingEventBase trackingEvent) { }
+
         /// <inheritdoc /> 
         protected override void OnUpdate()
         {
-            TrackingEvents = Tracking.GetTrackingEvents((DependencyObject)CurrentMediaSource).OfType<T>().ToList();
+            TrackingEvents = Tracking.GetTrackingEvents((DependencyObject)CurrentMediaSource).ToList();
             base.OnUpdate();
         }
 
@@ -162,8 +163,10 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A base class that all tracking events inherit.
     /// </summary>
-    public abstract class TrackingEventBase
+    public class TrackingEventBase
     {
+        internal TrackingEventBase() { }
+
         /// <summary>
         /// Gets or sets extra data associated with a tracking event.
         /// </summary>
@@ -175,16 +178,20 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public string Area { get; set; }
     }
-    
+
     /// <summary>
     /// Contains additional information about a tracking event that has occurred.
     /// </summary>
+#if SILVERLIGHT
     public class EventTrackedEventArgs : EventArgs
+#else
+    public class EventTrackedEventArgs
+#endif
     {
         /// <summary>
         /// Creates a new instance of EventTrackedEventArgs
         /// </summary>
-        public EventTrackedEventArgs()
+        internal EventTrackedEventArgs()
         {
             Timestamp = DateTimeOffset.Now;
         }
@@ -193,12 +200,12 @@ namespace Microsoft.PlayerFramework
         /// Creates a new instance of EventTrackedEventArgs
         /// </summary>
         /// <param name="trackingEvent">The event that was tracked</param>
-        public EventTrackedEventArgs(TrackingEventBase trackingEvent)
+        internal EventTrackedEventArgs(TrackingEventBase trackingEvent)
             : this()
         {
             TrackingEvent = trackingEvent;
         }
-        
+
         /// <summary>
         /// Gets the timestamp when the event occurred.
         /// </summary>

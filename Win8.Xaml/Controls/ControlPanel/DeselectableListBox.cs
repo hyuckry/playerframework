@@ -15,12 +15,9 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that acts like a list box but presents a separate option for unselecting to the user.
     /// </summary>
-    public class DeselectableListBox : Control
+    public sealed class DeselectableListBox : Control
     {
-        /// <summary>
-        /// The internal instance listbox used by this control to display the items.
-        /// </summary>
-        protected ListBox ListBox { get; private set; }
+        private ListBox listBox;
 
         private EnumerableWrapper items;
 
@@ -40,7 +37,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SelectedIdentifierText dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedIdentifierTextProperty = DependencyProperty.Register("SelectedIdentifierText", typeof(string), typeof(DeselectableListBox), new PropertyMetadata(DefaultSelectedIdentifierText));
+        public static DependencyProperty SelectedIdentifierTextProperty { get { return selectedIdentifierTextProperty; } }
+        static readonly DependencyProperty selectedIdentifierTextProperty = DependencyProperty.Register("SelectedIdentifierText", typeof(string), typeof(DeselectableListBox), new PropertyMetadata(DefaultSelectedIdentifierText));
 
         /// <summary>
         /// Gets or sets the text to identify that an item is selected.
@@ -50,7 +48,7 @@ namespace Microsoft.PlayerFramework
             get { return GetValue(SelectedIdentifierTextProperty) as string; }
             set { SetValue(SelectedIdentifierTextProperty, value); }
         }
-        
+
         static string DefaultSelectedIdentifierText
         {
             get
@@ -76,17 +74,17 @@ namespace Microsoft.PlayerFramework
         {
             base.OnApplyTemplate();
 
-            ListBox = GetTemplateChild("ListBox") as ListBox;
+            listBox = GetTemplateChild("ListBox") as ListBox;
 
-            ListBox.ItemTemplate = ItemTemplate;
-            ListBox.ItemsSource = items;
-            ListBox.SelectedItem = SelectedItem;
-            ListBox.SelectionChanged += ListBox_SelectionChanged;
+            listBox.ItemTemplate = ItemTemplate;
+            listBox.ItemsSource = items;
+            listBox.SelectedItem = SelectedItem;
+            listBox.SelectionChanged += ListBox_SelectionChanged;
         }
 
         void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedItem = ListBox.SelectedItem == DeselectedItem ? null : ListBox.SelectedItem;
+            SelectedItem = listBox.SelectedItem == DeselectedItem ? null : listBox.SelectedItem;
             if (SelectionChanged != null)
             {
                 SelectionChanged(this, e);
@@ -98,7 +96,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// ItemsSource DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnItemsSourceChanged(e.NewValue as IEnumerable)));
+        public static DependencyProperty ItemsSourceProperty { get { return itemsSourceProperty; } }
+        static readonly DependencyProperty itemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnItemsSourceChanged(e.NewValue as IEnumerable)));
 
         /// <summary>
         /// Gets or sets the collection of items to be used as the item source.
@@ -108,7 +107,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// ItemsSource DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(object), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnItemsSourceChanged(e.NewValue as IEnumerable)));
+        public static DependencyProperty ItemsSourceProperty { get { return itemsSourceProperty; } }
+        static readonly DependencyProperty itemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(object), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnItemsSourceChanged(e.NewValue as IEnumerable)));
 
         /// <summary>
         /// Gets or sets the collection of items to be used as the item source.
@@ -125,16 +125,17 @@ namespace Microsoft.PlayerFramework
             items = new EnumerableWrapper(itemsSource);
             items.StartingItem = DeselectedItem;
             items.IncludeStartingItem = SelectedItem != null;
-            if (ListBox != null)
+            if (listBox != null)
             {
-                ListBox.ItemsSource = items;
+                listBox.ItemsSource = items;
             }
         }
-        
+
         /// <summary>
         /// SelectedItem DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnSelectedItemChanged(e.NewValue as object)));
+        public static DependencyProperty SelectedItemProperty { get { return selectedItemProperty; } }
+        static readonly DependencyProperty selectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnSelectedItemChanged(e.NewValue as object)));
 
         /// <summary>
         /// Gets or sets the selected item.
@@ -148,16 +149,17 @@ namespace Microsoft.PlayerFramework
         void OnSelectedItemChanged(object newSelectedItem)
         {
             items.IncludeStartingItem = newSelectedItem != null;
-            if (ListBox != null)
+            if (listBox != null)
             {
-                ListBox.SelectedItem = newSelectedItem;
+                listBox.SelectedItem = newSelectedItem;
             }
         }
 
         /// <summary>
         /// DeselectedItem DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty DeselectedItemProperty = DependencyProperty.Register("DeselectedItem", typeof(object), typeof(DeselectableListBox), new PropertyMetadata(DefaultDeselectedItemText, (d, e) => ((DeselectableListBox)d).OnDeselectedItemChanged(e.NewValue as object)));
+        public static DependencyProperty DeselectedItemProperty { get { return deselectedItemProperty; } }
+        static readonly DependencyProperty deselectedItemProperty = DependencyProperty.Register("DeselectedItem", typeof(object), typeof(DeselectableListBox), new PropertyMetadata(DefaultDeselectedItemText, (d, e) => ((DeselectableListBox)d).OnDeselectedItemChanged(e.NewValue as object)));
 
         /// <summary>
         /// Gets or sets the item that is used to indicate nothing is selected.
@@ -179,7 +181,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// ItemTemplate DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnItemTemplateChanged(e.NewValue as DataTemplate)));
+        public static DependencyProperty ItemTemplateProperty { get { return itemTemplateProperty; } }
+        static readonly DependencyProperty itemTemplateProperty = DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(DeselectableListBox), new PropertyMetadata(null, (d, e) => ((DeselectableListBox)d).OnItemTemplateChanged(e.NewValue as DataTemplate)));
 
         /// <summary>
         /// Gets or sets the item template to be used to display each item in the list.
@@ -192,9 +195,9 @@ namespace Microsoft.PlayerFramework
 
         void OnItemTemplateChanged(DataTemplate newItemTemplate)
         {
-            if (ListBox != null)
+            if (listBox != null)
             {
-                ListBox.ItemTemplate = newItemTemplate;
+                listBox.ItemTemplate = newItemTemplate;
             }
         }
 
@@ -288,7 +291,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a special listbox that contains ListBoxItem objects with knowlege of the listbox. This is useful for binding.
     /// </summary>
-    public class ParentAwareListBox : ListBox
+    public sealed class ParentAwareListBox : ListBox
     {
         /// <inheritdoc /> 
         protected override DependencyObject GetContainerForItemOverride()
@@ -300,7 +303,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a special listbox that contains ListBoxItem objects with knowlege of the listbox. This is useful for binding.
     /// </summary>
-    public class ParentAwareListBoxItem : ListBoxItem
+    public sealed class ParentAwareListBoxItem : ListBoxItem
     {
         /// <summary>
         /// Creates a new instance of ParentAwareListBoxItem.
@@ -314,7 +317,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ParentListBox dependency property.
         /// </summary>
-        public static readonly DependencyProperty ParentListBoxProperty = DependencyProperty.Register("ParentListBox", typeof(ParentAwareListBox), typeof(ParentAwareListBoxItem), null);
+        public static DependencyProperty ParentListBoxProperty { get { return parentListBoxProperty; } }
+        static readonly DependencyProperty parentListBoxProperty = DependencyProperty.Register("ParentListBox", typeof(ParentAwareListBox), typeof(ParentAwareListBoxItem), null);
 
         /// <summary>
         /// Gets the parent list box.

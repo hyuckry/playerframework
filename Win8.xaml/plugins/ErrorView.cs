@@ -17,7 +17,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that indicates an error has occurred.
     /// </summary>
-    public class ErrorView : Control
+    public sealed class ErrorView : Control
     {
         /// <summary>
         /// Occurs when a button control is clicked.
@@ -66,7 +66,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// ErrorText DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ErrorTextProperty = DependencyProperty.Register("ErrorText", typeof(string), typeof(ErrorView), null);
+        public static DependencyProperty ErrorTextProperty { get { return errorTextProperty; } }
+        static readonly DependencyProperty errorTextProperty = DependencyProperty.Register("ErrorText", typeof(string), typeof(ErrorView), null);
 
         /// <summary>
         /// Gets or sets the error text to be displayed to the user.

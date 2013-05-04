@@ -16,7 +16,7 @@ namespace Microsoft.PlayerFramework
     [System.ComponentModel.Composition.PartCreationPolicy(System.ComponentModel.Composition.CreationPolicy.NonShared)]
     [System.ComponentModel.Composition.Export(typeof(IPlugin))]
 #endif
-    public class ChaptersPlugin : PluginBase
+    public sealed class ChaptersPlugin : PluginBase
     {
         const string DefaultMarkerType = "NAME";
 

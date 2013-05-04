@@ -13,7 +13,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control to display the signal strength for adaptive streaming.
     /// </summary>
-    public class SignalStrength : RangeBase
+    public sealed class SignalStrength : RangeBase
     {
         /// <summary>
         /// Creates a new instance of SignalStrength

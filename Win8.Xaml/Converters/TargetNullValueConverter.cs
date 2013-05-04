@@ -13,13 +13,13 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Returns the parameter instead of the value if the value is null. Offers a good substitution for the TargetNullValue param on bindings in Silverlight or WPF
     /// </summary>
-    public class TargetNullValueConverter : IValueConverter
+    public sealed class TargetNullValueConverter : IValueConverter
     {
         /// <inheritdoc /> 
 #if SILVERLIGHT
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object Convert(object value, Type targetType, object parameter, string culture)
+        public object Convert(object value, Type targetType, object parameter, string language)
 #endif
         {
             return value ?? parameter;
@@ -29,7 +29,7 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object ConvertBack(object value, Type targetType, object parameter, string culture)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
 #endif
         {
             throw new NotImplementedException();

@@ -16,7 +16,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A plugin used to help track when specific events occur during playback.
     /// </summary>
-    public class PlayTimeTrackingPlugin : TrackingPluginBase<PlayTimeTrackingEvent>
+    public sealed class PlayTimeTrackingPlugin : TrackingPluginBase
     {
         private readonly List<PlayTimeTrackingEvent> spentPlayTimeEvents = new List<PlayTimeTrackingEvent>();
 
@@ -91,7 +91,7 @@ namespace Microsoft.PlayerFramework
             {
                 PlayTime = DateTime.Now.Subtract(startTime.Value);
                 PlayTimePercentage = PlayTime.TotalSeconds / MediaPlayer.Duration.TotalSeconds;
-                foreach (var playTimeTrackingEvent in TrackingEvents.Except(spentPlayTimeEvents).ToList())
+                foreach (var playTimeTrackingEvent in TrackingEvents.OfType<PlayTimeTrackingEvent>().Except(spentPlayTimeEvents).ToList())
                 {
                     if ((!playTimeTrackingEvent.PlayTimePercentage.HasValue && playTimeTrackingEvent.PlayTime <= PlayTime) || (playTimeTrackingEvent.PlayTimePercentage.HasValue && playTimeTrackingEvent.PlayTimePercentage <= PlayTimePercentage))
                     {
@@ -106,7 +106,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Used to identify and track when the media has been played a specified amount of time.
     /// </summary>
-    public class PlayTimeTrackingEvent : TrackingEventBase
+    public sealed class PlayTimeTrackingEvent : TrackingEventBase
     {
         /// <summary>
         /// Gets or sets the absolute amount of time that the media has been played before the tracking event will fire.

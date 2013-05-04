@@ -12,7 +12,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents an audio stream.
     /// </summary>
-    public class AudioStream
+    public sealed class AudioStream
     {
         /// <summary>
         /// Creates a new instance of AudioStream
@@ -42,12 +42,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the name of the audio stream.
         /// </summary>
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the Language of the audio stream.
         /// </summary>
-        public virtual string Language { get; set; }
+        public string Language { get; set; }
 
         /// <inheritdoc /> 
         public override string ToString()

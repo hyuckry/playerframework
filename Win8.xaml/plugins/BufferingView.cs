@@ -13,7 +13,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that indicates buffering is occuring.
     /// </summary>
-    public class BufferingView : Control
+    public sealed class BufferingView : Control
     {
         /// <summary>
         /// Creates a new instance of the control
@@ -37,7 +37,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaPlayer dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(BufferingView), new PropertyMetadata(null, (d, e) => ((BufferingView)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(BufferingView), new PropertyMetadata(null, (d, e) => ((BufferingView)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {

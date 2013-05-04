@@ -146,143 +146,143 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// The main panel element containing the controls.
         /// </summary>
-        protected FrameworkElement BorderElement { get; private set; }
+        FrameworkElement borderElement;
         /// <summary>
         /// The replay (instant replay) button.
         /// </summary>
-        protected ButtonBase ReplayButtonElement { get; private set; }
+        ButtonBase replayButtonElement;
         /// <summary>
         /// The skip previous button (sends the user to the previous marker).
         /// </summary>
-        protected ButtonBase SkipPreviousButtonElement { get; private set; }
+        ButtonBase skipPreviousButtonElement;
         /// <summary>
         /// The skip back button (sends the user x seconds back in the timeline).
         /// </summary>
-        protected ButtonBase SkipBackButtonElement { get; private set; }
+        ButtonBase skipBackButtonElement;
         /// <summary>
         /// The rewind/reverse button.
         /// </summary>
-        protected ButtonBase RewindButtonElement { get; private set; }
+        ButtonBase rewindButtonElement;
         /// <summary>
         /// The play and pause toggle button.
         /// </summary>
-        protected ButtonBase PlayPauseButtonElement { get; private set; }
+        ButtonBase playPauseButtonElement;
         /// <summary>
         /// The stop button.
         /// </summary>
-        protected ButtonBase StopButtonElement { get; private set; }
+        ButtonBase stopButtonElement;
         /// <summary>
         /// The fast forward button.
         /// </summary>
-        protected ButtonBase FastForwardButtonElement { get; private set; }
+        ButtonBase fastForwardButtonElement;
         /// <summary>
         /// The slow motion button.
         /// </summary>
-        protected ToggleButton SlowMotionButtonElement { get; private set; }
+        ToggleButton slowMotionButtonElement;
         /// <summary>
         /// The skip next button. Sends the user to the next marker.
         /// </summary>
-        protected ButtonBase SkipNextButtonElement { get; private set; }
+        ButtonBase skipNextButtonElement;
         /// <summary>
         /// The skip ahead button (sends the user x seconds forward in the timeline).
         /// </summary>
-        protected ButtonBase SkipAheadButtonElement { get; private set; }
+        ButtonBase skipAheadButtonElement;
         /// <summary>
         /// The current position of the media. Also sends the user back 30 seconds in the timeline.
         /// </summary>
-        protected ButtonBase TimeElapsedButtonElement { get; private set; }
+        ButtonBase timeElapsedButtonElement;
         /// <summary>
         /// The panel that contains the timeline.
         /// </summary>
-        protected Timeline TimelineElement { get; private set; }
+        Timeline timelineElement;
         /// <summary>
         /// The total duration of the media. Also Sends user 30 seconds ahead in the timeline.
         /// </summary>
-        protected ButtonBase DurationButtonElement { get; private set; }
+        ButtonBase durationButtonElement;
         /// <summary>
         /// The time remaining in the media. Also Sends user 30 seconds ahead in the timeline.
         /// </summary>
-        protected ButtonBase TimeRemainingButtonElement { get; private set; }
+        ButtonBase timeRemainingButtonElement;
         /// <summary>
         /// The Captions button.
         /// </summary>
-        protected ButtonBase CaptionSelectionButtonElement { get; private set; }
+        ButtonBase captionSelectionButtonElement;
         /// <summary>
         /// Allow you to select an audio track.
         /// </summary>
-        protected ButtonBase AudioSelectionButtonElement { get; private set; }
+        ButtonBase audioSelectionButtonElement;
         /// <summary>
         /// The mute and volume slider toggle button (used for video media).
         /// </summary>
-        protected VolumeButton VolumeButtonElement { get; private set; }
+        VolumeButton volumeButtonElement;
         /// <summary>
         /// The mute toggle button (used for audio media).
         /// </summary>
-        protected ButtonBase MuteButtonElement { get; private set; }
+        ButtonBase muteButtonElement;
         /// <summary>
         /// The horizontal volume slider (used for audio media where you can't extend vertically).
         /// </summary>
-        protected VolumeSlider VolumeSliderElement { get; private set; }
+        VolumeSlider volumeSliderElement;
         /// <summary>
         /// The fullscreen toggle button.
         /// </summary>
-        protected ButtonBase FullScreenButtonElement { get; private set; }
+        ButtonBase fullScreenButtonElement;
         /// <summary>
         /// The go live button.
         /// </summary>
-        protected ButtonBase GoLiveButtonElement { get; private set; }
+        ButtonBase goLiveButtonElement;
         /// <summary>
         /// The signal strength indicator (usually adaptive only).
         /// </summary>
-        protected SignalStrength SignalStrengthElement { get; private set; }
+        SignalStrength signalStrengthElement;
         /// <summary>
         /// The signal strength indicator (usually adaptive only).
         /// </summary>
-        protected ResolutionIndicator ResolutionIndicatorElement { get; private set; }
+        ResolutionIndicator resolutionIndicatorElement;
 
 #if SILVERLIGHT
         /// <summary>
         /// The button to allow the user to cycle through display modes (Letterbox, stretch, native, ...etc).
         /// </summary>
-        protected ButtonBase DisplayModeButtonElement { get; private set; }
+        ButtonBase displayModeButtonElement;
 #endif
 
         /// <inheritdoc /> 
-        protected virtual void GetTemplateChildren()
+        void GetTemplateChildren()
         {
-            BorderElement = GetTemplateChild(ControlPanelTemplateParts.BorderElement) as FrameworkElement;
+            borderElement = GetTemplateChild(ControlPanelTemplateParts.BorderElement) as FrameworkElement;
             LeftItemsPanel = GetTemplateChild(ControlPanelTemplateParts.LeftItemsPanelElement) as Panel;
             RightItemsPanel = GetTemplateChild(ControlPanelTemplateParts.RightItemsPanelElement) as Panel;
 
-            ReplayButtonElement = GetTemplateChild(ControlPanelTemplateParts.ReplayButtonElement) as ButtonBase;
-            SkipPreviousButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipPreviousButtonElement) as ButtonBase;
-            RewindButtonElement = GetTemplateChild(ControlPanelTemplateParts.RewindButtonElement) as ButtonBase;
-            SkipBackButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipBackButtonElement) as ButtonBase;
-            PlayPauseButtonElement = GetTemplateChild(ControlPanelTemplateParts.PlayPauseButtonElement) as ButtonBase;
-            StopButtonElement = GetTemplateChild(ControlPanelTemplateParts.StopButtonElement) as ButtonBase;
-            SkipAheadButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipAheadButtonElement) as ButtonBase;
-            FastForwardButtonElement = GetTemplateChild(ControlPanelTemplateParts.FastForwardButtonElement) as ButtonBase;
-            SlowMotionButtonElement = GetTemplateChild(ControlPanelTemplateParts.SlowMotionButtonElement) as ToggleButton;
-            SkipNextButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipNextButtonElement) as ButtonBase;
-            TimeElapsedButtonElement = GetTemplateChild(ControlPanelTemplateParts.TimeElapsedButtonElement) as ButtonBase;
+            replayButtonElement = GetTemplateChild(ControlPanelTemplateParts.ReplayButtonElement) as ButtonBase;
+            skipPreviousButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipPreviousButtonElement) as ButtonBase;
+            rewindButtonElement = GetTemplateChild(ControlPanelTemplateParts.RewindButtonElement) as ButtonBase;
+            skipBackButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipBackButtonElement) as ButtonBase;
+            playPauseButtonElement = GetTemplateChild(ControlPanelTemplateParts.PlayPauseButtonElement) as ButtonBase;
+            stopButtonElement = GetTemplateChild(ControlPanelTemplateParts.StopButtonElement) as ButtonBase;
+            skipAheadButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipAheadButtonElement) as ButtonBase;
+            fastForwardButtonElement = GetTemplateChild(ControlPanelTemplateParts.FastForwardButtonElement) as ButtonBase;
+            slowMotionButtonElement = GetTemplateChild(ControlPanelTemplateParts.SlowMotionButtonElement) as ToggleButton;
+            skipNextButtonElement = GetTemplateChild(ControlPanelTemplateParts.SkipNextButtonElement) as ButtonBase;
+            timeElapsedButtonElement = GetTemplateChild(ControlPanelTemplateParts.TimeElapsedButtonElement) as ButtonBase;
 
-            TimelineElement = GetTemplateChild(ControlPanelTemplateParts.TimelineElement) as Timeline;
+            timelineElement = GetTemplateChild(ControlPanelTemplateParts.TimelineElement) as Timeline;
 
-            DurationButtonElement = GetTemplateChild(ControlPanelTemplateParts.DurationButtonElement) as ButtonBase;
-            TimeRemainingButtonElement = GetTemplateChild(ControlPanelTemplateParts.TimeRemainingButtonElement) as ButtonBase;
-            CaptionSelectionButtonElement = GetTemplateChild(ControlPanelTemplateParts.CaptionSelectionButtonElement) as ButtonBase;
-            AudioSelectionButtonElement = GetTemplateChild(ControlPanelTemplateParts.AudioSelectionButtonElement) as ButtonBase;
+            durationButtonElement = GetTemplateChild(ControlPanelTemplateParts.DurationButtonElement) as ButtonBase;
+            timeRemainingButtonElement = GetTemplateChild(ControlPanelTemplateParts.TimeRemainingButtonElement) as ButtonBase;
+            captionSelectionButtonElement = GetTemplateChild(ControlPanelTemplateParts.CaptionSelectionButtonElement) as ButtonBase;
+            audioSelectionButtonElement = GetTemplateChild(ControlPanelTemplateParts.AudioSelectionButtonElement) as ButtonBase;
 
-            VolumeButtonElement = GetTemplateChild(ControlPanelTemplateParts.VolumeButtonElement) as VolumeButton;
-            MuteButtonElement = GetTemplateChild(ControlPanelTemplateParts.MuteButtonElement) as ButtonBase;
-            VolumeSliderElement = GetTemplateChild(ControlPanelTemplateParts.VolumeSliderElement) as VolumeSlider;
+            volumeButtonElement = GetTemplateChild(ControlPanelTemplateParts.VolumeButtonElement) as VolumeButton;
+            muteButtonElement = GetTemplateChild(ControlPanelTemplateParts.MuteButtonElement) as ButtonBase;
+            volumeSliderElement = GetTemplateChild(ControlPanelTemplateParts.VolumeSliderElement) as VolumeSlider;
 
-            FullScreenButtonElement = GetTemplateChild(ControlPanelTemplateParts.FullScreenButtonElement) as ButtonBase;
-            GoLiveButtonElement = GetTemplateChild(ControlPanelTemplateParts.GoLiveButtonElement) as ButtonBase;
-            SignalStrengthElement = GetTemplateChild(ControlPanelTemplateParts.SignalStrengthElement) as SignalStrength;
-            ResolutionIndicatorElement = GetTemplateChild(ControlPanelTemplateParts.ResolutionIndicatorElement) as ResolutionIndicator;
+            fullScreenButtonElement = GetTemplateChild(ControlPanelTemplateParts.FullScreenButtonElement) as ButtonBase;
+            goLiveButtonElement = GetTemplateChild(ControlPanelTemplateParts.GoLiveButtonElement) as ButtonBase;
+            signalStrengthElement = GetTemplateChild(ControlPanelTemplateParts.SignalStrengthElement) as SignalStrength;
+            resolutionIndicatorElement = GetTemplateChild(ControlPanelTemplateParts.ResolutionIndicatorElement) as ResolutionIndicator;
 #if SILVERLIGHT
-            DisplayModeButtonElement = GetTemplateChild(ControlPanelTemplateParts.DisplayModeButtonElement) as ButtonBase;
+            displayModeButtonElement = GetTemplateChild(ControlPanelTemplateParts.DisplayModeButtonElement) as ButtonBase;
 #endif
         }
 
@@ -306,9 +306,9 @@ namespace Microsoft.PlayerFramework
 
         void InitializeTemplateChildren()
         {
-            if (TimelineElement != null)
+            if (timelineElement != null)
             {
-                TimelineElement.SizeChanged += TimelineElement_SizeChanged;
+                timelineElement.SizeChanged += TimelineElement_SizeChanged;
             }
 
             if (ViewModel != null)
@@ -319,9 +319,9 @@ namespace Microsoft.PlayerFramework
 
         void UninitializeTemplateChildren()
         {
-            if (TimelineElement != null)
+            if (timelineElement != null)
             {
-                TimelineElement.SizeChanged -= TimelineElement_SizeChanged;
+                timelineElement.SizeChanged -= TimelineElement_SizeChanged;
             }
 
             if (ViewModel != null)

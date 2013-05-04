@@ -15,6 +15,8 @@ namespace Microsoft.PlayerFramework
     /// </summary>
     public class PositionedItemsPanel : Panel
     {
+        internal PositionedItemsPanel() { }
+
         // dependency property notification
         private static void OnDependencyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -25,7 +27,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Minimum DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register("Minimum", typeof(double), typeof(PositionedItemsPanel), new PropertyMetadata(0.0, OnDependencyPropertyChanged));
+        public static DependencyProperty MinimumProperty { get { return minimumProperty; } }
+        static readonly DependencyProperty minimumProperty = DependencyProperty.Register("Minimum", typeof(double), typeof(PositionedItemsPanel), new PropertyMetadata(0.0, OnDependencyPropertyChanged));
 
         /// <summary>
         /// Gets or sets the minimum position of the items.
@@ -41,7 +44,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Maximum DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register("Maximum", typeof(double), typeof(PositionedItemsPanel), new PropertyMetadata(100.0, OnDependencyPropertyChanged));
+        public static DependencyProperty MaximumProperty { get { return maximumProperty; } }
+        static readonly DependencyProperty maximumProperty = DependencyProperty.Register("Maximum", typeof(double), typeof(PositionedItemsPanel), new PropertyMetadata(100.0, OnDependencyPropertyChanged));
 
         /// <summary>
         /// Gets or sets the maximum position of the items.
@@ -57,7 +61,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// MaxPosition DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty MaxPositionProperty = DependencyProperty.Register("MaxPosition", typeof(double?), typeof(PositionedItemsPanel), new PropertyMetadata(null, OnDependencyPropertyChanged));
+        public static DependencyProperty MaxPositionProperty { get { return maxPositionProperty; } }
+        static readonly DependencyProperty maxPositionProperty = DependencyProperty.Register("MaxPosition", typeof(double?), typeof(PositionedItemsPanel), new PropertyMetadata(null, OnDependencyPropertyChanged));
 
         /// <summary>
         /// Gets or sets the max position.
@@ -73,7 +78,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// MinPosition DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty MinPositionProperty = DependencyProperty.Register("MinPosition", typeof(double?), typeof(PositionedItemsPanel), new PropertyMetadata(null, OnDependencyPropertyChanged));
+        public static DependencyProperty MinPositionProperty { get { return minPositionProperty; } }
+        static readonly DependencyProperty minPositionProperty = DependencyProperty.Register("MinPosition", typeof(double?), typeof(PositionedItemsPanel), new PropertyMetadata(null, OnDependencyPropertyChanged));
 
         /// <summary>
         /// Gets or sets the min position.
@@ -89,7 +95,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// DisplayAllItemsProperty DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty DisplayAllItemsProperty = DependencyProperty.Register("DisplayAllItems", typeof(bool), typeof(PositionedItemsPanel), new PropertyMetadata(true, OnDependencyPropertyChanged));
+        public static DependencyProperty DisplayAllItemsProperty { get { return displayAllItemsProperty; } }
+        static readonly DependencyProperty displayAllItemsProperty = DependencyProperty.Register("DisplayAllItems", typeof(bool), typeof(PositionedItemsPanel), new PropertyMetadata(true, OnDependencyPropertyChanged));
 
         /// <summary>
         /// Gets or sets whether items outside the MinPosition and MaxPosition are displayed
@@ -167,7 +174,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Position AttachedProperty definition.
         /// </summary>
-        public static readonly DependencyProperty PositionProperty = DependencyProperty.RegisterAttached("Position", typeof(double), typeof(PositionedItemsPanel), new PropertyMetadata(0.0));
+        public static DependencyProperty PositionProperty { get { return positionProperty; } }
+        static readonly DependencyProperty positionProperty = DependencyProperty.RegisterAttached("Position", typeof(double), typeof(PositionedItemsPanel), new PropertyMetadata(0.0));
 
         /// <summary>
         /// Sets the position on an item.

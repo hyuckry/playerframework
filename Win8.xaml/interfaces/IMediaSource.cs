@@ -68,17 +68,17 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets this audio stream names to be displayed to the user for selecting from multiple audio tracks.
         /// </summary>
-        ICollection<AudioStream> AvailableAudioStreams { get; }
+        IList<AudioStream> AvailableAudioStreams { get; }
 
         /// <summary>
         /// Gets a collection of timeline markers to display in the timeline.
         /// </summary>
-        ICollection<VisualMarker> VisualMarkers { get; }
+        IList<VisualMarker> VisualMarkers { get; }
 
         /// <summary>
         /// Gets a collection of available captions.
         /// </summary>
-        ICollection<Caption> AvailableCaptions { get; }
+        IList<Caption> AvailableCaptions { get; }
 
         /// <summary>
         /// Gets the media player associated with this MediaSource

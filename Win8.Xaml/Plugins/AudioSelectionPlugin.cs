@@ -73,7 +73,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void SelectorView_Close(object sender, EventArgs e)
+        void SelectorView_Close(object sender, object e)
         {
             OnClose();
         }

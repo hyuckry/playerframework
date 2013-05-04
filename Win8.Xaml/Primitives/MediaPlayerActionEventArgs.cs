@@ -37,7 +37,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Contains state information and event data associated with a MediaPlayer position action event.
     /// </summary>
-    public class MediaPlayerPositionActionEventArgs : MediaPlayerActionEventArgs
+    public sealed class MediaPlayerPositionActionEventArgs : MediaPlayerActionEventArgs
     {
         internal MediaPlayerPositionActionEventArgs(TimeSpan position)
         {
@@ -60,7 +60,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Contains state information and event data associated with a MediaPlayer marker action event.
     /// </summary>
-    public class MediaPlayerMarkerActionEventArgs : MediaPlayerActionEventArgs
+    public sealed class MediaPlayerMarkerActionEventArgs : MediaPlayerActionEventArgs
     {
         internal MediaPlayerMarkerActionEventArgs(VisualMarker marker)
         {

@@ -25,7 +25,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Creates a new instance of MediaPlayerButton
         /// </summary>
-        public MediaPlayerButton()
+        internal MediaPlayerButton()
         {
             DefaultStyleKey = typeof(MediaPlayerButton);
         }
@@ -33,19 +33,19 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the ViewModelCommand associated with the button.
         /// </summary>
-        public new ViewModelCommand Command
+        public IViewModelCommand ViewModelCommand
         {
-            get { return base.Command as ViewModelCommand; }
+            get { return Command as ViewModelCommand; }
             set
             {
-                if (Command != null)
+                if (ViewModelCommand != null)
                 {
-                    Command.ViewModel = null;
+                    ViewModelCommand.ViewModel = null;
                 }
-                base.Command = value;
-                if (Command != null)
+                Command = value;
+                if (ViewModelCommand != null)
                 {
-                    Command.ViewModel = ViewModel;
+                    ViewModelCommand.ViewModel = ViewModel;
                 }
             }
         }
@@ -53,7 +53,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaPlayer dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MediaPlayerButton), new PropertyMetadata(null, (d, e) => ((MediaPlayerButton)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MediaPlayerButton), new PropertyMetadata(null, (d, e) => ((MediaPlayerButton)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         /// <summary>
         /// Provides notification that the view model has changed.
@@ -62,9 +63,9 @@ namespace Microsoft.PlayerFramework
         /// <param name="newValue">The new view model. Note: this could be null.</param>
         protected virtual void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
-            if (Command != null)
+            if (ViewModelCommand != null)
             {
-                Command.ViewModel = newValue;
+                ViewModelCommand.ViewModel = newValue;
             }
         }
 
@@ -83,7 +84,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Size dependency property.
         /// </summary>
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(double), typeof(MediaPlayerButton), new PropertyMetadata(26.0));
+        public static DependencyProperty SizeProperty { get { return sizeProperty; } }
+        static readonly DependencyProperty sizeProperty = DependencyProperty.Register("Size", typeof(double), typeof(MediaPlayerButton), new PropertyMetadata(26.0));
 
         /// <summary>
         /// Gets or sets the diameter of the button.
@@ -97,7 +99,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the StrokeThickness dependency property.
         /// </summary>
-        public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register("StrokeThickness", typeof(double), typeof(MediaPlayerButton), new PropertyMetadata(2.0));
+        public static DependencyProperty StrokeThicknessProperty { get { return strokeThicknessProperty; } }
+        static readonly DependencyProperty strokeThicknessProperty = DependencyProperty.Register("StrokeThickness", typeof(double), typeof(MediaPlayerButton), new PropertyMetadata(2.0));
 
         /// <summary>
         /// Gets or sets the thickness of the button border.
@@ -111,7 +114,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ContentTransform dependency property.
         /// </summary>
-        public static readonly DependencyProperty ContentTransformProperty = DependencyProperty.Register("ContentTransform", typeof(Transform), typeof(MediaPlayerButton), null);
+        public static DependencyProperty ContentTransformProperty { get { return contentTransformProperty; } }
+        static readonly DependencyProperty contentTransformProperty = DependencyProperty.Register("ContentTransform", typeof(Transform), typeof(MediaPlayerButton), null);
 
         /// <summary>
         /// Gets or sets the Transform to apply to the inner content of the button.
@@ -125,7 +129,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ContentHover dependency property.
         /// </summary>
-        public static readonly DependencyProperty ContentHoverProperty = DependencyProperty.Register("ContentHover", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnContentHoverChanged));
+        public static DependencyProperty ContentHoverProperty { get { return contentHoverProperty; } }
+        static readonly DependencyProperty contentHoverProperty = DependencyProperty.Register("ContentHover", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnContentHoverChanged));
 
         static void OnContentHoverChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -161,7 +166,7 @@ namespace Microsoft.PlayerFramework
             base.OnPointerEntered(e);
             Content = ContentHover ?? Content;
         }
-        
+
         /// <inheritdoc />
         protected override void OnPointerExited(PointerRoutedEventArgs e)
         {
@@ -181,7 +186,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ContentUnhover dependency property.
         /// </summary>
-        public static readonly DependencyProperty ContentUnhoverProperty = DependencyProperty.Register("ContentUnhover", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnContentUnhoverChanged));
+        public static DependencyProperty ContentUnhoverProperty { get { return contentUnhoverProperty; } }
+        static readonly DependencyProperty contentUnhoverProperty = DependencyProperty.Register("ContentUnhover", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnContentUnhoverChanged));
 
         static void OnContentUnhoverChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -209,7 +215,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Value dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(MediaPlayerButton), new PropertyMetadata(false, OnIsSelectedChanged));
+        public static DependencyProperty IsSelectedProperty { get { return isSelectedProperty; } }
+        static readonly DependencyProperty isSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(MediaPlayerButton), new PropertyMetadata(false, OnIsSelectedChanged));
 
         static void OnIsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -240,7 +247,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SelectedContent dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedContentProperty = DependencyProperty.Register("SelectedContent", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnSelectedContentChanged));
+        public static DependencyProperty SelectedContentProperty { get { return selectedContentProperty; } }
+        static readonly DependencyProperty selectedContentProperty = DependencyProperty.Register("SelectedContent", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnSelectedContentChanged));
 
         static void OnSelectedContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -264,7 +272,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the UnselectedContent dependency property.
         /// </summary>
-        public static readonly DependencyProperty UnselectedContentProperty = DependencyProperty.Register("UnselectedContent", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnUnselectedContentChanged));
+        public static DependencyProperty UnselectedContentProperty { get { return unselectedContentProperty; } }
+        static readonly DependencyProperty unselectedContentProperty = DependencyProperty.Register("UnselectedContent", typeof(object), typeof(MediaPlayerButton), new PropertyMetadata(null, OnUnselectedContentChanged));
 
         static void OnUnselectedContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -290,7 +299,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SelectedName dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedNameProperty = DependencyProperty.Register("SelectedName", typeof(string), typeof(MediaPlayerButton), new PropertyMetadata(null, OnSelectedNameChanged));
+        public static DependencyProperty SelectedNameProperty { get { return selectedNameProperty; } }
+        static readonly DependencyProperty selectedNameProperty = DependencyProperty.Register("SelectedName", typeof(string), typeof(MediaPlayerButton), new PropertyMetadata(null, OnSelectedNameChanged));
 
         static void OnSelectedNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -314,7 +324,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the UnselectedName dependency property.
         /// </summary>
-        public static readonly DependencyProperty UnselectedNameProperty = DependencyProperty.Register("UnselectedName", typeof(string), typeof(MediaPlayerButton), new PropertyMetadata(null, OnUnselectedNameChanged));
+        public static DependencyProperty UnselectedNameProperty { get { return unselectedNameProperty; } }
+        static readonly DependencyProperty unselectedNameProperty = DependencyProperty.Register("UnselectedName", typeof(string), typeof(MediaPlayerButton), new PropertyMetadata(null, OnUnselectedNameChanged));
 
         static void OnUnselectedNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -347,7 +358,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Creates a new instance of MediaPlayerToggleButton
         /// </summary>
-        public MediaPlayerToggleButton()
+        internal MediaPlayerToggleButton()
         {
             DefaultStyleKey = typeof(MediaPlayerToggleButton);
         }
@@ -355,19 +366,19 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the ViewModelCommand associated with the button.
         /// </summary>
-        public new ViewModelCommand Command
+        public IViewModelCommand ViewModelCommand
         {
             get { return base.Command as ViewModelCommand; }
             set
             {
-                if (Command != null)
+                if (ViewModelCommand != null)
                 {
-                    Command.ViewModel = null;
+                    ViewModelCommand.ViewModel = null;
                 }
                 base.Command = value;
-                if (Command != null)
+                if (ViewModelCommand != null)
                 {
-                    Command.ViewModel = ViewModel;
+                    ViewModelCommand.ViewModel = ViewModel;
                 }
             }
         }
@@ -375,7 +386,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ViewModel dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MediaPlayerToggleButton), new PropertyMetadata(null, (d, e) => ((MediaPlayerToggleButton)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MediaPlayerToggleButton), new PropertyMetadata(null, (d, e) => ((MediaPlayerToggleButton)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         /// <summary>
         /// Provides notification that the view model has changed.
@@ -384,9 +396,9 @@ namespace Microsoft.PlayerFramework
         /// <param name="newValue">The new view model. Note: this could be null.</param> 
         protected virtual void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
-            if (Command != null)
+            if (ViewModelCommand != null)
             {
-                Command.ViewModel = newValue;
+                ViewModelCommand.ViewModel = newValue;
             }
         }
 
@@ -405,7 +417,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Size dependency property.
         /// </summary>
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(double), typeof(MediaPlayerToggleButton), new PropertyMetadata(26.0));
+        public static DependencyProperty SizeProperty { get { return sizeProperty; } }
+        static readonly DependencyProperty sizeProperty = DependencyProperty.Register("Size", typeof(double), typeof(MediaPlayerToggleButton), new PropertyMetadata(26.0));
 
         /// <summary>
         /// Gets or sets the diameter of the button.
@@ -419,7 +432,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the StrokeThickness dependency property.
         /// </summary>
-        public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register("StrokeThickness", typeof(double), typeof(MediaPlayerToggleButton), new PropertyMetadata(2.0));
+        public static DependencyProperty StrokeThicknessProperty { get { return strokeThicknessProperty; } }
+        static readonly DependencyProperty strokeThicknessProperty = DependencyProperty.Register("StrokeThickness", typeof(double), typeof(MediaPlayerToggleButton), new PropertyMetadata(2.0));
 
         /// <summary>
         /// Gets or sets the thickness of the button border.
@@ -433,7 +447,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ContentTransform dependency property.
         /// </summary>
-        public static readonly DependencyProperty ContentTransformProperty = DependencyProperty.Register("ContentTransform", typeof(Transform), typeof(MediaPlayerToggleButton), null);
+        public static DependencyProperty ContentTransformProperty { get { return contentTransformProperty; } }
+        static readonly DependencyProperty contentTransformProperty = DependencyProperty.Register("ContentTransform", typeof(Transform), typeof(MediaPlayerToggleButton), null);
 
         /// <summary>
         /// Gets or sets the Transform to apply to the inner content of the button.
@@ -455,7 +470,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Creates a new instance of MediaPlayerControl
         /// </summary>
-        public MediaPlayerControl()
+        internal MediaPlayerControl()
         {
             DefaultStyleKey = typeof(MediaPlayerControl);
         }
@@ -463,7 +478,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaPlayer dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MediaPlayerControl), new PropertyMetadata(null, (d, e) => ((MediaPlayerControl)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MediaPlayerControl), new PropertyMetadata(null, (d, e) => ((MediaPlayerControl)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         /// <summary>
         /// Provides notification that the view model has changed.

@@ -13,20 +13,24 @@ namespace Microsoft.PlayerFramework
     /// Represents a caption or subtitle track.
     /// </summary>
 #if SILVERLIGHT
-    public class Caption : DependencyObject
+    public sealed class Caption : DependencyObject
 #else
-    public class Caption : FrameworkElement
+    public sealed class Caption : FrameworkElement
 #endif
     {
         /// <summary>
         /// Indicates that the Payload property has changed
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler PayloadChanged;
+#else
+        public event EventHandler<object> PayloadChanged;
+#endif
 
         /// <summary>
         /// Invokes the PayloadChanged event
         /// </summary>
-        protected void OnPayloadChanged()
+        void OnPayloadChanged()
         {
             if (PayloadChanged != null) PayloadChanged(this, EventArgs.Empty);
         }
@@ -47,7 +51,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Id DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty IdProperty = DependencyProperty.Register("Id", typeof(string), typeof(Caption), null);
+        public static DependencyProperty IdProperty { get { return idProperty; } }
+        static readonly DependencyProperty idProperty = DependencyProperty.Register("Id", typeof(string), typeof(Caption), null);
 
         /// <summary>
         /// Gets or sets the Id of the caption track.
@@ -61,7 +66,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Description DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register("Description", typeof(string), typeof(Caption), null);
+        public static DependencyProperty DescriptionProperty { get { return descriptionProperty; } }
+        static readonly DependencyProperty descriptionProperty = DependencyProperty.Register("Description", typeof(string), typeof(Caption), null);
 
         /// <summary>
         /// Gets or sets the description of the caption track.
@@ -75,7 +81,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Payload DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty PayloadProperty = DependencyProperty.Register("Payload", typeof(object), typeof(Caption), new PropertyMetadata(null, (d, o) => ((Caption)d).OnPayloadChanged()));
+        public static DependencyProperty PayloadProperty { get { return payloadProperty; } }
+        static readonly DependencyProperty payloadProperty = DependencyProperty.Register("Payload", typeof(object), typeof(Caption), new PropertyMetadata(null, (d, o) => ((Caption)d).OnPayloadChanged()));
 
         /// <summary>
         /// Gets or sets the payload of the caption track. This can be any object.
@@ -106,7 +113,11 @@ namespace Microsoft.PlayerFramework
     /// Includes information that allows a caption engine to augment the existing caption information.
     /// Useful for in-stream caption support where caption data comes in chunks.
     /// </summary>
+#if SILVERLIGHT
     public sealed class PayloadAugmentedEventArgs : EventArgs
+#else
+    public sealed class PayloadAugmentedEventArgs
+#endif
     {
         /// <summary>
         /// Creates a new instance of PayloadAugmentedEventArgs.

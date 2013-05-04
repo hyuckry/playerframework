@@ -13,13 +13,13 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// IValueConverter used to help Xaml determine if the value is null
     /// </summary>
-    public class IsNullConverter : IValueConverter
+    public sealed class IsNullConverter : IValueConverter
     {
         /// <inheritdoc /> 
 #if SILVERLIGHT
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object Convert(object value, Type targetType, object parameter, string culture)
+        public object Convert(object value, Type targetType, object parameter, string language)
 #endif
         {
             return value == null;
@@ -29,7 +29,7 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object ConvertBack(object value, Type targetType, object parameter, string culture)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
 #endif
         {
             throw new NotImplementedException();

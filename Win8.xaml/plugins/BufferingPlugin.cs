@@ -70,11 +70,11 @@ namespace Microsoft.PlayerFramework
         }
 
 #if !SILVERLIGHT || WINDOWS_PHONE
-        void MediaPlayer_InteractiveViewModelChanged(object sender, RoutedPropertyChangedEventArgs<IInteractiveViewModel> e)
+        void MediaPlayer_InteractiveViewModelChanged(object sender, InteractiveViewModelChangedEventArgs e)
         {
             if (bufferingElement != null)
             {
-                bufferingElement.ViewModel = MediaPlayer.InteractiveViewModel;
+                bufferingElement.ViewModel = e.NewValue;
             }
         }
 #endif

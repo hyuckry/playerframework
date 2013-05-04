@@ -13,13 +13,14 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// IValueConverter used to help Xaml format an object before binding it to a string.
     /// </summary>
-    public class StringFormatConverter : DependencyObject, IValueConverter
+    public sealed class StringFormatConverter : DependencyObject, IValueConverter
     {
         #region StringFormat
         /// <summary>
         /// StringFormat DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty StringFormatProperty = DependencyProperty.Register("StringFormat", typeof(string), typeof(StringFormatConverter), null);
+        public static DependencyProperty StringFormatProperty { get { return stringFormatProperty; } }
+        static readonly DependencyProperty stringFormatProperty = DependencyProperty.Register("StringFormat", typeof(string), typeof(StringFormatConverter), null);
 
         /// <summary>
         /// Gets or sets the string format to use.
@@ -36,7 +37,7 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object Convert(object value, Type targetType, object parameter, string culture)
+        public object Convert(object value, Type targetType, object parameter, string language)
 #endif
         {
             if (value == null) throw new ArgumentNullException("value");
@@ -84,7 +85,7 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object ConvertBack(object value, Type targetType, object parameter, string culture)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
 #endif
         {
             throw new NotImplementedException();

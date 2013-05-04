@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{81AE6F43-2BA7-4E89-8D7C-A78B152222BD}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.PlayerFramework</RootNamespace>
     <AssemblyName>Microsoft.PlayerFramework</AssemblyName>
@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="Commands\IViewModelCommand.cs" />
     <Compile Include="Commands\ViewModelCommand.cs" />
     <Compile Include="Commands\ViewModelCommandFactory.cs" />
     <Compile Include="Controls\ControlPanel\ControlPanel.cs" />
@@ -131,10 +132,22 @@
     <Compile Include="Plugins\MediaControlPlugin.cs" />
     <Compile Include="Controls\MediaPackHelper.cs" />
     <Compile Include="Primitives\AdvertisingStateEnum.cs" />
-    <Compile Include="Primitives\CategoryAttribute.cs" />
-    <Compile Include="Primitives\CategoryConstants.cs" />
     <Compile Include="Primitives\AutoHideBehavior.cs" />
+    <Compile Include="Primitives\AdvertisingStateChangedEventArgs.cs" />
+    <Compile Include="Primitives\AudioStreamIndexChangedEventArgs.cs" />
+    <Compile Include="Primitives\TimeFormatConverterChangedEventArgs.cs" />
+    <Compile Include="Primitives\SkipAheadIntervalChangedEventArgs.cs" />
+    <Compile Include="Primitives\SkipBackIntervalChangedEventArgs.cs" />
+    <Compile Include="Primitives\LivePositionChangedEventArgs.cs" />
+    <Compile Include="Primitives\TimeRemainingChangedEventArgs.cs" />
+    <Compile Include="Primitives\EndTimeChangedEventArgs.cs" />
+    <Compile Include="Primitives\StartTimeChangedEventArgs.cs" />
+    <Compile Include="Primitives\DurationChangedEventArgs.cs" />
+    <Compile Include="Primitives\SignalStrengthChangedEventArgs.cs" />
+    <Compile Include="Primitives\PositionChangedEventArgs.cs" />
+    <Compile Include="Primitives\PlayerStateChangedEventArgs.cs" />
     <Compile Include="Primitives\InteractionType.cs" />
+    <Compile Include="Primitives\InteractiveViewModelChangedEventArgs.cs" />
     <Compile Include="Primitives\MediaEndedBehaviorEnum.cs" />
     <Compile Include="Primitives\MediaPlayerActionEventArgs.cs" />
     <Compile Include="Primitives\MediaPlayerTemplateParts.cs" />
@@ -148,11 +161,9 @@
     <Compile Include="Plugins\PlaylistPlugin.Commands.cs" />
     <Compile Include="Primitives\PlaylistItem.Metadata.cs" />
     <Compile Include="Primitives\PositionRoutedEventArgs.cs" />
-    <Compile Include="Primitives\RoutedPropertyChangedEventArgs.cs" />
     <Compile Include="Primitives\MediaPlayerDeferrableOperation.cs" />
     <Compile Include="Primitives\SelectedAudioStreamChangedEventArgs.cs" />
     <Compile Include="Controls\InteractiveViewModel.cs" />
-    <Compile Include="Controls\InteractiveViewModelBase.cs" />
     <Compile Include="Controls\MediaPlayer.cs" />
     <Compile Include="Controls\MediaPlayer.TemplateDefinitions.cs" />
     <Compile Include="Controls\PluginsFactory.cs">
@@ -196,6 +207,7 @@
     <Compile Include="Controls\ControlPanel\SeekableSliderTemplateParts.cs" />
     <Compile Include="Controls\ControlPanel\SeekableSliderVisualStates.cs" />
     <Compile Include="Controls\ControlPanel\SignalStrength.cs" />
+    <Compile Include="Primitives\SelectedCaptionChangedEventArgs.cs" />
     <Compile Include="Primitives\VisualMarker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

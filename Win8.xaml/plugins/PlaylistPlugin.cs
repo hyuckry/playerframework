@@ -13,6 +13,7 @@ using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Data;
+using System.Collections.Generic;
 #endif
 
 namespace Microsoft.PlayerFramework
@@ -21,7 +22,7 @@ namespace Microsoft.PlayerFramework
     /// An plugin responsible for maintaining a playlist of media.
     /// The playlist items are automatically loaded into the MediaElement at the appropriate times.
     /// </summary>
-    public class PlaylistPlugin : DependencyObject, IPlugin
+    public sealed class PlaylistPlugin : DependencyObject, IPlugin
     {
         /// <summary>
         /// Creates a new instance of PlaylistPlugin.
@@ -35,19 +36,24 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the CurrentPlaylistItem changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler CurrentPlaylistItemChanged;
+#else
+        public event EventHandler<object> CurrentPlaylistItemChanged;
+#endif
 
         /// <summary>
         /// Playlist DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty PlaylistProperty = DependencyProperty.Register("Playlist", typeof(ObservableCollection<PlaylistItem>), typeof(PlaylistPlugin), new PropertyMetadata(null, (d, e) => ((PlaylistPlugin)d).OnPlaylistChanged(e.OldValue as ObservableCollection<PlaylistItem>, e.NewValue as ObservableCollection<PlaylistItem>)));
+        public static DependencyProperty PlaylistProperty { get { return playlistProperty; } }
+        static readonly DependencyProperty playlistProperty = DependencyProperty.Register("Playlist", typeof(IList<PlaylistItem>), typeof(PlaylistPlugin), new PropertyMetadata(null, (d, e) => ((PlaylistPlugin)d).OnPlaylistChanged(e.OldValue as ObservableCollection<PlaylistItem>, e.NewValue as ObservableCollection<PlaylistItem>)));
 
         /// <summary>
         /// Gets a list of media items to play.
         /// </summary>
-        public ObservableCollection<PlaylistItem> Playlist
+        public IList<PlaylistItem> Playlist
         {
-            get { return GetValue(PlaylistProperty) as ObservableCollection<PlaylistItem>; }
+            get { return GetValue(PlaylistProperty) as IList<PlaylistItem>; }
             set { SetValue(PlaylistProperty, value); }
         }
 
@@ -95,7 +101,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// AutoAdvance DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty AutoAdvanceProperty = DependencyProperty.Register("AutoAdvance", typeof(bool), typeof(PlaylistPlugin), new PropertyMetadata(true));
+        public static DependencyProperty AutoAdvanceProperty { get { return autoAdvanceProperty; } }
+        static readonly DependencyProperty autoAdvanceProperty = DependencyProperty.Register("AutoAdvance", typeof(bool), typeof(PlaylistPlugin), new PropertyMetadata(true));
 
         /// <summary>
         /// Determines whether the next PlaylistItem should be automatically loaded when a PlaylistItem has ended. AutoPlay is still used to determine whether or not that next PlaylistItem should automatically start playing.
@@ -115,7 +122,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SkipBackThreshold DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SkipBackThresholdProperty = DependencyProperty.Register("SkipBackThreshold", typeof(TimeSpan?), typeof(PlaylistPlugin), new PropertyMetadata(TimeSpan.FromSeconds(5)));
+        public static DependencyProperty SkipBackThresholdProperty { get { return skipBackThresholdProperty; } }
+        static readonly DependencyProperty skipBackThresholdProperty = DependencyProperty.Register("SkipBackThreshold", typeof(TimeSpan?), typeof(PlaylistPlugin), new PropertyMetadata(TimeSpan.FromSeconds(5)));
 
         /// <summary>
         /// The amount of time into the media after which a skip back operation is treated as a reset (vs. going to the previous playlist item).
@@ -136,7 +144,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// CurrentPlaylistItem DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty CurrentPlaylistItemProperty = DependencyProperty.Register("CurrentPlaylistItem", typeof(PlaylistItem), typeof(PlaylistPlugin), new PropertyMetadata(null, (d, e) => ((PlaylistPlugin)d).OnCurrentPlaylistItemChanged(e.OldValue as PlaylistItem, e.NewValue as PlaylistItem)));
+        public static DependencyProperty CurrentPlaylistItemProperty { get { return currentPlaylistItemProperty; } }
+        static readonly DependencyProperty currentPlaylistItemProperty = DependencyProperty.Register("CurrentPlaylistItem", typeof(PlaylistItem), typeof(PlaylistPlugin), new PropertyMetadata(null, (d, e) => ((PlaylistPlugin)d).OnCurrentPlaylistItemChanged(e.OldValue as PlaylistItem, e.NewValue as PlaylistItem)));
 
         /// <summary>
         /// Gets the current PlaylistItem.
@@ -164,7 +173,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// PreviousPlaylistItem DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty PreviousPlaylistItemProperty = DependencyProperty.Register("PreviousPlaylistItem", typeof(PlaylistItem), typeof(PlaylistPlugin), null);
+        public static DependencyProperty PreviousPlaylistItemProperty { get { return previousPlaylistItemProperty; } }
+        static readonly DependencyProperty previousPlaylistItemProperty = DependencyProperty.Register("PreviousPlaylistItem", typeof(PlaylistItem), typeof(PlaylistPlugin), null);
 
         /// <summary>
         /// Returns the PlaylistItem directly before the CurrentPlaylistItem (or null if none exist).
@@ -178,7 +188,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// NextPlaylistItem DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty NextPlaylistItemProperty = DependencyProperty.Register("NextPlaylistItem", typeof(PlaylistItem), typeof(PlaylistPlugin), null);
+        public static DependencyProperty NextPlaylistItemProperty { get { return nextPlaylistItemProperty; } }
+        static readonly DependencyProperty nextPlaylistItemProperty = DependencyProperty.Register("NextPlaylistItem", typeof(PlaylistItem), typeof(PlaylistPlugin), null);
 
         /// <summary>
         /// Returns the PlaylistItem directly after the CurrentPlaylistItem (or null if none exist).
@@ -326,7 +337,7 @@ namespace Microsoft.PlayerFramework
                 mediaPlayer.AvailableAudioStreams.Clear();
                 mediaPlayer.AvailableCaptions.Clear();
                 mediaPlayer.PosterSource = null;
-                mediaPlayer.Close();
+                mediaPlayer.Unload();
             }
             else
             {

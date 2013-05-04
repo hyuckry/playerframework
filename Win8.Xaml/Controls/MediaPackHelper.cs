@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Popups;
 
@@ -44,7 +46,16 @@ namespace Microsoft.PlayerFramework
         /// Performs a test and prompts the user about installing the Media Feature Pack if it is required.
         /// </summary>
         /// <returns>An awaitable task that returns true if the media feature pack is installed, false if not.</returns>
+#if NETFX_CORE
+        public static IAsyncOperation<bool> TestForMediaPack()
+        {
+            return AsyncInfo.Run(c => testForMediaPack());
+        }
+
+        static async Task<bool> testForMediaPack()
+#else
         public static async Task<bool> TestForMediaPack()
+#endif
         {
             if (IsMediaPackRequired())
             {
@@ -58,7 +69,16 @@ namespace Microsoft.PlayerFramework
         /// Prompts the user to install the Media Feature Pack.
         /// </summary>
         /// <returns>An awaitable task that returns when the prompt has completed.</returns>
+#if NETFX_CORE
+        public static IAsyncAction PromptForMediaPack()
+        {
+            return AsyncInfo.Run(c => promptForMediaPack());
+        }
+            
+        static async Task promptForMediaPack()
+#else
         public static async Task PromptForMediaPack()
+#endif
         {
             var messageDialog = new MessageDialog(MediaPlayer.GetResourceString("MediaFeaturePackRequiredLabel"), MediaPlayer.GetResourceString("MediaFeaturePackRequiredText"));
             var cmdDownload = new UICommand(MediaPlayer.GetResourceString("MediaFeaturePackDownloadLabel"));

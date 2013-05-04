@@ -9,7 +9,7 @@ using Windows.UI.Xaml;
 #endif
 
 namespace Microsoft.PlayerFramework
-{    
+{
     /// <summary>
     /// Helper class used to attach config data specific to each playlist item.
     /// </summary>
@@ -18,14 +18,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the TrackingEvents attached property.
         /// </summary>
-        public static readonly DependencyProperty TrackingEventsProperty = DependencyProperty.RegisterAttached("TrackingEvents", typeof(TrackingEventCollection), typeof(Tracking), null);
+        public static DependencyProperty TrackingEventsProperty { get { return trackingEventsProperty; } }
+        static readonly DependencyProperty trackingEventsProperty = DependencyProperty.RegisterAttached("TrackingEvents", typeof(IList<TrackingEventBase>), typeof(Tracking), null);
 
         /// <summary>
         /// Sets the TrackingEvents attached property value.
         /// </summary>
         /// <param name="obj">An instance of the MediaPlayer or PlaylistItem.</param>
         /// <param name="propertyValue">A value containing the TrackingEvents to apply to the plugin.</param>
-        public static void SetTrackingEvents(DependencyObject obj, TrackingEventCollection propertyValue)
+        public static void SetTrackingEvents(DependencyObject obj, IList<TrackingEventBase> propertyValue)
         {
             if (obj == null) throw new ArgumentNullException("obj");
             obj.SetValue(TrackingEventsProperty, propertyValue);
@@ -36,17 +37,11 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="obj">An instance of the MediaPlayer or PlaylistItem.</param>
         /// <returns>A value containing the TrackingEvents to apply to the plugin.</returns>
-        public static TrackingEventCollection GetTrackingEvents(DependencyObject obj)
+        public static IList<TrackingEventBase> GetTrackingEvents(DependencyObject obj)
         {
             if (obj == null) throw new ArgumentNullException("obj");
-            return obj.GetValue(TrackingEventsProperty) as TrackingEventCollection;
+            return obj.GetValue(TrackingEventsProperty) as IList<TrackingEventBase>;
         }
 
     }
-
-    /// <summary>
-    /// A collection class containing the TrackingEvent objects associated with a PlaylistItem
-    /// </summary>
-    public class TrackingEventCollection : ObservableCollection<TrackingEventBase>
-    { }
 }

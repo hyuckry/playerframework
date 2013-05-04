@@ -21,7 +21,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A MediaPlayer control panel to allow user control over audio or video.
     /// </summary>
-    public partial class ControlPanel : Control
+    public sealed partial class ControlPanel : Control
     {
         /// <summary>
         /// Instantiates a new instance of the ControlPanel class.
@@ -51,7 +51,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaPlayer dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(ControlPanel), new PropertyMetadata(null, (d, e) => ((ControlPanel)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(ControlPanel), new PropertyMetadata(null, (d, e) => ((ControlPanel)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
@@ -81,7 +82,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the GoLiveButtonVisibility dependency property.
         /// </summary>
-        public static readonly DependencyProperty GoLiveButtonVisibilityProperty = DependencyProperty.Register("GoLiveButtonVisibility", typeof(Visibility), typeof(ControlPanel), new PropertyMetadata(Visibility.Collapsed));
+        public static DependencyProperty GoLiveButtonVisibilityProperty { get { return goLiveButtonVisibilityProperty; } }
+        static readonly DependencyProperty goLiveButtonVisibilityProperty = DependencyProperty.Register("GoLiveButtonVisibility", typeof(Visibility), typeof(ControlPanel), new PropertyMetadata(Visibility.Collapsed));
 
         /// <summary>
         /// Gets or sets the Visibility property on the GoLiveButton.
@@ -95,7 +97,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsGoLiveButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsGoLiveButtonVisibleProperty = DependencyProperty.Register("IsGoLiveButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsGoLiveButtonVisibleProperty { get { return isGoLiveButtonVisibleProperty; } }
+        static readonly DependencyProperty isGoLiveButtonVisibleProperty = DependencyProperty.Register("IsGoLiveButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the GoLiveButton is visible or not.
@@ -109,7 +112,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsAudioSelectionButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsAudioSelectionButtonVisibleProperty = DependencyProperty.Register("IsAudioSelectionButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsAudioSelectionButtonVisibleProperty { get { return isAudioSelectionButtonVisibleProperty; } }
+        static readonly DependencyProperty isAudioSelectionButtonVisibleProperty = DependencyProperty.Register("IsAudioSelectionButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the AudioSelectionButton is visible or not.
@@ -123,7 +127,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsCaptionSelectionButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsCaptionSelectionButtonVisibleProperty = DependencyProperty.Register("IsCaptionSelectionButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsCaptionSelectionButtonVisibleProperty { get { return isCaptionSelectionButtonVisibleProperty; } }
+        static readonly DependencyProperty isCaptionSelectionButtonVisibleProperty = DependencyProperty.Register("IsCaptionSelectionButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the CaptionSelectionButton is visible or not.
@@ -137,7 +142,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsTimeElapsedButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTimeElapsedButtonVisibleProperty = DependencyProperty.Register("IsTimeElapsedButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
+        public static DependencyProperty IsTimeElapsedButtonVisibleProperty { get { return isTimeElapsedButtonVisibleProperty; } }
+        static readonly DependencyProperty isTimeElapsedButtonVisibleProperty = DependencyProperty.Register("IsTimeElapsedButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets if the TimeElapsedButton is visible or not.
@@ -151,7 +157,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsDurationButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsDurationButtonVisibleProperty = DependencyProperty.Register("IsDurationButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsDurationButtonVisibleProperty { get { return isDurationButtonVisibleProperty; } }
+        static readonly DependencyProperty isDurationButtonVisibleProperty = DependencyProperty.Register("IsDurationButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the DurationButton is visible or not.
@@ -165,7 +172,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsTimeRemainingButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTimeRemainingButtonVisibleProperty = DependencyProperty.Register("IsTimeRemainingButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
+        public static DependencyProperty IsTimeRemainingButtonVisibleProperty { get { return isTimeRemainingButtonVisibleProperty; } }
+        static readonly DependencyProperty isTimeRemainingButtonVisibleProperty = DependencyProperty.Register("IsTimeRemainingButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets if the TimeRemainingButton is visible or not.
@@ -179,7 +187,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipNextButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipNextButtonVisibleProperty = DependencyProperty.Register("IsSkipNextButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsSkipNextButtonVisibleProperty { get { return isSkipNextButtonVisibleProperty; } }
+        static readonly DependencyProperty isSkipNextButtonVisibleProperty = DependencyProperty.Register("IsSkipNextButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the SkipNextButton is visible or not.
@@ -193,7 +202,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipPreviousButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipPreviousButtonVisibleProperty = DependencyProperty.Register("IsSkipPreviousButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsSkipPreviousButtonVisibleProperty { get { return isSkipPreviousButtonVisibleProperty; } }
+        static readonly DependencyProperty isSkipPreviousButtonVisibleProperty = DependencyProperty.Register("IsSkipPreviousButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the SkipPreviousButton is visible or not.
@@ -207,7 +217,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipAheadButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipAheadButtonVisibleProperty = DependencyProperty.Register("IsSkipAheadButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsSkipAheadButtonVisibleProperty { get { return isSkipAheadButtonVisibleProperty; } }
+        static readonly DependencyProperty isSkipAheadButtonVisibleProperty = DependencyProperty.Register("IsSkipAheadButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the SkipAheadButton is visible or not.
@@ -221,7 +232,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipBackButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipBackButtonVisibleProperty = DependencyProperty.Register("IsSkipBackButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsSkipBackButtonVisibleProperty { get { return isSkipBackButtonVisibleProperty; } }
+        static readonly DependencyProperty isSkipBackButtonVisibleProperty = DependencyProperty.Register("IsSkipBackButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the SkipBackButton is visible or not.
@@ -235,7 +247,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsFastForwardButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFastForwardButtonVisibleProperty = DependencyProperty.Register("IsFastForwardButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsFastForwardButtonVisibleProperty { get { return isFastForwardButtonVisibleProperty; } }
+        static readonly DependencyProperty isFastForwardButtonVisibleProperty = DependencyProperty.Register("IsFastForwardButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the FastForwardButton is visible or not.
@@ -249,7 +262,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsStopButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsStopButtonVisibleProperty = DependencyProperty.Register("IsStopButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsStopButtonVisibleProperty { get { return isStopButtonVisibleProperty; } }
+        static readonly DependencyProperty isStopButtonVisibleProperty = DependencyProperty.Register("IsStopButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the StopButton is visible or not.
@@ -263,7 +277,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsRewindButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsRewindButtonVisibleProperty = DependencyProperty.Register("IsRewindButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsRewindButtonVisibleProperty { get { return isRewindButtonVisibleProperty; } }
+        static readonly DependencyProperty isRewindButtonVisibleProperty = DependencyProperty.Register("IsRewindButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the RewindButton is visible or not.
@@ -277,7 +292,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsReplayButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsReplayButtonVisibleProperty = DependencyProperty.Register("IsReplayButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsReplayButtonVisibleProperty { get { return isReplayButtonVisibleProperty; } }
+        static readonly DependencyProperty isReplayButtonVisibleProperty = DependencyProperty.Register("IsReplayButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the ReplayButton is visible or not.
@@ -291,7 +307,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsResolutionIndicatorVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsResolutionIndicatorVisibleProperty = DependencyProperty.Register("IsResolutionIndicatorVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsResolutionIndicatorVisibleProperty { get { return isResolutionIndicatorVisibleProperty; } }
+        static readonly DependencyProperty isResolutionIndicatorVisibleProperty = DependencyProperty.Register("IsResolutionIndicatorVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the ResolutionIndicator is visible or not.
@@ -305,7 +322,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSignalStrengthVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSignalStrengthVisibleProperty = DependencyProperty.Register("IsSignalStrengthVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsSignalStrengthVisibleProperty { get { return isSignalStrengthVisibleProperty; } }
+        static readonly DependencyProperty isSignalStrengthVisibleProperty = DependencyProperty.Register("IsSignalStrengthVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the SignalStrength is visible or not.
@@ -319,7 +337,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsFullScreenButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFullScreenButtonVisibleProperty = DependencyProperty.Register("IsFullScreenButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsFullScreenButtonVisibleProperty { get { return isFullScreenButtonVisibleProperty; } }
+        static readonly DependencyProperty isFullScreenButtonVisibleProperty = DependencyProperty.Register("IsFullScreenButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the FullScreenButton is visible or not.
@@ -333,7 +352,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsMuteButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsMuteButtonVisibleProperty = DependencyProperty.Register("IsMuteButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsMuteButtonVisibleProperty { get { return isMuteButtonVisibleProperty; } }
+        static readonly DependencyProperty isMuteButtonVisibleProperty = DependencyProperty.Register("IsMuteButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the MuteButton is visible or not.
@@ -347,7 +367,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSlowMotionButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSlowMotionButtonVisibleProperty = DependencyProperty.Register("IsSlowMotionButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsSlowMotionButtonVisibleProperty { get { return isSlowMotionButtonVisibleProperty; } }
+        static readonly DependencyProperty isSlowMotionButtonVisibleProperty = DependencyProperty.Register("IsSlowMotionButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the SlowMotionButton is visible or not.
@@ -361,7 +382,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsPlayPauseButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsPlayPauseButtonVisibleProperty = DependencyProperty.Register("IsPlayPauseButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
+        public static DependencyProperty IsPlayPauseButtonVisibleProperty { get { return isPlayPauseButtonVisibleProperty; } }
+        static readonly DependencyProperty isPlayPauseButtonVisibleProperty = DependencyProperty.Register("IsPlayPauseButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets if the PlayPauseButton is visible or not.
@@ -375,7 +397,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsVolumeButtonVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsVolumeButtonVisibleProperty = DependencyProperty.Register("IsVolumeButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
+        public static DependencyProperty IsVolumeButtonVisibleProperty { get { return isVolumeButtonVisibleProperty; } }
+        static readonly DependencyProperty isVolumeButtonVisibleProperty = DependencyProperty.Register("IsVolumeButtonVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets if the VolumeButton is visible or not.
@@ -389,7 +412,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsVolumeSliderVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsVolumeSliderVisibleProperty = DependencyProperty.Register("IsVolumeSliderVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
+        public static DependencyProperty IsVolumeSliderVisibleProperty { get { return isVolumeSliderVisibleProperty; } }
+        static readonly DependencyProperty isVolumeSliderVisibleProperty = DependencyProperty.Register("IsVolumeSliderVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets if the VolumeSlider is visible or not.
@@ -403,7 +427,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsTimelineVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTimelineVisibleProperty = DependencyProperty.Register("IsTimelineVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
+        public static DependencyProperty IsTimelineVisibleProperty { get { return isTimelineVisibleProperty; } }
+        static readonly DependencyProperty isTimelineVisibleProperty = DependencyProperty.Register("IsTimelineVisible", typeof(bool), typeof(ControlPanel), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets if the Timeline is visible or not.

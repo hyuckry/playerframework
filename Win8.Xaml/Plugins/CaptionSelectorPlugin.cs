@@ -73,7 +73,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void captionSelectorView_Close(object sender, EventArgs e)
+        void captionSelectorView_Close(object sender, object e)
         {
             OnClose();
         }

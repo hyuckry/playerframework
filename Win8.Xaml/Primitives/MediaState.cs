@@ -5,7 +5,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// The state of the MediaElement
     /// </summary>
-    public class MediaState
+    public sealed class MediaState
     {
         /// <summary>
         /// Gets or sets if the media is paused (vs. playing).

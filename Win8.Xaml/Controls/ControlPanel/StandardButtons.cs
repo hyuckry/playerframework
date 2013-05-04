@@ -26,7 +26,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a play/pause toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class PlayPauseButton : MediaPlayerButton
+    public sealed class PlayPauseButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of PlayPauseButton.
@@ -53,7 +53,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a fullscreen toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class FullScreenButton : MediaPlayerButton
+    public sealed class FullScreenButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of FullScreenButton.
@@ -80,7 +80,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a mute toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class MuteButton : MediaPlayerButton
+    public sealed class MuteButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of MuteButton.
@@ -107,7 +107,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a slow motion toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class SlowMotionButton : MediaPlayerToggleButton
+    public sealed class SlowMotionButton : MediaPlayerToggleButton
     {
         /// <summary>
         /// Creates a new instance of SlowMotionButton.
@@ -133,7 +133,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a play button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class PlayButton : MediaPlayerButton
+    public sealed class PlayButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of PlayButton.
@@ -150,7 +150,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a pause button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class PauseButton : MediaPlayerButton
+    public sealed class PauseButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of PauseButton.
@@ -167,7 +167,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a caption selection button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class CaptionSelectionButton : MediaPlayerButton
+    public sealed class CaptionSelectionButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of CaptionSelectionButton.
@@ -184,7 +184,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a go live button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class GoLiveButton : MediaPlayerButton
+    public sealed class GoLiveButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of GoLiveButton.
@@ -201,7 +201,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents an audio stream selection button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class AudioSelectionButton : MediaPlayerButton
+    public sealed class AudioSelectionButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of AudioSelectionButton.
@@ -218,7 +218,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a skip back button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class SkipBackButton : MediaPlayerButton
+    public sealed class SkipBackButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of SkipBackButton.
@@ -235,7 +235,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a skip ahead button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class SkipAheadButton : MediaPlayerButton
+    public sealed class SkipAheadButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of SkipAheadButton.
@@ -253,7 +253,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time elapsed + skip back button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class TimeElapsedButton : SkipBackButton
+    public sealed class TimeElapsedButton : MediaPlayerButton
     {
         string skipBackPointerOverStringFormat;
 
@@ -267,6 +267,8 @@ namespace Microsoft.PlayerFramework
             skipBackPointerOverStringFormat = MediaPlayer.GetResourceString("SkipBackPointerOverStringFormat");
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("TimeElapsedButtonLabel"));
+
+            Command = ViewModelCommandFactory.CreateSkipBackCommand();
         }
 
         /// <inheritdoc /> 
@@ -282,7 +284,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a total duration + skip ahead button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class DurationButton : SkipAheadButton
+    public sealed class DurationButton : MediaPlayerButton
     {
         string skipAheadPointerOverStringFormat;
 
@@ -296,6 +298,8 @@ namespace Microsoft.PlayerFramework
             skipAheadPointerOverStringFormat = MediaPlayer.GetResourceString("SkipAheadPointerOverStringFormat");
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("DurationButtonLabel"));
+
+            Command = ViewModelCommandFactory.CreateSkipAheadCommand();
         }
 
         /// <inheritdoc /> 
@@ -311,7 +315,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time remaining + skip ahead button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class TimeRemainingButton : SkipAheadButton
+    public sealed class TimeRemainingButton : MediaPlayerButton
     {
         string skipAheadPointerOverStringFormat;
 
@@ -325,6 +329,8 @@ namespace Microsoft.PlayerFramework
             skipAheadPointerOverStringFormat = MediaPlayer.GetResourceString("SkipAheadPointerOverStringFormat");
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("TimeRemainingButtonLabel"));
+
+            Command = ViewModelCommandFactory.CreateSkipAheadCommand();
         }
 
         /// <inheritdoc /> 
@@ -340,7 +346,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a total duration textblock that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class TotalDuration : MediaPlayerControl
+    public sealed class TotalDuration : MediaPlayerControl
     {
         /// <summary>
         /// Creates a new instance of TotalDuration.
@@ -362,7 +368,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time elapsed textblock that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class TimeElapsed : MediaPlayerControl
+    public sealed class TimeElapsed : MediaPlayerControl
     {
         /// <summary>
         /// Creates a new instance of TimeElapsed.
@@ -384,7 +390,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time remaining textblock that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class TimeRemaining : MediaPlayerControl
+    public sealed class TimeRemaining : MediaPlayerControl
     {
         /// <summary>
         /// Creates a new instance of TimeRemaining.
@@ -406,7 +412,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a skip to previous marker/playlist item button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class SkipPreviousButton : MediaPlayerButton
+    public sealed class SkipPreviousButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of SkipPreviousButton.
@@ -423,7 +429,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a skip to next marker/playlist item button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class SkipNextButton : MediaPlayerButton
+    public sealed class SkipNextButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of SkipNextButton.
@@ -440,7 +446,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a stop button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class StopButton : MediaPlayerButton
+    public sealed class StopButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of StopButton.
@@ -457,7 +463,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a rewind button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class RewindButton : MediaPlayerButton
+    public sealed class RewindButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of RewindButton.
@@ -474,7 +480,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a fast forward button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class FastForwardButton : MediaPlayerButton
+    public sealed class FastForwardButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of FastForwardButton.
@@ -491,7 +497,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents an instant replay button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public class ReplayButton : MediaPlayerButton
+    public sealed class ReplayButton : MediaPlayerButton
     {
         /// <summary>
         /// Creates a new instance of ReplayButton.

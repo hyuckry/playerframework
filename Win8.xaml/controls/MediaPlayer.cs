@@ -38,6 +38,8 @@ using Windows.ApplicationModel.Resources.Core;
 using Windows.ApplicationModel;
 using Windows.Storage.Streams;
 using Windows.Media;
+using Windows.Foundation;
+using System.Runtime.InteropServices.WindowsRuntime;
 #endif
 
 namespace Microsoft.PlayerFramework
@@ -48,7 +50,7 @@ namespace Microsoft.PlayerFramework
     /// This player offers a super-set of the MediaElement API.
     /// Optional plugins can be automatically detected to help extend or modify the default behavior.
     /// </summary>
-    public partial class MediaPlayer : Control, IMediaSource, IDisposable
+    public sealed partial class MediaPlayer : Control, IMediaSource, IDisposable
     {
         /// <summary>
         /// Instantiates a new instance of the MediaPlayer class.
@@ -124,7 +126,7 @@ namespace Microsoft.PlayerFramework
         /// Gets whether or not the media has successfully opened.
         /// Note: returns false if the media has failed.
         /// </summary>
-        protected bool IsMediaOpened
+        bool IsMediaOpened
         {
             get
             {
@@ -144,10 +146,10 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether or not the media is actually set on the underlying MediaElement.
         /// </summary>
-        protected bool IsMediaLoaded
+        bool IsMediaLoaded
         {
             get { return isMediaLoaded; }
-            private set
+            set
             {
                 isMediaLoaded = value;
                 if (isMediaLoaded)
@@ -173,7 +175,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Holds the action to set the source so we can delay things
         /// </summary>
-        protected Action PendingLoadAction
+        Action PendingLoadAction
         {
             get { return pendingLoadAction; }
             set
@@ -231,7 +233,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs immediately after the template is applied and all plugins are loaded
         /// </summary>
-        protected virtual void OnInitialized()
+        void OnInitialized()
         {
             if (Initialized != null) Initialized(this, new RoutedEventArgs());
         }
@@ -262,12 +264,12 @@ namespace Microsoft.PlayerFramework
                 if (PluginsManager.Plugins != null)
                 {
                     // we want to load the plugins ourselves instead of in this event. This allows us to add them all before loading the first one.
-                    Plugins.CollectionChanged -= Plugins_CollectionChanged;
+                    plugins.CollectionChanged -= Plugins_CollectionChanged;
                     try
                     {
                         foreach (var plugin in PluginsManager.Plugins)
                         {
-                            Plugins.Add(plugin);
+                            plugins.Add(plugin);
                         }
                         foreach (var plugin in PluginsManager.Plugins)
                         {
@@ -277,7 +279,7 @@ namespace Microsoft.PlayerFramework
                     }
                     finally // turn on the event again
                     {
-                        Plugins.CollectionChanged += Plugins_CollectionChanged;
+                        plugins.CollectionChanged += Plugins_CollectionChanged;
                     }
                 }
             }
@@ -289,7 +291,6 @@ namespace Microsoft.PlayerFramework
         /// You can programmatically connect plugins by adding to the Plugins collection. Default is true.
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
-        [Category(Categories.Advanced)]
         public bool AutoLoadPlugins { get; set; }
 
         ObservableCollection<IPlugin> plugins;
@@ -297,18 +298,17 @@ namespace Microsoft.PlayerFramework
         /// Gets the collection of connected plugins. You can dynamically add a plugin to the collection at any time and it will be appropriately wired when added and unwired when removed.
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
-        [Category(Categories.Advanced)]
-        public ObservableCollection<IPlugin> Plugins
+        public IList<IPlugin> Plugins
         {
             get { return plugins; }
         }
 
         void LoadPlugins(ObservableCollection<IPlugin> value)
         {
-            if (Plugins != null)
+            if (plugins != null)
             {
-                Plugins.CollectionChanged -= Plugins_CollectionChanged;
-                foreach (var plugin in Plugins)
+                plugins.CollectionChanged -= Plugins_CollectionChanged;
+                foreach (var plugin in plugins)
                 {
                     if (pluginsLoaded) plugin.Unload();
                     plugin.MediaPlayer = null;
@@ -317,10 +317,10 @@ namespace Microsoft.PlayerFramework
 
             plugins = value;
 
-            if (Plugins != null)
+            if (plugins != null)
             {
-                Plugins.CollectionChanged += Plugins_CollectionChanged;
-                foreach (var plugin in Plugins)
+                plugins.CollectionChanged += Plugins_CollectionChanged;
+                foreach (var plugin in plugins)
                 {
                     plugin.MediaPlayer = this;
                     if (pluginsLoaded) plugin.Load();
@@ -432,7 +432,7 @@ namespace Microsoft.PlayerFramework
         /// Changes the display mode (or Stretch property) when called to the next in the list and starts at the beginning if at the end of the list.
         /// The order is Uniform, UniformToFill, Fill, None.
         /// </summary>
-        public virtual void CycleDisplayMode()
+        public void CycleDisplayMode()
         {
             switch (Stretch)
             {
@@ -541,7 +541,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Decreases the PlaybackRate. When called, PlaybackRate will halve until it reaches 1. Once it reaches 1, it will flip to negative numbers causing the player to rewind.
         /// </summary>
-        public virtual void DecreasePlaybackRate()
+        public void DecreasePlaybackRate()
         {
             var ascendingPlaybackRates = SupportedPlaybackRates.Where(r => r <= -1 || r >= 1).OrderByDescending(r => r);
             var availableRates = ascendingPlaybackRates.SkipWhile(r => r >= PlaybackRate);
@@ -554,7 +554,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Increases the PlaybackRate. When called, PlaybackRate will double until it reaches -1. Once it reaches -1, it will flip to positive numbers causing the player to fast forward.
         /// </summary>
-        public virtual void IncreasePlaybackRate()
+        public void IncreasePlaybackRate()
         {
             var ascendingPlaybackRates = SupportedPlaybackRates.Where(r => r <= -1 || r >= 1).OrderBy(r => r);
             var availableRates = ascendingPlaybackRates.SkipWhile(r => r <= PlaybackRate);
@@ -567,7 +567,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Supports Instant Replay by subtracting the amount of time specified by the ReplayOffset property from the current Position.
         /// </summary>
-        public virtual void Replay()
+        public void Replay()
         {
             TimeSpan newPosition = Position.Subtract(ReplayOffset);
             if (newPosition < StartTime)
@@ -586,7 +586,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Stops and closes the current media source. Fires MediaClosed.
         /// </summary>
-        public virtual void Close()
+        public void Unload()
         {
             Source = null;
         }
@@ -704,10 +704,10 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void CompleteScrub(TimeSpan position, ref bool canceled)
+        internal void CompleteScrub(TimeSpan position, bool alreadyCanceled, out bool canceled)
         {
             var args = new ScrubProgressRoutedEventArgs(startScrubPosition, position);
-            args.Canceled = canceled;
+            args.Canceled = alreadyCanceled;
             OnScrubbingCompleted(args);
             canceled = args.Canceled;
             if (!canceled)
@@ -784,17 +784,17 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the SelectedCaption property changed.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<Caption> SelectedCaptionChanged;
+        public event SelectedCaptionChangedEventHandler SelectedCaptionChanged;
 
         /// <summary>
         /// Occurs when the SelectedAudioStream property changed.
         /// </summary>
-        public event EventHandler<SelectedAudioStreamChangedEventArgs> SelectedAudioStreamChanged;
+        public event SelectedAudioStreamChangedEventHandler SelectedAudioStreamChanged;
 
         /// <summary>
         /// Occurs when the PlayerState property changed. This is different from the MediaState.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<PlayerState> PlayerStateChanged;
+        public event PlayerStateChangedEventHandler PlayerStateChanged;
 
         /// <summary>
         /// Occurs just before the source is set and offers the ability to perform blocking async operations.
@@ -870,46 +870,42 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the Position property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan> PositionChanged;
+        public event PositionChangedEventHandler PositionChanged;
 
         /// <summary>
         /// Occurs when the Volume property changes.
         /// </summary>
-#if SILVERLIGHT
-        public event RoutedPropertyChangedEventHandler<double> VolumeChanged;
-#else
         public event RoutedEventHandler VolumeChanged;
-#endif
 
         /// <summary>
         /// Occurs when the IsMuted property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> IsMutedChanged;
+        public event RoutedEventHandler IsMutedChanged;
 
         /// <summary>
         /// Occurs when the IsLive property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> IsLiveChanged;
+        public event RoutedEventHandler IsLiveChanged;
 
         /// <summary>
         /// Occurs when the AudioStreamIndex property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<int?> AudioStreamIndexChanged;
+        public event AudioStreamIndexChangedEventHandler AudioStreamIndexChanged;
 
         /// <summary>
         /// Occurs when the IsFullScreen property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> IsFullScreenChanged;
+        public event RoutedEventHandler IsFullScreenChanged;
 
         /// <summary>
         /// Occurs when the AdvertisingState property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<AdvertisingState> AdvertisingStateChanged;
+        public event AdvertisingStateChangedEventHandler AdvertisingStateChanged;
 
         /// <summary>
         /// Occurs when the IsCaptionsActive property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> IsCaptionsActiveChanged;
+        public event RoutedEventHandler IsCaptionsActiveChanged;
 
         /// <summary>
         /// Occurs while the user seeks. This is mutually exclusive from scrubbing.
@@ -944,7 +940,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the SignalStrength property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<double> SignalStrengthChanged;
+        public event SignalStrengthChangedEventHandler SignalStrengthChanged;
 
         /// <summary>
         /// Occurs when the HighDefinition property changes.
@@ -954,47 +950,47 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSlowMotion property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<bool> IsSlowMotionChanged;
+        public event RoutedEventHandler IsSlowMotionChanged;
 
         /// <summary>
         /// Occurs when the Duration property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan> DurationChanged;
+        public event DurationChangedEventHandler DurationChanged;
 
         /// <summary>
         /// Occurs when the StartTime property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan> StartTimeChanged;
+        public event StartTimeChangedEventHandler StartTimeChanged;
 
         /// <summary>
         /// Occurs when the EndTime property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan> EndTimeChanged;
+        public event EndTimeChangedEventHandler EndTimeChanged;
 
         /// <summary>
         /// Occurs when the TimeRemaining property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan> TimeRemainingChanged;
+        public event TimeRemainingChangedEventHandler TimeRemainingChanged;
 
         /// <summary>
         /// Occurs when the MaxPosition property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan?> LivePositionChanged;
+        public event LivePositionChangedEventHandler LivePositionChanged;
 
         /// <summary>
         /// Occurs when the TimeFormatConverter property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IValueConverter> TimeFormatConverterChanged;
+        public event TimeFormatConverterChangedEventHandler TimeFormatConverterChanged;
 
         /// <summary>
         /// Occurs when the SkipBackInterval property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan?> SkipBackIntervalChanged;
+        public event SkipBackIntervalChangedEventHandler SkipBackIntervalChanged;
 
         /// <summary>
         /// Occurs when the SkipAheadInterval property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<TimeSpan?> SkipAheadIntervalChanged;
+        public event SkipAheadIntervalChangedEventHandler SkipAheadIntervalChanged;
 
         /// <summary>
         /// Occurs when the SeekToLive method is called.
@@ -1027,7 +1023,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsCaptionSelectionEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsCaptionSelectionEnabledProperty = RegisterDependencyProperty<bool>("IsCaptionSelectionEnabled", (t, o, n) => t.OnIsCaptionSelectionEnabledChanged(), true);
+        public static DependencyProperty IsCaptionSelectionEnabledProperty { get { return isCaptionSelectionEnabledProperty; } }
+        static readonly DependencyProperty isCaptionSelectionEnabledProperty = RegisterDependencyProperty<bool>("IsCaptionSelectionEnabled", (t, o, n) => t.OnIsCaptionSelectionEnabledChanged(), true);
 
         void OnIsCaptionSelectionEnabledChanged()
         {
@@ -1037,7 +1034,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether GoLive can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsCaptionSelectionEnabled
         {
             get { return (bool)GetValue(IsCaptionSelectionEnabledProperty); }
@@ -1052,7 +1048,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether go live is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsCaptionSelectionAllowed
+        public bool IsCaptionSelectionAllowed
         {
             get
             {
@@ -1063,7 +1059,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the go live enabled state may have changed.
         /// </summary>
-        protected void NotifyIsCaptionSelectionAllowedChanged()
+        void NotifyIsCaptionSelectionAllowedChanged()
         {
             if (IsCaptionSelectionAllowedChanged != null) IsCaptionSelectionAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1079,7 +1075,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsGoLiveEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsGoLiveEnabledProperty = RegisterDependencyProperty<bool>("IsGoLiveEnabled", (t, o, n) => t.OnIsGoLiveEnabledChanged(), true);
+        public static DependencyProperty IsGoLiveEnabledProperty { get { return isGoLiveEnabledProperty; } }
+        static readonly DependencyProperty isGoLiveEnabledProperty = RegisterDependencyProperty<bool>("IsGoLiveEnabled", (t, o, n) => t.OnIsGoLiveEnabledChanged(), true);
 
         void OnIsGoLiveEnabledChanged()
         {
@@ -1089,7 +1086,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether GoLive can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsGoLiveEnabled
         {
             get { return (bool)GetValue(IsGoLiveEnabledProperty); }
@@ -1104,7 +1100,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether go live is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsGoLiveAllowed
+        public bool IsGoLiveAllowed
         {
             get
             {
@@ -1115,7 +1111,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the go live enabled state may have changed.
         /// </summary>
-        protected void NotifyIsGoLiveAllowedChanged()
+        void NotifyIsGoLiveAllowedChanged()
         {
             if (IsGoLiveAllowedChanged != null) IsGoLiveAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1131,7 +1127,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsPlayResumeEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsPlayResumeEnabledProperty = RegisterDependencyProperty<bool>("IsPlayResumeEnabled", (t, o, n) => t.OnIsPlayResumeEnabledChanged(), true);
+        public static DependencyProperty IsPlayResumeEnabledProperty { get { return isPlayResumeEnabledProperty; } }
+        static readonly DependencyProperty isPlayResumeEnabledProperty = RegisterDependencyProperty<bool>("IsPlayResumeEnabled", (t, o, n) => t.OnIsPlayResumeEnabledChanged(), true);
 
         void OnIsPlayResumeEnabledChanged()
         {
@@ -1141,7 +1138,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether PlayResume can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsPlayResumeEnabled
         {
             get { return (bool)GetValue(IsPlayResumeEnabledProperty); }
@@ -1156,7 +1152,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that play is preferred over pause. Useful for binding to the toggle state of a Play/Pause button.
         /// </summary>
-        public virtual bool IsPlayResumeAllowed
+        public bool IsPlayResumeAllowed
         {
             get { return CurrentState != MediaElementState.Closed && (CurrentState != MediaElementState.Playing || (PlaybackRate != DefaultPlaybackRate && PlaybackRate != 0)) && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1164,7 +1160,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the play resume enabled state may have changed.
         /// </summary>
-        protected void NotifyIsPlayResumeAllowedChanged()
+        void NotifyIsPlayResumeAllowedChanged()
         {
             if (IsPlayResumeAllowedChanged != null) IsPlayResumeAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1180,7 +1176,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsPauseEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsPauseEnabledProperty = RegisterDependencyProperty<bool>("IsPauseEnabled", (t, o, n) => t.OnIsPauseEnabledChanged(), true);
+        public static DependencyProperty IsPauseEnabledProperty { get { return isPauseEnabledProperty; } }
+        static readonly DependencyProperty isPauseEnabledProperty = RegisterDependencyProperty<bool>("IsPauseEnabled", (t, o, n) => t.OnIsPauseEnabledChanged(), true);
 
         void OnIsPauseEnabledChanged()
         {
@@ -1190,7 +1187,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether Pause can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsPauseEnabled
         {
             get { return (bool)GetValue(IsPauseEnabledProperty); }
@@ -1205,7 +1201,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether pause is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsPauseAllowed
+        public bool IsPauseAllowed
         {
             get { return CanPause && CurrentState == MediaElementState.Playing && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1213,7 +1209,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the pause enabled state may have changed.
         /// </summary>
-        protected void NotifyIsPauseAllowedChanged()
+        void NotifyIsPauseAllowedChanged()
         {
             if (IsPauseAllowedChanged != null) IsPauseAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1229,7 +1225,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsStopEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsStopEnabledProperty = RegisterDependencyProperty<bool>("IsStopEnabled", (t, o, n) => t.OnIsStopEnabledChanged(), true);
+        public static DependencyProperty IsStopEnabledProperty { get { return isStopEnabledProperty; } }
+        static readonly DependencyProperty isStopEnabledProperty = RegisterDependencyProperty<bool>("IsStopEnabled", (t, o, n) => t.OnIsStopEnabledChanged(), true);
 
         void OnIsStopEnabledChanged()
         {
@@ -1239,7 +1236,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether Stop can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsStopEnabled
         {
             get { return (bool)GetValue(IsStopEnabledProperty); }
@@ -1254,7 +1250,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether stop is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsStopAllowed
+        public bool IsStopAllowed
         {
             get { return CurrentState != MediaElementState.Closed || CurrentState != MediaElementState.Stopped; }
         }
@@ -1262,7 +1258,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the stop enabled state may have changed.
         /// </summary>
-        protected void NotifyIsStopAllowedChanged()
+        void NotifyIsStopAllowedChanged()
         {
             if (IsStopAllowedChanged != null) IsStopAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1278,7 +1274,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsReplayEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsReplayEnabledProperty = RegisterDependencyProperty<bool>("IsReplayEnabled", (t, o, n) => t.OnIsReplayEnabledChanged(), true);
+        public static DependencyProperty IsReplayEnabledProperty { get { return isReplayEnabledProperty; } }
+        static readonly DependencyProperty isReplayEnabledProperty = RegisterDependencyProperty<bool>("IsReplayEnabled", (t, o, n) => t.OnIsReplayEnabledChanged(), true);
 
         void OnIsReplayEnabledChanged()
         {
@@ -1288,7 +1285,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether Replay can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsReplayEnabled
         {
             get { return (bool)GetValue(IsReplayEnabledProperty); }
@@ -1303,7 +1299,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether replay is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsReplayAllowed
+        public bool IsReplayAllowed
         {
             get { return CanSeek && CurrentState == MediaElementState.Paused || CurrentState == MediaElementState.Playing && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1311,7 +1307,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the replay enabled state may have changed.
         /// </summary>
-        protected void NotifyIsReplayAllowedChanged()
+        void NotifyIsReplayAllowedChanged()
         {
             if (IsReplayAllowedChanged != null) IsReplayAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1327,7 +1323,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsAudioSelectionEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsAudioSelectionEnabledProperty = RegisterDependencyProperty<bool>("IsAudioSelectionEnabled", (t, o, n) => t.OnIsAudioSelectionEnabledChanged(), true);
+        public static DependencyProperty IsAudioSelectionEnabledProperty { get { return isAudioSelectionEnabledProperty; } }
+        static readonly DependencyProperty isAudioSelectionEnabledProperty = RegisterDependencyProperty<bool>("IsAudioSelectionEnabled", (t, o, n) => t.OnIsAudioSelectionEnabledChanged(), true);
 
         void OnIsAudioSelectionEnabledChanged()
         {
@@ -1337,7 +1334,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether AudioStreamSelection can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsAudioSelectionEnabled
         {
             get { return (bool)GetValue(IsAudioSelectionEnabledProperty); }
@@ -1352,7 +1348,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether audio stream selection is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsAudioSelectionAllowed
+        public bool IsAudioSelectionAllowed
         {
             get { return AvailableAudioStreams.Any() && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1360,7 +1356,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the audio stream selection enabled state may have changed.
         /// </summary>
-        protected void NotifyIsAudioSelectionAllowedChanged()
+        void NotifyIsAudioSelectionAllowedChanged()
         {
             if (IsAudioSelectionAllowedChanged != null) IsAudioSelectionAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1376,7 +1372,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsRewindEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsRewindEnabledProperty = RegisterDependencyProperty<bool>("IsRewindEnabled", (t, o, n) => t.OnIsRewindEnabledChanged(), true);
+        public static DependencyProperty IsRewindEnabledProperty { get { return isRewindEnabledProperty; } }
+        static readonly DependencyProperty isRewindEnabledProperty = RegisterDependencyProperty<bool>("IsRewindEnabled", (t, o, n) => t.OnIsRewindEnabledChanged(), true);
 
         void OnIsRewindEnabledChanged()
         {
@@ -1386,7 +1383,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether Rewind can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsRewindEnabled
         {
             get { return (bool)GetValue(IsRewindEnabledProperty); }
@@ -1401,7 +1397,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether rewind is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsRewindAllowed
+        public bool IsRewindAllowed
         {
             get { return CurrentState == MediaElementState.Playing && PlaybackRate > SupportedPlaybackRates.Min() && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1409,7 +1405,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the rewind enabled state may have changed.
         /// </summary>
-        protected void NotifyIsRewindAllowedChanged()
+        void NotifyIsRewindAllowedChanged()
         {
             if (IsRewindAllowedChanged != null) IsRewindAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1425,7 +1421,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsFastForwardEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFastForwardEnabledProperty = RegisterDependencyProperty<bool>("IsFastForwardEnabled", (t, o, n) => t.OnIsFastForwardEnabledChanged(), true);
+        public static DependencyProperty IsFastForwardEnabledProperty { get { return isFastForwardEnabledProperty; } }
+        static readonly DependencyProperty isFastForwardEnabledProperty = RegisterDependencyProperty<bool>("IsFastForwardEnabled", (t, o, n) => t.OnIsFastForwardEnabledChanged(), true);
 
         void OnIsFastForwardEnabledChanged()
         {
@@ -1435,7 +1432,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether FastForward can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsFastForwardEnabled
         {
             get { return (bool)GetValue(IsFastForwardEnabledProperty); }
@@ -1450,7 +1446,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether fast forward is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsFastForwardAllowed
+        public bool IsFastForwardAllowed
         {
             get { return CurrentState == MediaElementState.Playing && PlaybackRate < SupportedPlaybackRates.Max() && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1458,7 +1454,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the fast forward enabled state may have changed.
         /// </summary>
-        protected void NotifyIsFastForwardAllowedChanged()
+        void NotifyIsFastForwardAllowedChanged()
         {
             if (IsFastForwardAllowedChanged != null) IsFastForwardAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1474,7 +1470,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSlowMotionEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSlowMotionEnabledProperty = RegisterDependencyProperty<bool>("IsSlowMotionEnabled", (t, o, n) => t.OnIsSlowMotionEnabledChanged(), true);
+        public static DependencyProperty IsSlowMotionEnabledProperty { get { return isSlowMotionEnabledProperty; } }
+        static readonly DependencyProperty isSlowMotionEnabledProperty = RegisterDependencyProperty<bool>("IsSlowMotionEnabled", (t, o, n) => t.OnIsSlowMotionEnabledChanged(), true);
 
         void OnIsSlowMotionEnabledChanged()
         {
@@ -1484,7 +1481,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether SlowMotion can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsSlowMotionEnabled
         {
             get { return (bool)GetValue(IsSlowMotionEnabledProperty); }
@@ -1499,7 +1495,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether slow motion is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsSlowMotionAllowed
+        public bool IsSlowMotionAllowed
         {
             get { return CurrentState == MediaElementState.Playing && SupportedPlaybackRates.Where(r => r > 0 && r < 1).Any() && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1507,7 +1503,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the slow motion enabled state may have changed.
         /// </summary>
-        protected void NotifyIsSlowMotionAllowedChanged()
+        void NotifyIsSlowMotionAllowedChanged()
         {
             if (IsSlowMotionAllowedChanged != null) IsSlowMotionAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1523,7 +1519,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSeekEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSeekEnabledProperty = RegisterDependencyProperty<bool>("IsSeekEnabled", (t, o, n) => t.OnIsSeekEnabledChanged(), true);
+        public static DependencyProperty IsSeekEnabledProperty { get { return isSeekEnabledProperty; } }
+        static readonly DependencyProperty isSeekEnabledProperty = RegisterDependencyProperty<bool>("IsSeekEnabled", (t, o, n) => t.OnIsSeekEnabledChanged(), true);
 
         void OnIsSeekEnabledChanged()
         {
@@ -1533,7 +1530,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether Seek can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsSeekEnabled
         {
             get { return (bool)GetValue(IsSeekEnabledProperty); }
@@ -1548,7 +1544,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether seek is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsSeekAllowed
+        public bool IsSeekAllowed
         {
             get { return CanSeek && CurrentState != MediaElementState.Closed && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1556,7 +1552,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the seek enabled state may have changed.
         /// </summary>
-        protected void NotifyIsSeekAllowedChanged()
+        void NotifyIsSeekAllowedChanged()
         {
             if (IsSeekAllowedChanged != null) IsSeekAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1572,7 +1568,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipPreviousEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipPreviousEnabledProperty = RegisterDependencyProperty<bool>("IsSkipPreviousEnabled", (t, o, n) => t.OnIsSkipPreviousEnabledChanged(), true);
+        public static DependencyProperty IsSkipPreviousEnabledProperty { get { return isSkipPreviousEnabledProperty; } }
+        static readonly DependencyProperty isSkipPreviousEnabledProperty = RegisterDependencyProperty<bool>("IsSkipPreviousEnabled", (t, o, n) => t.OnIsSkipPreviousEnabledChanged(), true);
 
         void OnIsSkipPreviousEnabledChanged()
         {
@@ -1582,7 +1579,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether the SkipPrevious method can be called.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsSkipPreviousEnabled
         {
             get { return (bool)GetValue(IsSkipPreviousEnabledProperty); }
@@ -1597,7 +1593,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether skipping previous is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsSkipPreviousAllowed
+        public bool IsSkipPreviousAllowed
         {
             get { return CanSeek && CurrentState != MediaElementState.Closed && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1605,7 +1601,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the skip previous enabled state may have changed.
         /// </summary>
-        protected void NotifyIsSkipPreviousAllowedChanged()
+        void NotifyIsSkipPreviousAllowedChanged()
         {
             if (IsSkipPreviousAllowedChanged != null) IsSkipPreviousAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1621,7 +1617,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipNextEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipNextEnabledProperty = RegisterDependencyProperty<bool>("IsSkipNextEnabled", (t, o, n) => t.OnIsSkipNextEnabledChanged(), true);
+        public static DependencyProperty IsSkipNextEnabledProperty { get { return isSkipNextEnabledProperty; } }
+        static readonly DependencyProperty isSkipNextEnabledProperty = RegisterDependencyProperty<bool>("IsSkipNextEnabled", (t, o, n) => t.OnIsSkipNextEnabledChanged(), true);
 
         void OnIsSkipNextEnabledChanged()
         {
@@ -1631,7 +1628,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether the SkipNext method can be called.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsSkipNextEnabled
         {
             get { return (bool)GetValue(IsSkipNextEnabledProperty); }
@@ -1646,7 +1642,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether skipping next is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsSkipNextAllowed
+        public bool IsSkipNextAllowed
         {
             get { return CanSeek && CurrentState != MediaElementState.Closed && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1654,7 +1650,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the skip next enabled state may have changed.
         /// </summary>
-        protected void NotifyIsSkipNextAllowedChanged()
+        void NotifyIsSkipNextAllowedChanged()
         {
             if (IsSkipNextAllowedChanged != null) IsSkipNextAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1670,7 +1666,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipBackEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipBackEnabledProperty = RegisterDependencyProperty<bool>("IsSkipBackEnabled", (t, o, n) => t.OnIsSkipBackEnabledChanged(), true);
+        public static DependencyProperty IsSkipBackEnabledProperty { get { return isSkipBackEnabledProperty; } }
+        static readonly DependencyProperty isSkipBackEnabledProperty = RegisterDependencyProperty<bool>("IsSkipBackEnabled", (t, o, n) => t.OnIsSkipBackEnabledChanged(), true);
 
         void OnIsSkipBackEnabledChanged()
         {
@@ -1680,7 +1677,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether the SkipBack method can be called.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsSkipBackEnabled
         {
             get { return (bool)GetValue(IsSkipBackEnabledProperty); }
@@ -1695,7 +1691,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether skipping back is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsSkipBackAllowed
+        public bool IsSkipBackAllowed
         {
             get { return CanSeek && CurrentState != MediaElementState.Closed && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1703,7 +1699,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the skip back enabled state may have changed.
         /// </summary>
-        protected void NotifyIsSkipBackAllowedChanged()
+        void NotifyIsSkipBackAllowedChanged()
         {
             if (IsSkipBackAllowedChanged != null) IsSkipBackAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1719,7 +1715,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipAheadEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipAheadEnabledProperty = RegisterDependencyProperty<bool>("IsSkipAheadEnabled", (t, o, n) => t.OnIsSkipAheadEnabledChanged(), true);
+        public static DependencyProperty IsSkipAheadEnabledProperty { get { return isSkipAheadEnabledProperty; } }
+        static readonly DependencyProperty isSkipAheadEnabledProperty = RegisterDependencyProperty<bool>("IsSkipAheadEnabled", (t, o, n) => t.OnIsSkipAheadEnabledChanged(), true);
 
         void OnIsSkipAheadEnabledChanged()
         {
@@ -1729,7 +1726,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether the SkipAhead method can be called.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsSkipAheadEnabled
         {
             get { return (bool)GetValue(IsSkipAheadEnabledProperty); }
@@ -1744,7 +1740,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether skipping ahead is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsSkipAheadAllowed
+        public bool IsSkipAheadAllowed
         {
             get { return CanSeek && CurrentState != MediaElementState.Closed && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1752,7 +1748,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the skip ahead enabled state may have changed.
         /// </summary>
-        protected void NotifyIsSkipAheadAllowedChanged()
+        void NotifyIsSkipAheadAllowedChanged()
         {
             if (IsSkipAheadAllowedChanged != null) IsSkipAheadAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1768,7 +1764,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsScrubbingEnabled dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsScrubbingEnabledProperty = RegisterDependencyProperty<bool>("IsScrubbingEnabled", (t, o, n) => t.OnIsScrubbingEnabledChanged(), true);
+        public static DependencyProperty IsScrubbingEnabledProperty { get { return isScrubbingEnabledProperty; } }
+        static readonly DependencyProperty isScrubbingEnabledProperty = RegisterDependencyProperty<bool>("IsScrubbingEnabled", (t, o, n) => t.OnIsScrubbingEnabledChanged(), true);
 
         void OnIsScrubbingEnabledChanged()
         {
@@ -1778,7 +1775,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets based on the current state whether scrubbing can occur.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsScrubbingEnabled
         {
             get { return (bool)GetValue(IsScrubbingEnabledProperty); }
@@ -1793,7 +1789,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets whether scrubbing is allowed based on the state of the player.
         /// </summary>
-        public virtual bool IsScrubbingAllowed
+        public bool IsScrubbingAllowed
         {
             get { return CanSeek && CurrentState != MediaElementState.Closed && (PlayerState == PlayerState.Started || PlayerState == PlayerState.Opened) && AdvertisingState != AdvertisingState.Linear && AdvertisingState != AdvertisingState.Loading; }
         }
@@ -1801,7 +1797,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the scrubbing enabled state may have changed.
         /// </summary>
-        protected void NotifyIsScrubbingAllowedChanged()
+        void NotifyIsScrubbingAllowedChanged()
         {
             if (IsScrubbingAllowedChanged != null) IsScrubbingAllowedChanged(this, new RoutedEventArgs());
         }
@@ -1816,7 +1812,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsDisplayModeVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsDisplayModeVisibleProperty = RegisterDependencyProperty<bool>("IsDisplayModeVisible", (t, o, n) => t.OnIsDisplayModeVisibleChanged(), DefaultIsDisplayModeVisible);
+        public static DependencyProperty IsDisplayModeVisibleProperty { get { return isDisplayModeVisibleProperty; } }
+        static readonly DependencyProperty isDisplayModeVisibleProperty = RegisterDependencyProperty<bool>("IsDisplayModeVisible", (t, o, n) => t.OnIsDisplayModeVisibleChanged(), DefaultIsDisplayModeVisible);
 
         static bool DefaultIsDisplayModeVisible
         {
@@ -1838,12 +1835,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsDisplayModeVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsDisplayModeVisibleChanged;
+#else
+        public event EventHandler<object> IsDisplayModeVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive DisplayMode feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsDisplayModeVisible
         {
             get { return (bool)GetValue(IsDisplayModeVisibleProperty); }
@@ -1856,7 +1856,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsAudioSelectionVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsAudioSelectionVisibleProperty = RegisterDependencyProperty<bool>("IsAudioSelectionVisible", (t, o, n) => t.OnIsAudioSelectionVisibleChanged(), false);
+        public static DependencyProperty IsAudioSelectionVisibleProperty { get { return isAudioSelectionVisibleProperty; } }
+        static readonly DependencyProperty isAudioSelectionVisibleProperty = RegisterDependencyProperty<bool>("IsAudioSelectionVisible", (t, o, n) => t.OnIsAudioSelectionVisibleChanged(), false);
 
         void OnIsAudioSelectionVisibleChanged()
         {
@@ -1866,12 +1867,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsAudioSelectionVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsAudioSelectionVisibleChanged;
+#else
+        public event EventHandler<object> IsAudioSelectionVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive AudioStreamSelection feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsAudioSelectionVisible
         {
             get { return (bool)GetValue(IsAudioSelectionVisibleProperty); }
@@ -1883,7 +1887,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsCaptionSelectionVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsCaptionSelectionVisibleProperty = RegisterDependencyProperty<bool>("IsCaptionSelectionVisible", (t, o, n) => t.OnIsCaptionSelectionVisibleChanged(), false);
+        public static DependencyProperty IsCaptionSelectionVisibleProperty { get { return isCaptionSelectionVisibleProperty; } }
+        static readonly DependencyProperty isCaptionSelectionVisibleProperty = RegisterDependencyProperty<bool>("IsCaptionSelectionVisible", (t, o, n) => t.OnIsCaptionSelectionVisibleChanged(), false);
 
         void OnIsCaptionSelectionVisibleChanged()
         {
@@ -1893,12 +1898,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsCaptionSelectionVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsCaptionSelectionVisibleChanged;
+#else
+        public event EventHandler<object> IsCaptionSelectionVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Captions feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsCaptionSelectionVisible
         {
             get { return (bool)GetValue(IsCaptionSelectionVisibleProperty); }
@@ -1910,7 +1918,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsDurationVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsDurationVisibleProperty = RegisterDependencyProperty<bool>("IsDurationVisible", (t, o, n) => t.OnIsDurationVisibleChanged(), false);
+        public static DependencyProperty IsDurationVisibleProperty { get { return isDurationVisibleProperty; } }
+        static readonly DependencyProperty isDurationVisibleProperty = RegisterDependencyProperty<bool>("IsDurationVisible", (t, o, n) => t.OnIsDurationVisibleChanged(), false);
 
         void OnIsDurationVisibleChanged()
         {
@@ -1920,12 +1929,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsDurationVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsDurationVisibleChanged;
+#else
+        public event EventHandler<object> IsDurationVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Duration feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsDurationVisible
         {
             get { return (bool)GetValue(IsDurationVisibleProperty); }
@@ -1937,7 +1949,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsTimeRemainingVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTimeRemainingVisibleProperty = RegisterDependencyProperty<bool>("IsTimeRemainingVisible", (t, o, n) => t.OnIsTimeRemainingVisibleChanged(), true);
+        public static DependencyProperty IsTimeRemainingVisibleProperty { get { return isTimeRemainingVisibleProperty; } }
+        static readonly DependencyProperty isTimeRemainingVisibleProperty = RegisterDependencyProperty<bool>("IsTimeRemainingVisible", (t, o, n) => t.OnIsTimeRemainingVisibleChanged(), true);
 
         void OnIsTimeRemainingVisibleChanged()
         {
@@ -1947,12 +1960,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsTimeRemainingVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsTimeRemainingVisibleChanged;
+#else
+        public event EventHandler<object> IsTimeRemainingVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive TimeRemaining feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsTimeRemainingVisible
         {
             get { return (bool)GetValue(IsTimeRemainingVisibleProperty); }
@@ -1964,7 +1980,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsFastForwardVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFastForwardVisibleProperty = RegisterDependencyProperty<bool>("IsFastForwardVisible", (t, o, n) => t.OnIsFastForwardVisibleChanged(), false);
+        public static DependencyProperty IsFastForwardVisibleProperty { get { return isFastForwardVisibleProperty; } }
+        static readonly DependencyProperty isFastForwardVisibleProperty = RegisterDependencyProperty<bool>("IsFastForwardVisible", (t, o, n) => t.OnIsFastForwardVisibleChanged(), false);
 
         void OnIsFastForwardVisibleChanged()
         {
@@ -1974,12 +1991,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsFastForwardVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsFastForwardVisibleChanged;
+#else
+        public event EventHandler<object> IsFastForwardVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive FastForward feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsFastForwardVisible
         {
             get { return (bool)GetValue(IsFastForwardVisibleProperty); }
@@ -1991,7 +2011,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsFullScreenVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFullScreenVisibleProperty = RegisterDependencyProperty<bool>("IsFullScreenVisible", (t, o, n) => t.OnIsFullScreenVisibleChanged(), false);
+        public static DependencyProperty IsFullScreenVisibleProperty { get { return isFullScreenVisibleProperty; } }
+        static readonly DependencyProperty isFullScreenVisibleProperty = RegisterDependencyProperty<bool>("IsFullScreenVisible", (t, o, n) => t.OnIsFullScreenVisibleChanged(), false);
 
         void OnIsFullScreenVisibleChanged()
         {
@@ -2001,12 +2022,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsFullScreenVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsFullScreenVisibleChanged;
+#else
+        public event EventHandler<object> IsFullScreenVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive FullScreen feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsFullScreenVisible
         {
             get { return (bool)GetValue(IsFullScreenVisibleProperty); }
@@ -2018,7 +2042,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsGoLiveVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsGoLiveVisibleProperty = RegisterDependencyProperty<bool>("IsGoLiveVisible", (t, o, n) => t.OnIsGoLiveVisibleChanged(), false);
+        public static DependencyProperty IsGoLiveVisibleProperty { get { return isGoLiveVisibleProperty; } }
+        static readonly DependencyProperty isGoLiveVisibleProperty = RegisterDependencyProperty<bool>("IsGoLiveVisible", (t, o, n) => t.OnIsGoLiveVisibleChanged(), false);
 
         void OnIsGoLiveVisibleChanged()
         {
@@ -2028,12 +2053,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsGoLiveVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsGoLiveVisibleChanged;
+#else
+        public event EventHandler<object> IsGoLiveVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive GoLive feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsGoLiveVisible
         {
             get { return (bool)GetValue(IsGoLiveVisibleProperty); }
@@ -2045,7 +2073,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsPlayPauseVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsPlayPauseVisibleProperty = RegisterDependencyProperty<bool>("IsPlayPauseVisible", (t, o, n) => t.OnIsPlayPauseVisibleChanged(), true);
+        public static DependencyProperty IsPlayPauseVisibleProperty { get { return isPlayPauseVisibleProperty; } }
+        static readonly DependencyProperty isPlayPauseVisibleProperty = RegisterDependencyProperty<bool>("IsPlayPauseVisible", (t, o, n) => t.OnIsPlayPauseVisibleChanged(), true);
 
         void OnIsPlayPauseVisibleChanged()
         {
@@ -2055,12 +2084,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsPlayPauseVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsPlayPauseVisibleChanged;
+#else
+        public event EventHandler<object> IsPlayPauseVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive PlayPause feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsPlayPauseVisible
         {
             get { return (bool)GetValue(IsPlayPauseVisibleProperty); }
@@ -2072,7 +2104,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsTimeElapsedVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTimeElapsedVisibleProperty = RegisterDependencyProperty<bool>("IsTimeElapsedVisible", (t, o, n) => t.OnIsTimeElapsedVisibleChanged(), true);
+        public static DependencyProperty IsTimeElapsedVisibleProperty { get { return isTimeElapsedVisibleProperty; } }
+        static readonly DependencyProperty isTimeElapsedVisibleProperty = RegisterDependencyProperty<bool>("IsTimeElapsedVisible", (t, o, n) => t.OnIsTimeElapsedVisibleChanged(), true);
 
         void OnIsTimeElapsedVisibleChanged()
         {
@@ -2082,12 +2115,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsTimeElapsedVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsTimeElapsedVisibleChanged;
+#else
+        public event EventHandler<object> IsTimeElapsedVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Position feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsTimeElapsedVisible
         {
             get { return (bool)GetValue(IsTimeElapsedVisibleProperty); }
@@ -2099,7 +2135,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipBackVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipBackVisibleProperty = RegisterDependencyProperty<bool>("IsSkipBackVisible", (t, o, n) => t.OnIsSkipBackVisibleChanged(), DefaultIsSkipBackVisible);
+        public static DependencyProperty IsSkipBackVisibleProperty { get { return isSkipBackVisibleProperty; } }
+        static readonly DependencyProperty isSkipBackVisibleProperty = RegisterDependencyProperty<bool>("IsSkipBackVisible", (t, o, n) => t.OnIsSkipBackVisibleChanged(), DefaultIsSkipBackVisible);
 
         static bool DefaultIsSkipBackVisible
         {
@@ -2121,12 +2158,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipBackVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsSkipBackVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipBackVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SkipBack feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsSkipBackVisible
         {
             get { return (bool)GetValue(IsSkipBackVisibleProperty); }
@@ -2138,7 +2178,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipAheadVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipAheadVisibleProperty = RegisterDependencyProperty<bool>("IsSkipAheadVisible", (t, o, n) => t.OnIsSkipAheadVisibleChanged(), DefaultIsSkipAheadVisible);
+        public static DependencyProperty IsSkipAheadVisibleProperty { get { return isSkipAheadVisibleProperty; } }
+        static readonly DependencyProperty isSkipAheadVisibleProperty = RegisterDependencyProperty<bool>("IsSkipAheadVisible", (t, o, n) => t.OnIsSkipAheadVisibleChanged(), DefaultIsSkipAheadVisible);
 
         static bool DefaultIsSkipAheadVisible
         {
@@ -2160,12 +2201,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipAheadVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsSkipAheadVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipAheadVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SkipAhead feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsSkipAheadVisible
         {
             get { return (bool)GetValue(IsSkipAheadVisibleProperty); }
@@ -2177,7 +2221,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsReplayVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsReplayVisibleProperty = RegisterDependencyProperty<bool>("IsReplayVisible", (t, o, n) => t.OnIsReplayVisibleChanged(), false);
+        public static DependencyProperty IsReplayVisibleProperty { get { return isReplayVisibleProperty; } }
+        static readonly DependencyProperty isReplayVisibleProperty = RegisterDependencyProperty<bool>("IsReplayVisible", (t, o, n) => t.OnIsReplayVisibleChanged(), false);
 
         void OnIsReplayVisibleChanged()
         {
@@ -2187,12 +2232,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsReplayVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsReplayVisibleChanged;
+#else
+        public event EventHandler<object> IsReplayVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Replay feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsReplayVisible
         {
             get { return (bool)GetValue(IsReplayVisibleProperty); }
@@ -2204,7 +2252,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsRewindVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsRewindVisibleProperty = RegisterDependencyProperty<bool>("IsRewindVisible", (t, o, n) => t.OnIsRewindVisibleChanged(), false);
+        public static DependencyProperty IsRewindVisibleProperty { get { return isRewindVisibleProperty; } }
+        static readonly DependencyProperty isRewindVisibleProperty = RegisterDependencyProperty<bool>("IsRewindVisible", (t, o, n) => t.OnIsRewindVisibleChanged(), false);
 
         void OnIsRewindVisibleChanged()
         {
@@ -2214,12 +2263,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsRewindVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsRewindVisibleChanged;
+#else
+        public event EventHandler<object> IsRewindVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Rewind feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsRewindVisible
         {
             get { return (bool)GetValue(IsRewindVisibleProperty); }
@@ -2231,7 +2283,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipPreviousVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipPreviousVisibleProperty = RegisterDependencyProperty<bool>("IsSkipPreviousVisible", (t, o, n) => t.OnIsSkipPreviousVisibleChanged(), false);
+        public static DependencyProperty IsSkipPreviousVisibleProperty { get { return isSkipPreviousVisibleProperty; } }
+        static readonly DependencyProperty isSkipPreviousVisibleProperty = RegisterDependencyProperty<bool>("IsSkipPreviousVisible", (t, o, n) => t.OnIsSkipPreviousVisibleChanged(), false);
 
         void OnIsSkipPreviousVisibleChanged()
         {
@@ -2241,12 +2294,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipPreviousVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsSkipPreviousVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipPreviousVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SkipPrevious feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsSkipPreviousVisible
         {
             get { return (bool)GetValue(IsSkipPreviousVisibleProperty); }
@@ -2258,7 +2314,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSkipNextVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSkipNextVisibleProperty = RegisterDependencyProperty<bool>("IsSkipNextVisible", (t, o, n) => t.OnIsSkipNextVisibleChanged(), false);
+        public static DependencyProperty IsSkipNextVisibleProperty { get { return isSkipNextVisibleProperty; } }
+        static readonly DependencyProperty isSkipNextVisibleProperty = RegisterDependencyProperty<bool>("IsSkipNextVisible", (t, o, n) => t.OnIsSkipNextVisibleChanged(), false);
 
         void OnIsSkipNextVisibleChanged()
         {
@@ -2268,12 +2325,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipNextVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsSkipNextVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipNextVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SkipNext feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsSkipNextVisible
         {
             get { return (bool)GetValue(IsSkipNextVisibleProperty); }
@@ -2285,7 +2345,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSlowMotionVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSlowMotionVisibleProperty = RegisterDependencyProperty<bool>("IsSlowMotionVisible", (t, o, n) => t.OnIsSlowMotionVisibleChanged(), false);
+        public static DependencyProperty IsSlowMotionVisibleProperty { get { return isSlowMotionVisibleProperty; } }
+        static readonly DependencyProperty isSlowMotionVisibleProperty = RegisterDependencyProperty<bool>("IsSlowMotionVisible", (t, o, n) => t.OnIsSlowMotionVisibleChanged(), false);
 
         void OnIsSlowMotionVisibleChanged()
         {
@@ -2295,12 +2356,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSlowMotionVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsSlowMotionVisibleChanged;
+#else
+        public event EventHandler<object> IsSlowMotionVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SlowMotion feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsSlowMotionVisible
         {
             get { return (bool)GetValue(IsSlowMotionVisibleProperty); }
@@ -2312,7 +2376,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsStopVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsStopVisibleProperty = RegisterDependencyProperty<bool>("IsStopVisible", (t, o, n) => t.OnIsStopVisibleChanged(), false);
+        public static DependencyProperty IsStopVisibleProperty { get { return isStopVisibleProperty; } }
+        static readonly DependencyProperty isStopVisibleProperty = RegisterDependencyProperty<bool>("IsStopVisible", (t, o, n) => t.OnIsStopVisibleChanged(), false);
 
         void OnIsStopVisibleChanged()
         {
@@ -2322,12 +2387,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsStopVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsStopVisibleChanged;
+#else
+        public event EventHandler<object> IsStopVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Stop feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsStopVisible
         {
             get { return (bool)GetValue(IsStopVisibleProperty); }
@@ -2339,7 +2407,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsTimelineVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTimelineVisibleProperty = RegisterDependencyProperty<bool>("IsTimelineVisible", (t, o, n) => t.OnIsTimelineVisibleChanged(), true);
+        public static DependencyProperty IsTimelineVisibleProperty { get { return isTimelineVisibleProperty; } }
+        static readonly DependencyProperty isTimelineVisibleProperty = RegisterDependencyProperty<bool>("IsTimelineVisible", (t, o, n) => t.OnIsTimelineVisibleChanged(), true);
 
         void OnIsTimelineVisibleChanged()
         {
@@ -2349,12 +2418,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsTimelineVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsTimelineVisibleChanged;
+#else
+        public event EventHandler<object> IsTimelineVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Timeline feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsTimelineVisible
         {
             get { return (bool)GetValue(IsTimelineVisibleProperty); }
@@ -2366,7 +2438,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsVolumeVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsVolumeVisibleProperty = RegisterDependencyProperty<bool>("IsVolumeVisible", (t, o, n) => t.OnIsVolumeVisibleChanged(), true);
+        public static DependencyProperty IsVolumeVisibleProperty { get { return isVolumeVisibleProperty; } }
+        static readonly DependencyProperty isVolumeVisibleProperty = RegisterDependencyProperty<bool>("IsVolumeVisible", (t, o, n) => t.OnIsVolumeVisibleChanged(), true);
 
         void OnIsVolumeVisibleChanged()
         {
@@ -2376,12 +2449,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsVolumeVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsVolumeVisibleChanged;
+#else
+        public event EventHandler<object> IsVolumeVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive Volume feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsVolumeVisible
         {
             get { return (bool)GetValue(IsVolumeVisibleProperty); }
@@ -2393,7 +2469,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSignalStrengthVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSignalStrengthVisibleProperty = RegisterDependencyProperty<bool>("IsSignalStrengthVisible", (t, o, n) => t.OnIsSignalStrengthVisibleChanged(), false);
+        public static DependencyProperty IsSignalStrengthVisibleProperty { get { return isSignalStrengthVisibleProperty; } }
+        static readonly DependencyProperty isSignalStrengthVisibleProperty = RegisterDependencyProperty<bool>("IsSignalStrengthVisible", (t, o, n) => t.OnIsSignalStrengthVisibleChanged(), false);
 
         void OnIsSignalStrengthVisibleChanged()
         {
@@ -2403,12 +2480,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSignalStrengthVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsSignalStrengthVisibleChanged;
+#else
+        public event EventHandler<object> IsSignalStrengthVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SignalStrength feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsSignalStrengthVisible
         {
             get { return (bool)GetValue(IsSignalStrengthVisibleProperty); }
@@ -2420,7 +2500,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsResolutionIndicatorVisible dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsResolutionIndicatorVisibleProperty = RegisterDependencyProperty<bool>("IsResolutionIndicatorVisible", (t, o, n) => t.OnIsResolutionIndicatorVisibleChanged(), false);
+        public static DependencyProperty IsResolutionIndicatorVisibleProperty { get { return isResolutionIndicatorVisibleProperty; } }
+        static readonly DependencyProperty isResolutionIndicatorVisibleProperty = RegisterDependencyProperty<bool>("IsResolutionIndicatorVisible", (t, o, n) => t.OnIsResolutionIndicatorVisibleChanged(), false);
 
         void OnIsResolutionIndicatorVisibleChanged()
         {
@@ -2430,12 +2511,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsResolutionIndicatorVisible property changes.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler IsResolutionIndicatorVisibleChanged;
+#else
+        public event EventHandler<object> IsResolutionIndicatorVisibleChanged;
+#endif
 
         /// <summary>
         /// Gets or sets if the interactive SignalStrength feature should be visible and therefore available for the user to control.
         /// </summary>
-        [Category(Categories.Appearance)]
         public bool IsResolutionIndicatorVisible
         {
             get { return (bool)GetValue(IsResolutionIndicatorVisibleProperty); }
@@ -2452,18 +2536,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the TimeFormatConverter dependency property.
         /// </summary>
-        public static readonly DependencyProperty TimeFormatConverterProperty = RegisterDependencyProperty<IValueConverter>("TimeFormatConverter", (t, o, n) => t.OnTimeFormatConverterChanged(o, n));
+        public static DependencyProperty TimeFormatConverterProperty { get { return timeFormatConverterProperty; } }
+        static readonly DependencyProperty timeFormatConverterProperty = RegisterDependencyProperty<IValueConverter>("TimeFormatConverter", (t, o, n) => t.OnTimeFormatConverterChanged(o, n));
 
         void OnTimeFormatConverterChanged(IValueConverter oldValue, IValueConverter newValue)
         {
-            OnTimeFormatConverterChanged(new RoutedPropertyChangedEventArgs<IValueConverter>(oldValue, newValue));
+            OnTimeFormatConverterChanged(new TimeFormatConverterChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets a an IValueConverter that is used to display the time to the user such as the position, duration, and time remaining.
         /// The default value applies the string format of "h\\:mm\\:ss".
         /// </summary>
-        [Category(Categories.Appearance)]
         public IValueConverter TimeFormatConverter
         {
             get { return (IValueConverter)GetValue(TimeFormatConverterProperty); }
@@ -2497,11 +2581,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SkipBackInterval dependency property.
         /// </summary>
-        public static readonly DependencyProperty SkipBackIntervalProperty = RegisterDependencyProperty<TimeSpan?>("SkipBackInterval", (t, o, n) => t.OnSkipBackIntervalChanged(o, n), DefaultSkipBackInterval);
+        public static DependencyProperty SkipBackIntervalProperty { get { return skipBackIntervalProperty; } }
+        static readonly DependencyProperty skipBackIntervalProperty = RegisterDependencyProperty<TimeSpan?>("SkipBackInterval", (t, o, n) => t.OnSkipBackIntervalChanged(o, n), DefaultSkipBackInterval);
 
         void OnSkipBackIntervalChanged(TimeSpan? oldValue, TimeSpan? newValue)
         {
-            OnSkipBackIntervalChanged(new RoutedPropertyChangedEventArgs<TimeSpan?>(oldValue, newValue));
+            OnSkipBackIntervalChanged(new SkipBackIntervalChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
@@ -2509,7 +2594,6 @@ namespace Microsoft.PlayerFramework
         /// This can be set to null to cause the skip back action to go back to the beginning.
         /// The default is 30 seconds although it will never go back past the beginning.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan? SkipBackInterval
         {
             get { return (TimeSpan?)GetValue(SkipBackIntervalProperty); }
@@ -2536,11 +2620,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SkipAheadInterval dependency property.
         /// </summary>
-        public static readonly DependencyProperty SkipAheadIntervalProperty = RegisterDependencyProperty<TimeSpan?>("SkipAheadInterval", (t, o, n) => t.OnSkipAheadIntervalChanged(o, n), DefaultSkipAheadInterval);
+        public static DependencyProperty SkipAheadIntervalProperty { get { return skipAheadIntervalProperty; } }
+        static readonly DependencyProperty skipAheadIntervalProperty = RegisterDependencyProperty<TimeSpan?>("SkipAheadInterval", (t, o, n) => t.OnSkipAheadIntervalChanged(o, n), DefaultSkipAheadInterval);
 
         void OnSkipAheadIntervalChanged(TimeSpan? oldValue, TimeSpan? newValue)
         {
-            OnSkipAheadIntervalChanged(new RoutedPropertyChangedEventArgs<TimeSpan?>(oldValue, newValue));
+            OnSkipAheadIntervalChanged(new SkipAheadIntervalChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
@@ -2548,7 +2633,6 @@ namespace Microsoft.PlayerFramework
         /// This can be set to null to cause the skip ahead action to go directly to the end.
         /// The default is 30 seconds although it will never go past the end (or MaxPosition if set).
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan? SkipAheadInterval
         {
             get { return (TimeSpan?)GetValue(SkipAheadIntervalProperty); }
@@ -2568,20 +2652,15 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the TimelineMarkers dependency property.
         /// </summary>
-        public static readonly DependencyProperty VisualMarkersProperty = RegisterDependencyProperty<ObservableCollection<VisualMarker>>("VisualMarkers");
+        public static DependencyProperty VisualMarkersProperty { get { return visualMarkersProperty; } }
+        static readonly DependencyProperty visualMarkersProperty = RegisterDependencyProperty<IList<VisualMarker>>("VisualMarkers");
 
         /// <summary>
         /// Gets or sets the collection of markers to be displayed in the timeline.
         /// </summary>
-        [Category(Categories.Common)]
-        public ObservableCollection<VisualMarker> VisualMarkers
+        public IList<VisualMarker> VisualMarkers
         {
-            get { return (ObservableCollection<VisualMarker>)GetValue(VisualMarkersProperty); }
-        }
-
-        ICollection<VisualMarker> IMediaSource.VisualMarkers
-        {
-            get { return VisualMarkers; }
+            get { return GetValue(VisualMarkersProperty) as IList<VisualMarker>; }
         }
         #endregion
 
@@ -2598,7 +2677,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoLoad dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoLoadProperty = RegisterDependencyProperty<bool>("AutoLoad", (t, o, n) => t.OnAutoLoadChanged(n), true);
+        public static DependencyProperty AutoLoadProperty { get { return autoLoadProperty; } }
+        static readonly DependencyProperty autoLoadProperty = RegisterDependencyProperty<bool>("AutoLoad", (t, o, n) => t.OnAutoLoadChanged(n), true);
 
         void OnAutoLoadChanged(bool newValue)
         {
@@ -2614,7 +2694,6 @@ namespace Microsoft.PlayerFramework
         /// Once the source is set on the underlying MediaElement, the media begins to download.
         /// Note: There is another opportunity to block setting the source by using the awaitable BeforeMediaLoaded event.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool AutoLoad
         {
             get { return (bool)GetValue(AutoLoadProperty); }
@@ -2626,18 +2705,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SignalStrength dependency property.
         /// </summary>
-        public static readonly DependencyProperty SignalStrengthProperty = RegisterDependencyProperty<double>("SignalStrength", (t, o, n) => t.OnSignalStrengthChanged(o, n), 0.0);
+        public static DependencyProperty SignalStrengthProperty { get { return signalStrengthProperty; } }
+        static readonly DependencyProperty signalStrengthProperty = RegisterDependencyProperty<double>("SignalStrength", (t, o, n) => t.OnSignalStrengthChanged(o, n), 0.0);
 
         void OnSignalStrengthChanged(double oldValue, double newValue)
         {
-            OnSignalStrengthChanged(new RoutedPropertyChangedEventArgs<double>(oldValue, newValue));
+            OnSignalStrengthChanged(new SignalStrengthChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets the signal strength used to indicate visually to the user the quality of the bitrate.
         /// This is only useful for adaptive streaming and is only displayed when IsSignalStrengthVisible = true
         /// </summary>
-        [Category(Categories.Info)]
         public double SignalStrength
         {
             get { return (double)GetValue(SignalStrengthProperty); }
@@ -2649,7 +2728,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaQuality dependency property.
         /// </summary>
-        public static readonly DependencyProperty MediaQualityProperty = RegisterDependencyProperty<MediaQuality>("MediaQuality", (t, o, n) => t.OnMediaQualityChanged(), MediaQuality.StandardDefinition);
+        public static DependencyProperty MediaQualityProperty { get { return mediaQualityProperty; } }
+        static readonly DependencyProperty mediaQualityProperty = RegisterDependencyProperty<MediaQuality>("MediaQuality", (t, o, n) => t.OnMediaQualityChanged(), MediaQuality.StandardDefinition);
 
         void OnMediaQualityChanged()
         {
@@ -2659,7 +2739,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets an enum indicating the quality or resolution of the media. This does not affect the actual quality and only offers visual indication to the end-user when IsResolutionIndicatorVisible is true.
         /// </summary>
-        [Category(Categories.Info)]
         public MediaQuality MediaQuality
         {
             get { return (MediaQuality)GetValue(MediaQualityProperty); }
@@ -2671,7 +2750,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the LivePositionBuffer dependency property.
         /// </summary>
-        public static readonly DependencyProperty LivePositionBufferProperty = RegisterDependencyProperty<TimeSpan>("LivePositionBuffer", (t, o, n) => t.OnLivePositionBufferChanged(o, n), TimeSpan.FromSeconds(10));
+        public static DependencyProperty LivePositionBufferProperty { get { return livePositionBufferProperty; } }
+        static readonly DependencyProperty livePositionBufferProperty = RegisterDependencyProperty<TimeSpan>("LivePositionBuffer", (t, o, n) => t.OnLivePositionBufferChanged(o, n), TimeSpan.FromSeconds(10));
 
         void OnLivePositionBufferChanged(TimeSpan oldValue, TimeSpan newValue)
         {
@@ -2690,7 +2770,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a value indicating what the tollerance is for determining whether or not the current position is live. IsPositionLive is affected by this property.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan LivePositionBuffer
         {
             get { return (TimeSpan)GetValue(LivePositionBufferProperty); }
@@ -2702,7 +2781,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsPositionLive dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsPositionLiveProperty = RegisterDependencyProperty<bool>("IsPositionLive", (t, o, n) => t.OnIsPositionLiveChanged(o, n), false);
+        public static DependencyProperty IsPositionLiveProperty { get { return isPositionLiveProperty; } }
+        static readonly DependencyProperty isPositionLiveProperty = RegisterDependencyProperty<bool>("IsPositionLive", (t, o, n) => t.OnIsPositionLiveChanged(o, n), false);
 
         void OnIsPositionLiveChanged(bool oldValue, bool newValue)
         {
@@ -2712,7 +2792,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a value indicating what the tollerance is for determining whether or not the current position is live. IsPositionLive is affected by this property.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool IsPositionLive
         {
             get { return (bool)GetValue(IsPositionLiveProperty); }
@@ -2724,18 +2803,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the LivePosition dependency property.
         /// </summary>
-        public static readonly DependencyProperty LivePositionProperty = RegisterDependencyProperty<TimeSpan?>("LivePosition", (t, o, n) => t.OnLivePositionChanged(o, n), (TimeSpan?)null);
+        public static DependencyProperty LivePositionProperty { get { return livePositionProperty; } }
+        static readonly DependencyProperty livePositionProperty = RegisterDependencyProperty<TimeSpan?>("LivePosition", (t, o, n) => t.OnLivePositionChanged(o, n), (TimeSpan?)null);
 
         void OnLivePositionChanged(TimeSpan? oldValue, TimeSpan? newValue)
         {
             UpdateIsPositionLive();
-            OnLivePositionChanged(new RoutedPropertyChangedEventArgs<TimeSpan?>(oldValue, newValue));
+            OnLivePositionChanged(new LivePositionChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets the Live position for realtime/live playback.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan? LivePosition
         {
             get { return (TimeSpan?)GetValue(LivePositionProperty); }
@@ -2747,17 +2826,17 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Duration dependency property.
         /// </summary>
-        public static readonly DependencyProperty DurationProperty = RegisterDependencyProperty<TimeSpan>("Duration", (t, o, n) => t.OnDurationChanged(o, n), TimeSpan.Zero);
+        public static DependencyProperty DurationProperty { get { return durationProperty; } }
+        static readonly DependencyProperty durationProperty = RegisterDependencyProperty<TimeSpan>("Duration", (t, o, n) => t.OnDurationChanged(o, n), TimeSpan.Zero);
 
         void OnDurationChanged(TimeSpan oldValue, TimeSpan newValue)
         {
-            OnDurationChanged(new RoutedPropertyChangedEventArgs<TimeSpan>(oldValue, newValue));
+            OnDurationChanged(new DurationChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets the duration of the current video or audio. For VOD, this is automatically set from the NaturalDuration property.
         /// </summary>
-        [Category(Categories.Info)]
         public TimeSpan Duration
         {
             get { return (TimeSpan)GetValue(DurationProperty); }
@@ -2768,12 +2847,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsStartTimeOffset dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsStartTimeOffsetProperty = RegisterDependencyProperty<bool>("IsStartTimeOffset", false);
+        public static DependencyProperty IsStartTimeOffsetProperty { get { return isStartTimeOffsetProperty; } }
+        static readonly DependencyProperty isStartTimeOffsetProperty = RegisterDependencyProperty<bool>("IsStartTimeOffset", false);
 
         /// <summary>
         /// Gets or sets the IsStartTimeOffset of the current video or audio. For VOD, this is automatically set from the NaturalIsStartTimeOffset property.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsStartTimeOffset
         {
             get { return (bool)GetValue(IsStartTimeOffsetProperty); }
@@ -2785,18 +2864,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the StartTime dependency property.
         /// </summary>
-        public static readonly DependencyProperty StartTimeProperty = RegisterDependencyProperty<TimeSpan>("StartTime", (t, o, n) => t.OnStartTimeChanged(o, n), TimeSpan.Zero);
+        public static DependencyProperty StartTimeProperty { get { return startTimeProperty; } }
+        static readonly DependencyProperty startTimeProperty = RegisterDependencyProperty<TimeSpan>("StartTime", (t, o, n) => t.OnStartTimeChanged(o, n), TimeSpan.Zero);
 
         void OnStartTimeChanged(TimeSpan oldValue, TimeSpan newValue)
         {
             SetValue(DurationProperty, EndTime.Subtract(newValue));
-            OnStartTimeChanged(new RoutedPropertyChangedEventArgs<TimeSpan>(oldValue, newValue));
+            OnStartTimeChanged(new StartTimeChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets the StartTime of the current video or audio. For VOD, this is automatically set from the NaturalStartTime property.
         /// </summary>
-        [Category(Categories.Info)]
         public TimeSpan StartTime
         {
             get { return (TimeSpan)GetValue(StartTimeProperty); }
@@ -2808,19 +2887,19 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the EndTime dependency property.
         /// </summary>
-        public static readonly DependencyProperty EndTimeProperty = RegisterDependencyProperty<TimeSpan>("EndTime", (t, o, n) => t.OnEndTimeChanged(o, n), TimeSpan.Zero);
+        public static DependencyProperty EndTimeProperty { get { return endTimeProperty; } }
+        static readonly DependencyProperty endTimeProperty = RegisterDependencyProperty<TimeSpan>("EndTime", (t, o, n) => t.OnEndTimeChanged(o, n), TimeSpan.Zero);
 
         void OnEndTimeChanged(TimeSpan oldValue, TimeSpan newValue)
         {
             SetValue(DurationProperty, newValue.Subtract(StartTime));
             SetValue(TimeRemainingProperty, TimeSpanExtensions.Max(newValue.Subtract(Position), TimeSpan.Zero));
-            OnEndTimeChanged(new RoutedPropertyChangedEventArgs<TimeSpan>(oldValue, newValue));
+            OnEndTimeChanged(new EndTimeChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets the EndTime of the current media. For progressive video, this is automatically set from Duration - StartTime.
         /// </summary>
-        [Category(Categories.Info)]
         public TimeSpan EndTime
         {
             get { return (TimeSpan)GetValue(EndTimeProperty); }
@@ -2832,17 +2911,17 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the TimeRemaining dependency property.
         /// </summary>
-        public static readonly DependencyProperty TimeRemainingProperty = RegisterDependencyProperty<TimeSpan>("TimeRemaining", (t, o, n) => t.OnTimeRemainingChanged(o, n), TimeSpan.Zero);
+        public static DependencyProperty TimeRemainingProperty { get { return timeRemainingProperty; } }
+        static readonly DependencyProperty timeRemainingProperty = RegisterDependencyProperty<TimeSpan>("TimeRemaining", (t, o, n) => t.OnTimeRemainingChanged(o, n), TimeSpan.Zero);
 
         void OnTimeRemainingChanged(TimeSpan oldValue, TimeSpan newValue)
         {
-            OnTimeRemainingChanged(new RoutedPropertyChangedEventArgs<TimeSpan>(oldValue, newValue));
+            OnTimeRemainingChanged(new TimeRemainingChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets the time remaining before the media will finish. This is calculated automatically whenever the Position or Duration properties change.
         /// </summary>
-        [Category(Categories.Info)]
         public TimeSpan TimeRemaining
         {
             get { return (TimeSpan)GetValue(TimeRemainingProperty); }
@@ -2853,12 +2932,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SeekWhileScrubbing dependency property.
         /// </summary>
-        public static readonly DependencyProperty SeekWhileScrubbingProperty = RegisterDependencyProperty<bool>("SeekWhileScrubbing", true);
+        public static DependencyProperty SeekWhileScrubbingProperty { get { return seekWhileScrubbingProperty; } }
+        static readonly DependencyProperty seekWhileScrubbingProperty = RegisterDependencyProperty<bool>("SeekWhileScrubbing", true);
 
         /// <summary>
         /// Gets or sets whether or not the position should change while the user is actively scrubbing. If false, media will be paused until the user has finished scrubbing.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool SeekWhileScrubbing
         {
             get { return (bool)GetValue(SeekWhileScrubbingProperty); }
@@ -2870,12 +2949,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ReplayOffset dependency property.
         /// </summary>
-        public static readonly DependencyProperty ReplayOffsetProperty = RegisterDependencyProperty<TimeSpan>("ReplayOffset", TimeSpan.FromSeconds(5));
+        public static DependencyProperty ReplayOffsetProperty { get { return replayOffsetProperty; } }
+        static readonly DependencyProperty replayOffsetProperty = RegisterDependencyProperty<TimeSpan>("ReplayOffset", TimeSpan.FromSeconds(5));
 
         /// <summary>
         /// Gets or sets the amount of time to reset the current play position back for an instant replay. Default 5 seconds.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan ReplayOffset
         {
             get { return (TimeSpan)GetValue(ReplayOffsetProperty); }
@@ -2887,12 +2966,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SlowMotionPlaybackRate dependency property.
         /// </summary>
-        public static readonly DependencyProperty SlowMotionPlaybackRateProperty = RegisterDependencyProperty<double>("SlowMotionPlaybackRate", .25);
+        public static DependencyProperty SlowMotionPlaybackRateProperty { get { return slowMotionPlaybackRateProperty; } }
+        static readonly DependencyProperty slowMotionPlaybackRateProperty = RegisterDependencyProperty<double>("SlowMotionPlaybackRate", .25);
 
         /// <summary>
         /// Gets or sets the playback rate when operating in slow motion (IsSlowMotion). Default .25
         /// </summary>
-        [Category(Categories.Advanced)]
         public double SlowMotionPlaybackRate
         {
             get { return (double)GetValue(SlowMotionPlaybackRateProperty); }
@@ -2904,20 +2983,20 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsSlowMotion dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsSlowMotionProperty = RegisterDependencyProperty<bool>("IsSlowMotion", (t, o, n) => t.OnIsSlowMotionChanged(o, n), false);
+        public static DependencyProperty IsSlowMotionProperty { get { return isSlowMotionProperty; } }
+        static readonly DependencyProperty isSlowMotionProperty = RegisterDependencyProperty<bool>("IsSlowMotion", (t, o, n) => t.OnIsSlowMotionChanged(o, n), false);
 
         void OnIsSlowMotionChanged(bool oldValue, bool newValue)
         {
             if (newValue) PlaybackRate = SlowMotionPlaybackRate;
             else PlaybackRate = DefaultPlaybackRate;
-            OnIsSlowMotionChanged(new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue));
+            OnIsSlowMotionChanged(new RoutedEventArgs());
         }
 
         /// <summary>
         /// Gets or sets whether or not the media is playing in slow motion.
         /// The slow motion playback rate is defined by the SlowMotionPlaybackRate property.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool IsSlowMotion
         {
             get { return (bool)GetValue(IsSlowMotionProperty); }
@@ -2929,18 +3008,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsCaptionsActive dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsCaptionsActiveProperty = RegisterDependencyProperty<bool>("IsCaptionsActive", (t, o, n) => t.OnIsCaptionsActiveChanged(o, n), false);
+        public static DependencyProperty IsCaptionsActiveProperty { get { return isCaptionsActiveProperty; } }
+        static readonly DependencyProperty isCaptionsActiveProperty = RegisterDependencyProperty<bool>("IsCaptionsActive", (t, o, n) => t.OnIsCaptionsActiveChanged(o, n), false);
 
         void OnIsCaptionsActiveChanged(bool oldValue, bool newValue)
         {
             _IsCaptionsActive = newValue;
-            OnIsCaptionsActiveChanged(new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue));
+            OnIsCaptionsActiveChanged(new RoutedEventArgs());
         }
 
         /// <summary>
         /// Gets or sets if the player should show the captions configuration window.
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsCaptionsActive
         {
             get { return (bool)GetValue(IsCaptionsActiveProperty); }
@@ -2952,7 +3031,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsFullScreen dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsFullScreenProperty = RegisterDependencyProperty<bool>("IsFullScreen", (t, o, n) => t.OnIsFullScreenChanged(o, n), false);
+        public static DependencyProperty IsFullScreenProperty { get { return isFullScreenProperty; } }
+        static readonly DependencyProperty isFullScreenProperty = RegisterDependencyProperty<bool>("IsFullScreen", (t, o, n) => t.OnIsFullScreenChanged(o, n), false);
 
         void OnIsFullScreenChanged(bool oldValue, bool newValue)
         {
@@ -2963,13 +3043,12 @@ namespace Microsoft.PlayerFramework
 #endif
             }
             _IsFullScreen = newValue;
-            OnIsFullScreenChanged(new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue));
+            OnIsFullScreenChanged(new RoutedEventArgs());
         }
 
         /// <summary>
         /// Gets or sets if the player should indicate it is in fullscreen mode.
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsFullScreen
         {
             get { return (bool)GetValue(IsFullScreenProperty); }
@@ -2981,18 +3060,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AdvertisingState dependency property.
         /// </summary>
-        public static readonly DependencyProperty AdvertisingStateProperty = RegisterDependencyProperty<AdvertisingState>("AdvertisingState", (t, o, n) => t.OnAdvertisingStateChanged(o, n), AdvertisingState.None);
+        public static DependencyProperty AdvertisingStateProperty { get { return advertisingStateProperty; } }
+        static readonly DependencyProperty advertisingStateProperty = RegisterDependencyProperty<AdvertisingState>("AdvertisingState", (t, o, n) => t.OnAdvertisingStateChanged(o, n), AdvertisingState.None);
 
         void OnAdvertisingStateChanged(AdvertisingState oldValue, AdvertisingState newValue)
         {
             _AdvertisingState = newValue;
-            OnAdvertisingStateChanged(new RoutedPropertyChangedEventArgs<AdvertisingState>(oldValue, newValue));
+            OnAdvertisingStateChanged(new AdvertisingStateChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets if the player should indicate it is in Advertising mode.
         /// </summary>
-        [Category(Categories.Common)]
         public AdvertisingState AdvertisingState
         {
             get { return (AdvertisingState)GetValue(AdvertisingStateProperty); }
@@ -3004,12 +3083,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsScrubbing dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsScrubbingProperty = RegisterDependencyProperty<bool>("IsScrubbing", false);
+        public static DependencyProperty IsScrubbingProperty { get { return isScrubbingProperty; } }
+        static readonly DependencyProperty isScrubbingProperty = RegisterDependencyProperty<bool>("IsScrubbing", false);
 
         /// <summary>
         /// Gets whether or not the user is actively scrubbing.
         /// </summary>
-        [Category(Categories.Info)]
         public bool IsScrubbing
         {
             get { return (bool)GetValue(IsScrubbingProperty); }
@@ -3020,12 +3099,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the StartupPosition dependency property.
         /// </summary>
-        public static readonly DependencyProperty StartupPositionProperty = RegisterDependencyProperty<TimeSpan?>("StartupPosition", (TimeSpan?)null);
+        public static DependencyProperty StartupPositionProperty { get { return startupPositionProperty; } }
+        static readonly DependencyProperty startupPositionProperty = RegisterDependencyProperty<TimeSpan?>("StartupPosition", (TimeSpan?)null);
 
         /// <summary>
         /// Gets or sets the position at which to start the video at. This is useful for resuming videos at the place they were left off at.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan? StartupPosition
         {
             get { return (TimeSpan?)GetValue(StartupPositionProperty); }
@@ -3037,13 +3116,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MediaEndedBehavior dependency property.
         /// </summary>
-        public static readonly DependencyProperty MediaEndedBehaviorProperty = RegisterDependencyProperty<MediaEndedBehavior>("MediaEndedBehavior", MediaEndedBehavior.Stop);
+        public static DependencyProperty MediaEndedBehaviorProperty { get { return mediaEndedBehaviorProperty; } }
+        static readonly DependencyProperty mediaEndedBehaviorProperty = RegisterDependencyProperty<MediaEndedBehavior>("MediaEndedBehavior", MediaEndedBehavior.Stop);
 
         /// <summary>
         /// Gets or sets the desired behavior when the media reaches the end.
         /// Note: This will be ignored if IsLooping = true.
         /// </summary>
-        [Category(Categories.Advanced)]
         public MediaEndedBehavior MediaEndedBehavior
         {
             get { return (MediaEndedBehavior)GetValue(MediaEndedBehaviorProperty); }
@@ -3056,7 +3135,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the UpdateInterval dependency property.
         /// </summary>
-        public static readonly DependencyProperty UpdateIntervalProperty = RegisterDependencyProperty<TimeSpan>("UpdateInterval", (t, o, n) => t.OnUpdateIntervalChanged(n), TimeSpan.FromMilliseconds(250));
+        public static DependencyProperty UpdateIntervalProperty { get { return updateIntervalProperty; } }
+        static readonly DependencyProperty updateIntervalProperty = RegisterDependencyProperty<TimeSpan>("UpdateInterval", (t, o, n) => t.OnUpdateIntervalChanged(n), TimeSpan.FromMilliseconds(250));
 
         void OnUpdateIntervalChanged(TimeSpan newValue)
         {
@@ -3066,7 +3146,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the interval that the timeline and other properties affected by the position will change.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan UpdateInterval
         {
             get { return (TimeSpan)GetValue(UpdateIntervalProperty); }
@@ -3084,21 +3163,16 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AvailableCaptions dependency property.
         /// </summary>
-        public static readonly DependencyProperty AvailableCaptionsProperty = RegisterDependencyProperty<List<Caption>>("AvailableCaptions");
+        public static DependencyProperty AvailableCaptionsProperty { get { return availableCaptionsProperty; } }
+        static readonly DependencyProperty availableCaptionsProperty = RegisterDependencyProperty<IList<Caption>>("AvailableCaptions");
 
         /// <summary>
         /// Gets or sets the list of captions that can be chosen by the user.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "Can be set from xaml")]
-        [Category(Categories.Advanced)]
-        public List<Caption> AvailableCaptions
+        public IList<Caption> AvailableCaptions
         {
-            get { return (List<Caption>)GetValue(AvailableCaptionsProperty); }
-        }
-
-        ICollection<Caption> IMediaSource.AvailableCaptions
-        {
-            get { return AvailableCaptions; }
+            get { return GetValue(AvailableCaptionsProperty) as IList<Caption>; }
         }
         #endregion
 
@@ -3106,17 +3180,17 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SelectedCaption dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedCaptionProperty = RegisterDependencyProperty<Caption>("SelectedCaption", (t, o, n) => t.OnSelectedCaptionChanged(o, n));
+        public static DependencyProperty SelectedCaptionProperty { get { return selectedCaptionProperty; } }
+        static readonly DependencyProperty selectedCaptionProperty = RegisterDependencyProperty<Caption>("SelectedCaption", (t, o, n) => t.OnSelectedCaptionChanged(o, n));
 
         void OnSelectedCaptionChanged(Caption oldValue, Caption newValue)
         {
-            OnSelectedCaptionChanged(new RoutedPropertyChangedEventArgs<Caption>(oldValue, newValue));
+            OnSelectedCaptionChanged(new SelectedCaptionChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets or sets the selected caption stream.
         /// </summary>
-        [Category(Categories.Advanced)]
         public Caption SelectedCaption
         {
             get { return (Caption)GetValue(SelectedCaptionProperty); }
@@ -3128,21 +3202,16 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AvailableAudioStreams dependency property.
         /// </summary>
-        public static readonly DependencyProperty AvailableAudioStreamsProperty = RegisterDependencyProperty<List<AudioStream>>("AvailableAudioStreams");
+        public static DependencyProperty AvailableAudioStreamsProperty { get { return availableAudioStreamsProperty; } }
+        static readonly DependencyProperty availableAudioStreamsProperty = RegisterDependencyProperty<IList<AudioStream>>("AvailableAudioStreams");
 
         /// <summary>
         /// Gets or sets the list of AudioStreams that can be chosen by the user.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "Can be set from xaml")]
-        [Category(Categories.Advanced)]
-        public List<AudioStream> AvailableAudioStreams
+        public IList<AudioStream> AvailableAudioStreams
         {
-            get { return GetValue(AvailableAudioStreamsProperty) as List<AudioStream>; }
-        }
-
-        ICollection<AudioStream> IMediaSource.AvailableAudioStreams
-        {
-            get { return AvailableAudioStreams; }
+            get { return GetValue(AvailableAudioStreamsProperty) as IList<AudioStream>; }
         }
         #endregion
 
@@ -3150,7 +3219,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SelectedAudioStream dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedAudioStreamProperty = RegisterDependencyProperty<AudioStream>("SelectedAudioStream", (t, o, n) => t.OnSelectedAudioStreamChanged(o, n));
+        public static DependencyProperty SelectedAudioStreamProperty { get { return selectedAudioStreamProperty; } }
+        static readonly DependencyProperty selectedAudioStreamProperty = RegisterDependencyProperty<AudioStream>("SelectedAudioStream", (t, o, n) => t.OnSelectedAudioStreamChanged(o, n));
 
         void OnSelectedAudioStreamChanged(AudioStream oldValue, AudioStream newValue)
         {
@@ -3165,7 +3235,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the selected AudioStream stream.
         /// </summary>
-        [Category(Categories.Advanced)]
         public AudioStream SelectedAudioStream
         {
             get { return (AudioStream)GetValue(SelectedAudioStreamProperty); }
@@ -3177,18 +3246,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsLive dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsLiveProperty = RegisterDependencyProperty<bool>("IsLive", (t, o, n) => t.OnIsLiveChanged(o, n), false);
+        public static DependencyProperty IsLiveProperty { get { return isLiveProperty; } }
+        static readonly DependencyProperty isLiveProperty = RegisterDependencyProperty<bool>("IsLive", (t, o, n) => t.OnIsLiveChanged(o, n), false);
 
         void OnIsLiveChanged(bool oldValue, bool newValue)
         {
-            OnIsLiveChanged(new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue));
+            OnIsLiveChanged(new RoutedEventArgs());
             NotifyIsGoLiveAllowedChanged();
         }
 
         /// <summary>
         /// Gets or sets a value indicating whether the media is Live (vs. VOD).
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsLive
         {
             get { return (bool)GetValue(IsLiveProperty); }
@@ -3202,7 +3271,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the BufferingTime dependency property.
         /// </summary>
-        public static readonly DependencyProperty BufferingTimeProperty = RegisterDependencyProperty<TimeSpan>("BufferingTime", (t, o, n) => t.OnBufferingTimeChanged(n), DefaultBufferingTime);
+        public static DependencyProperty BufferingTimeProperty { get { return bufferingTimeProperty; } }
+        static readonly DependencyProperty bufferingTimeProperty = RegisterDependencyProperty<TimeSpan>("BufferingTime", (t, o, n) => t.OnBufferingTimeChanged(n), DefaultBufferingTime);
 
         void OnBufferingTimeChanged(TimeSpan newValue)
         {
@@ -3212,7 +3282,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the amount of time to buffer. The default value is the recommended value for optimal performance.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan BufferingTime
         {
             get { return (TimeSpan)GetValue(BufferingTimeProperty); }
@@ -3238,12 +3307,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Attributes dependency property.
         /// </summary>
-        public static readonly DependencyProperty AttributesProperty = RegisterDependencyProperty<Dictionary<string, string>>("Attributes", DefaultAttributes);
+        public static DependencyProperty AttributesProperty { get { return attributesProperty; } }
+        static readonly DependencyProperty attributesProperty = RegisterDependencyProperty<Dictionary<string, string>>("Attributes", DefaultAttributes);
 
         /// <summary>
         /// Gets the collection of attributes that corresponds to the current entry in the ASX file that Source is set to.
         /// </summary>
-        [Category(Categories.Info)]
         public Dictionary<string, string> Attributes
         {
             get { return (Dictionary<string, string>)GetValue(AttributesProperty); }
@@ -3255,14 +3324,14 @@ namespace Microsoft.PlayerFramework
         /// Identifies the IsDecodingOnGPU dependency property.
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "MediaElement compatibility")]
-        public static readonly DependencyProperty IsDecodingOnGPUProperty = RegisterDependencyProperty<bool>("IsDecodingOnGPU", DefaultIsDecodingOnGPU);
+        public static DependencyProperty IsDecodingOnGPUProperty { get { return isDecodingOnGPUProperty; } }
+        static readonly DependencyProperty isDecodingOnGPUProperty = RegisterDependencyProperty<bool>("IsDecodingOnGPU", DefaultIsDecodingOnGPU);
 
 
         /// <summary>
         /// Gets a value that indicates whether the media is being decoded in hardware.
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "MediaElement compatibility")]
-        [Category(Categories.Info)]
         public bool IsDecodingOnGPU
         {
             get { return (bool)GetValue(IsDecodingOnGPUProperty); }
@@ -3274,12 +3343,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the DroppedFramesPerSecond dependency property.
         /// </summary>
-        public static readonly DependencyProperty DroppedFramesPerSecondProperty = RegisterDependencyProperty<double>("DroppedFramesPerSecond", DefaultDroppedFramesPerSecond);
+        public static DependencyProperty DroppedFramesPerSecondProperty { get { return droppedFramesPerSecondProperty; } }
+        static readonly DependencyProperty droppedFramesPerSecondProperty = RegisterDependencyProperty<double>("DroppedFramesPerSecond", DefaultDroppedFramesPerSecond);
 
         /// <summary>
         /// Gets the number of frames per second being dropped by the media.
         /// </summary>
-        [Category(Categories.Info)]
         public double DroppedFramesPerSecond
         {
             get { return (double)GetValue(DroppedFramesPerSecondProperty); }
@@ -3291,12 +3360,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the RenderedFramesPerSecond dependency property.
         /// </summary>
-        public static readonly DependencyProperty RenderedFramesPerSecondProperty = RegisterDependencyProperty<double>("RenderedFramesPerSecond", DefaultRenderedFramesPerSecond);
+        public static DependencyProperty RenderedFramesPerSecondProperty { get { return renderedFramesPerSecondProperty; } }
+        static readonly DependencyProperty renderedFramesPerSecondProperty = RegisterDependencyProperty<double>("RenderedFramesPerSecond", DefaultRenderedFramesPerSecond);
 
         /// <summary>
         /// Gets the number of frames per second being rendered by the media.
         /// </summary>
-        [Category(Categories.Info)]
         public double RenderedFramesPerSecond
         {
             get { return (double)GetValue(RenderedFramesPerSecondProperty); }
@@ -3308,12 +3377,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the DefaultPlaybackRate dependency property.
         /// </summary>
-        public static readonly DependencyProperty DefaultPlaybackRateProperty = RegisterDependencyProperty<double>("DefaultPlaybackRate", 1.0);
+        public static DependencyProperty DefaultPlaybackRateProperty { get { return defaultPlaybackRateProperty; } }
+        static readonly DependencyProperty defaultPlaybackRateProperty = RegisterDependencyProperty<double>("DefaultPlaybackRate", 1.0);
 
         /// <summary>
         /// Gets or sets the default playback rate for the media. The playback rate applies when the user is not using fast forward or reverse.
         /// </summary>
-        [Category(Categories.Common)]
         public double DefaultPlaybackRate
         {
             get { return (double)GetValue(DefaultPlaybackRateProperty); }
@@ -3325,13 +3394,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsLooping dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsLoopingProperty = RegisterDependencyProperty<bool>("IsLooping", false);
+        public static DependencyProperty IsLoopingProperty { get { return isLoopingProperty; } }
+        static readonly DependencyProperty isLoopingProperty = RegisterDependencyProperty<bool>("IsLooping", false);
 
         /// <summary>
         /// Gets or sets a value that describes whether the media source should seek to the start after reaching its end. Set to true to loop the media and play continuously.
         /// If set to true, MediaEndedBehavior will have no effect.
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsLooping
         {
             get { return (bool)GetValue(IsLoopingProperty); }
@@ -3344,13 +3413,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PosterSource dependency property.
         /// </summary>
-        public static readonly DependencyProperty PosterSourceProperty = RegisterDependencyProperty<ImageSource>("PosterSource");
+        public static DependencyProperty PosterSourceProperty { get { return posterSourceProperty; } }
+        static readonly DependencyProperty posterSourceProperty = RegisterDependencyProperty<ImageSource>("PosterSource");
 
         /// <summary>
         /// Gets or sets an ImageSource to be displayed before the content is loaded. Only shows until MediaOpened fires and is hidden when the first frame of the video is available.
         /// Note: This will not show when waiting for AutoPlay to be set to true since MediaOpened still fires.
         /// </summary>
-        [Category(Categories.Common)]
         public ImageSource PosterSource
         {
             get { return (ImageSource)GetValue(PosterSourceProperty); }
@@ -3363,7 +3432,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Stretch dependency property.
         /// </summary>
-        public static readonly DependencyProperty StretchProperty = RegisterDependencyProperty<Stretch>("Stretch", (t, o, n) => t.OnStretchChanged(o, n), DefaultStretch);
+        public static DependencyProperty StretchProperty { get { return stretchProperty; } }
+        static readonly DependencyProperty stretchProperty = RegisterDependencyProperty<Stretch>("Stretch", (t, o, n) => t.OnStretchChanged(o, n), DefaultStretch);
 
         void OnStretchChanged(Stretch oldValue, Stretch newValue)
         {
@@ -3375,7 +3445,6 @@ namespace Microsoft.PlayerFramework
         /// Gets or sets a Stretch value that describes how to fill the destination rectangle. The default is Uniform.
         /// You can also cycle through the enumerations by calling the CycleDisplayMode method.
         /// </summary>
-        [Category(Categories.Appearance)]
         public Stretch Stretch
         {
             get { return (Stretch)GetValue(StretchProperty); }
@@ -3387,14 +3456,14 @@ namespace Microsoft.PlayerFramework
         #region TestForMediaPack
 
         /// <summary>
-        /// Identifies the AspectRatioWidth dependency property.
+        /// Identifies the AspectRatioWidth�dependency property.
         /// </summary>
-        public static readonly DependencyProperty TestForMediaPackProperty = RegisterDependencyProperty<bool>("TestForMediaPack", true);
+        public static DependencyProperty TestForMediaPackProperty { get { return testForMediaPackProperty; } }
+        static readonly DependencyProperty testForMediaPackProperty = RegisterDependencyProperty<bool>("TestForMediaPack", true);
 
         /// <summary>
         /// Gets or sets whether a test for the media feature pack should be performed prior to allowing content to be laoded. This is useful to enable if Windows 8 N/KN users will be using this app.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool TestForMediaPack
         {
             get { return (bool)GetValue(TestForMediaPackProperty); }
@@ -3428,14 +3497,14 @@ namespace Microsoft.PlayerFramework
         #region AspectRatioWidth
 
         /// <summary>
-        /// Identifies the AspectRatioWidth dependency property.
+        /// Identifies the AspectRatioWidth�dependency property.
         /// </summary>
-        public static readonly DependencyProperty AspectRatioWidthProperty = RegisterDependencyProperty<int>("AspectRatioWidth", DefaultAspectRatioWidth);
+        public static DependencyProperty AspectRatioWidthProperty { get { return aspectRatioWidthProperty; } }
+        static readonly DependencyProperty aspectRatioWidthProperty = RegisterDependencyProperty<int>("AspectRatioWidth", DefaultAspectRatioWidth);
 
         /// <summary>
         /// Gets the width portion of the media's native aspect ratio.
         /// </summary>
-        [Category(Categories.Info)]
         public int AspectRatioWidth
         {
             get { return (int)GetValue(AspectRatioWidthProperty); }
@@ -3446,14 +3515,14 @@ namespace Microsoft.PlayerFramework
         #region AspectRatioHeight
 
         /// <summary>
-        /// Identifies the AspectRatioHeight dependency property.
+        /// Identifies the AspectRatioHeight�dependency property.
         /// </summary>
-        public static readonly DependencyProperty AspectRatioHeightProperty = RegisterDependencyProperty<int>("AspectRatioHeight", DefaultAspectRatioHeight);
+        public static DependencyProperty AspectRatioHeightProperty { get { return aspectRatioHeightProperty; } }
+        static readonly DependencyProperty aspectRatioHeightProperty = RegisterDependencyProperty<int>("AspectRatioHeight", DefaultAspectRatioHeight);
 
         /// <summary>
         /// Gets the height portion of the media's native aspect ratio.
         /// </summary>
-        [Category(Categories.Info)]
         public int AspectRatioHeight
         {
             get { return (int)GetValue(AspectRatioHeightProperty); }
@@ -3466,7 +3535,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AudioCategory dependency property.
         /// </summary>
-        public static readonly DependencyProperty AudioCategoryProperty = RegisterDependencyProperty<AudioCategory>("AudioCategory", (t, o, n) => t.OnAudioCategoryChanged(n), DefaultAudioCategory);
+        public static DependencyProperty AudioCategoryProperty { get { return audioCategoryProperty; } }
+        static readonly DependencyProperty audioCategoryProperty = RegisterDependencyProperty<AudioCategory>("AudioCategory", (t, o, n) => t.OnAudioCategoryChanged(n), DefaultAudioCategory);
 
         void OnAudioCategoryChanged(AudioCategory newValue)
         {
@@ -3476,7 +3546,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a value that describes the purpose of the audio information in an audio stream.
         /// </summary>
-        [Category(Categories.Advanced)]
         public AudioCategory AudioCategory
         {
             get { return (AudioCategory)GetValue(AudioCategoryProperty); }
@@ -3490,7 +3559,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AudioDeviceType dependency property.
         /// </summary>
-        public static readonly DependencyProperty AudioDeviceTypeProperty = RegisterDependencyProperty<AudioDeviceType>("AudioDeviceType", (t, o, n) => t.OnAudioDeviceTypeChanged(n), DefaultAudioDeviceType);
+        public static DependencyProperty AudioDeviceTypeProperty { get { return audioDeviceTypeProperty; } }
+        static readonly DependencyProperty audioDeviceTypeProperty = RegisterDependencyProperty<AudioDeviceType>("AudioDeviceType", (t, o, n) => t.OnAudioDeviceTypeChanged(n), DefaultAudioDeviceType);
 
         void OnAudioDeviceTypeChanged(AudioDeviceType newValue)
         {
@@ -3500,7 +3570,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a value that describes the primary usage of the device that is being used to play back audio.
         /// </summary>
-        [Category(Categories.Advanced)]
         public AudioDeviceType AudioDeviceType
         {
             get { return (AudioDeviceType)GetValue(AudioDeviceTypeProperty); }
@@ -3514,14 +3583,14 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PlayToSource dependency property.
         /// </summary>
-        public static readonly DependencyProperty PlayToSourceProperty = RegisterDependencyProperty<PlayToSource>("PlayToSource", (t, o, n) => t.OnPlayToSourceChanged(o, n), DefaultPlayToSource);
+        public static DependencyProperty PlayToSourceProperty { get { return playToSourceProperty; } }
+        static readonly DependencyProperty playToSourceProperty = RegisterDependencyProperty<PlayToSource>("PlayToSource", (t, o, n) => t.OnPlayToSourceChanged(o, n), DefaultPlayToSource);
 
         partial void OnPlayToSourceChanged(PlayToSource oldValue, PlayToSource newValue);
 
         /// <summary>
         /// Gets the information that is transmitted if the MediaElement is used for a "PlayTo" scenario.
         /// </summary>
-        [Category(Categories.Info)]
         public PlayToSource PlayToSource
         {
             get { return (PlayToSource)GetValue(PlayToSourceProperty); }
@@ -3532,9 +3601,10 @@ namespace Microsoft.PlayerFramework
         #region DefaultPlaybackRate
 
         /// <summary>
-        /// Identifies the DefaultPlaybackRate dependency property.
+        /// Identifies the DefaultPlaybackRate�dependency property.
         /// </summary>
-        public static readonly DependencyProperty DefaultPlaybackRateProperty = RegisterDependencyProperty<double>("DefaultPlaybackRate", (t, o, n) => t.OnDefaultPlaybackRateChanged(n), DefaultDefaultPlaybackRate);
+        public static DependencyProperty DefaultPlaybackRateProperty { get { return defaultPlaybackRateProperty; } }
+        static readonly DependencyProperty defaultPlaybackRateProperty = RegisterDependencyProperty<double>("DefaultPlaybackRate", (t, o, n) => t.OnDefaultPlaybackRateChanged(n), DefaultDefaultPlaybackRate);
 
         void OnDefaultPlaybackRateChanged(double newValue)
         {
@@ -3544,7 +3614,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the default playback rate for the media engine. The playback rate applies when the user is not using fast foward or reverse.
         /// </summary>
-        [Category(Categories.Common)]
         public double DefaultPlaybackRate
         {
             get { return (double)GetValue(DefaultPlaybackRateProperty); }
@@ -3558,12 +3627,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsAudioOnly dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsAudioOnlyProperty = RegisterDependencyProperty<bool>("IsAudioOnly", DefaultIsAudioOnly);
+        public static DependencyProperty IsAudioOnlyProperty { get { return isAudioOnlyProperty; } }
+        static readonly DependencyProperty isAudioOnlyProperty = RegisterDependencyProperty<bool>("IsAudioOnly", DefaultIsAudioOnly);
 
         /// <summary>
         /// Gets or sets a value that describes whether the media source loaded in the media engine should seek to the start after reaching its end.
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsAudioOnly
         {
             get { return (bool)GetValue(IsAudioOnlyProperty); }
@@ -3576,7 +3645,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsLooping dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsLoopingProperty = RegisterDependencyProperty<bool>("IsLooping", (t, o, n) => t.OnIsLoopingChanged(n), DefaultIsLooping);
+        public static DependencyProperty IsLoopingProperty { get { return isLoopingProperty; } }
+        static readonly DependencyProperty isLoopingProperty = RegisterDependencyProperty<bool>("IsLooping", (t, o, n) => t.OnIsLoopingChanged(n), DefaultIsLooping);
 
         void OnIsLoopingChanged(bool newValue)
         {
@@ -3586,7 +3656,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a value that describes whether the media source loaded in the media engine should seek to the start after reaching its end.
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsLooping
         {
             get { return (bool)GetValue(IsLoopingProperty); }
@@ -3600,7 +3669,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PosterSource dependency property.
         /// </summary>
-        public static readonly DependencyProperty PosterSourceProperty = RegisterDependencyProperty<ImageSource>("PosterSource", (t, o, n) => t.OnPosterSourceChanged(n), DefaultPosterSource);
+        public static DependencyProperty PosterSourceProperty { get { return posterSourceProperty; } }
+        static readonly DependencyProperty posterSourceProperty = RegisterDependencyProperty<ImageSource>("PosterSource", (t, o, n) => t.OnPosterSourceChanged(n), DefaultPosterSource);
 
         void OnPosterSourceChanged(ImageSource newValue)
         {
@@ -3610,7 +3680,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the source used for a default poster effect that is used as background in the default template for MediaPlayer.
         /// </summary>
-        [Category(Categories.Common)]
         public ImageSource PosterSource
         {
             get { return (ImageSource)GetValue(PosterSourceProperty); }
@@ -3624,12 +3693,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ActualStereo3DVideoPackingMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty ActualStereo3DVideoPackingModeProperty = RegisterDependencyProperty<Stereo3DVideoPackingMode>("ActualStereo3DVideoPackingMode", DefaultActualStereo3DVideoPackingMode);
+        public static DependencyProperty ActualStereo3DVideoPackingModeProperty { get { return actualStereo3DVideoPackingModeProperty; } }
+        static readonly DependencyProperty actualStereo3DVideoPackingModeProperty = RegisterDependencyProperty<Stereo3DVideoPackingMode>("ActualStereo3DVideoPackingMode", DefaultActualStereo3DVideoPackingMode);
 
         /// <summary>
         /// Gets a value that reports whether the current source media is a stereo 3-D video media file.
         /// </summary>
-        [Category(Categories.Advanced)]
         public Stereo3DVideoPackingMode ActualStereo3DVideoPackingMode
         {
             get { return (Stereo3DVideoPackingMode)GetValue(ActualStereo3DVideoPackingModeProperty); }
@@ -3642,7 +3711,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Stereo3DVideoPackingMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty Stereo3DVideoPackingModeProperty = RegisterDependencyProperty<Stereo3DVideoPackingMode>("Stereo3DVideoPackingMode", (t, o, n) => t.OnStereo3DVideoPackingModeChanged(n), DefaultStereo3DVideoPackingMode);
+        public static DependencyProperty Stereo3DVideoPackingModeProperty { get { return stereo3DVideoPackingModeProperty; } }
+        static readonly DependencyProperty stereo3DVideoPackingModeProperty = RegisterDependencyProperty<Stereo3DVideoPackingMode>("Stereo3DVideoPackingMode", (t, o, n) => t.OnStereo3DVideoPackingModeChanged(n), DefaultStereo3DVideoPackingMode);
 
         void OnStereo3DVideoPackingModeChanged(Stereo3DVideoPackingMode newValue)
         {
@@ -3652,7 +3722,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets an enumeration value that determines the stereo 3-D video frame-packing mode for the current media source.
         /// </summary>
-        [Category(Categories.Advanced)]
         public Stereo3DVideoPackingMode Stereo3DVideoPackingMode
         {
             get { return (Stereo3DVideoPackingMode)GetValue(Stereo3DVideoPackingModeProperty); }
@@ -3665,7 +3734,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Stereo3DVideoRenderMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty Stereo3DVideoRenderModeProperty = RegisterDependencyProperty<Stereo3DVideoRenderMode>("Stereo3DVideoRenderMode", (t, o, n) => t.OnStereo3DVideoRenderModeChanged(n), DefaultStereo3DVideoRenderMode);
+        public static DependencyProperty Stereo3DVideoRenderModeProperty { get { return stereo3DVideoRenderModeProperty; } }
+        static readonly DependencyProperty stereo3DVideoRenderModeProperty = RegisterDependencyProperty<Stereo3DVideoRenderMode>("Stereo3DVideoRenderMode", (t, o, n) => t.OnStereo3DVideoRenderModeChanged(n), DefaultStereo3DVideoRenderMode);
 
         void OnStereo3DVideoRenderModeChanged(Stereo3DVideoRenderMode newValue)
         {
@@ -3675,7 +3745,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets an enumeration value that determines the stereo 3-D video render mode for the current media source.
         /// </summary>
-        [Category(Categories.Advanced)]
         public Stereo3DVideoRenderMode Stereo3DVideoRenderMode
         {
             get { return (Stereo3DVideoRenderMode)GetValue(Stereo3DVideoRenderModeProperty); }
@@ -3688,12 +3757,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsStereo3DVideo dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsStereo3DVideoProperty = RegisterDependencyProperty<bool>("IsStereo3DVideo", DefaultIsStereo3DVideo);
+        public static DependencyProperty IsStereo3DVideoProperty { get { return isStereo3DVideoProperty; } }
+        static readonly DependencyProperty isStereo3DVideoProperty = RegisterDependencyProperty<bool>("IsStereo3DVideo", DefaultIsStereo3DVideo);
 
         /// <summary>
         /// Gets a value that reports whether the current source media is a stereo 3-D video media file.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool IsStereo3DVideo
         {
             get { return (bool)GetValue(IsStereo3DVideoProperty); }
@@ -3706,7 +3775,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the RealTimePlayback dependency property.
         /// </summary>
-        public static readonly DependencyProperty RealTimePlaybackProperty = RegisterDependencyProperty<bool>("RealTimePlayback", (t, o, n) => t.OnRealTimePlaybackChanged(n), DefaultRealTimePlayback);
+        public static DependencyProperty RealTimePlaybackProperty { get { return realTimePlaybackProperty; } }
+        static readonly DependencyProperty realTimePlaybackProperty = RegisterDependencyProperty<bool>("RealTimePlayback", (t, o, n) => t.OnRealTimePlaybackChanged(n), DefaultRealTimePlayback);
 
         void OnRealTimePlaybackChanged(bool newValue)
         {
@@ -3716,7 +3786,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a value that configures the MediaElement for real-time communications scenarios.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool RealTimePlayback
         {
             get { return (bool)GetValue(RealTimePlaybackProperty); }
@@ -3730,7 +3799,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ProtectionManager dependency property.
         /// </summary>
-        public static readonly DependencyProperty ProtectionManagerProperty = RegisterDependencyProperty<MediaProtectionManager>("ProtectionManager", (t, o, n) => t.OnProtectionManagerChanged(n), DefaultProtectionManager);
+        public static DependencyProperty ProtectionManagerProperty { get { return protectionManagerProperty; } }
+        static readonly DependencyProperty protectionManagerProperty = RegisterDependencyProperty<MediaProtectionManager>("ProtectionManager", (t, o, n) => t.OnProtectionManagerChanged(n), DefaultProtectionManager);
 
         void OnProtectionManagerChanged(MediaProtectionManager newValue)
         {
@@ -3740,7 +3810,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the dedicated object for media content protection that is associated with this MediaElement.
         /// </summary>
-        [Category(Categories.Advanced)]
         public MediaProtectionManager ProtectionManager
         {
             get { return (MediaProtectionManager)GetValue(ProtectionManagerProperty); }
@@ -3755,7 +3824,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AudioStreamCount dependency property.
         /// </summary>
-        public static readonly DependencyProperty AudioStreamCountProperty = RegisterDependencyProperty<int>("AudioStreamCount", (t, o, n) => t.OnAudioStreamCountChanged(), DefaultAudioStreamCount);
+        public static DependencyProperty AudioStreamCountProperty { get { return audioStreamCountProperty; } }
+        static readonly DependencyProperty audioStreamCountProperty = RegisterDependencyProperty<int>("AudioStreamCount", (t, o, n) => t.OnAudioStreamCountChanged(), DefaultAudioStreamCount);
 
         void OnAudioStreamCountChanged()
         {
@@ -3765,7 +3835,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the number of audio streams available in the current media file. The default is 0.
         /// </summary>
-        [Category(Categories.Info)]
         public int AudioStreamCount
         {
             get { return (int)GetValue(AudioStreamCountProperty); }
@@ -3776,12 +3845,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AudioStreamIndex dependency property.
         /// </summary>
-        public static readonly DependencyProperty AudioStreamIndexProperty = RegisterDependencyProperty<int?>("AudioStreamIndex", (t, o, n) => t.OnAudioStreamIndexChanged(o, n), DefaultAudioStreamIndex);
+        public static DependencyProperty AudioStreamIndexProperty { get { return audioStreamIndexProperty; } }
+        static readonly DependencyProperty audioStreamIndexProperty = RegisterDependencyProperty<int?>("AudioStreamIndex", (t, o, n) => t.OnAudioStreamIndexChanged(o, n), DefaultAudioStreamIndex);
 
         void OnAudioStreamIndexChanged(int? oldValue, int? newValue)
         {
             _AudioStreamIndex = newValue;
-            OnAudioStreamIndexChanged(new RoutedPropertyChangedEventArgs<int?>(oldValue, newValue));
+            OnAudioStreamIndexChanged(new AudioStreamIndexChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
@@ -3789,7 +3859,6 @@ namespace Microsoft.PlayerFramework
         /// The collection of audio streams is composed at run time and represents all audio streams available within the media file.
         /// The index can be unspecified, in which case the value is null.
         /// </summary>
-        [Category(Categories.Advanced)]
         public int? AudioStreamIndex
         {
             get { return (int?)GetValue(AudioStreamIndexProperty); }
@@ -3801,7 +3870,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoPlay dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoPlayProperty = RegisterDependencyProperty<bool>("AutoPlay", (t, o, n) => t.OnAutoPlayChanged(n), DefaultAutoPlay);
+        public static DependencyProperty AutoPlayProperty { get { return autoPlayProperty; } }
+        static readonly DependencyProperty autoPlayProperty = RegisterDependencyProperty<bool>("AutoPlay", (t, o, n) => t.OnAutoPlayChanged(n), DefaultAutoPlay);
 
         void OnAutoPlayChanged(bool newValue)
         {
@@ -3820,7 +3890,6 @@ namespace Microsoft.PlayerFramework
         /// Gets or sets a value that indicates whether media will begin playback automatically when the Source property is set.
         /// Setting to false will still open, download and buffer the media but will pause on the first frame.
         /// </summary>
-        [Category(Categories.Common)]
         public bool AutoPlay
         {
             get { return (bool)GetValue(AutoPlayProperty); }
@@ -3832,13 +3901,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the BufferingProgress dependency property.
         /// </summary>
-        public static readonly DependencyProperty BufferingProgressProperty = RegisterDependencyProperty<double>("BufferingProgress", DefaultBufferingProgress);
+        public static DependencyProperty BufferingProgressProperty { get { return bufferingProgressProperty; } }
+        static readonly DependencyProperty bufferingProgressProperty = RegisterDependencyProperty<double>("BufferingProgress", DefaultBufferingProgress);
 
         /// <summary>
         /// Gets a value that indicates the current buffering progress.
         /// The amount of buffering that is completed for media content. The value ranges from 0 to 1. Multiply by 100 to obtain a percentage.
         /// </summary>
-        [Category(Categories.Info)]
         public double BufferingProgress
         {
             get { return (double)GetValue(BufferingProgressProperty); }
@@ -3849,12 +3918,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the CanPause dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanPauseProperty = RegisterDependencyProperty<bool>("CanPause", DefaultCanPause);
+        public static DependencyProperty CanPauseProperty { get { return canPauseProperty; } }
+        static readonly DependencyProperty canPauseProperty = RegisterDependencyProperty<bool>("CanPause", DefaultCanPause);
 
         /// <summary>
         /// Gets a value indicating if media can be paused if the Pause() method is called.
         /// </summary>
-        [Category(Categories.Info)]
         public bool CanPause
         {
             get { return (bool)GetValue(CanPauseProperty); }
@@ -3865,12 +3934,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the CanSeek dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanSeekProperty = RegisterDependencyProperty<bool>("CanSeek", DefaultCanSeek);
+        public static DependencyProperty CanSeekProperty { get { return canSeekProperty; } }
+        static readonly DependencyProperty canSeekProperty = RegisterDependencyProperty<bool>("CanSeek", DefaultCanSeek);
 
         /// <summary>
         /// Gets a value indicating if media can be repositioned by setting the value of the Position property.
         /// </summary>
-        [Category(Categories.Info)]
         public bool CanSeek
         {
             get { return (bool)GetValue(CanSeekProperty); }
@@ -3881,7 +3950,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Balance dependency property.
         /// </summary>
-        public static readonly DependencyProperty BalanceProperty = RegisterDependencyProperty<double>("Balance", (t, o, n) => t.OnBalanceChanged(n), DefaultBalance);
+        public static DependencyProperty BalanceProperty { get { return balanceProperty; } }
+        static readonly DependencyProperty balanceProperty = RegisterDependencyProperty<double>("Balance", (t, o, n) => t.OnBalanceChanged(n), DefaultBalance);
 
         void OnBalanceChanged(double newValue)
         {
@@ -3891,7 +3961,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets a ratio of volume across stereo speakers. The ratio of volume across speakers in the range between -1 and 1.
         /// </summary>
-        [Category(Categories.Common)]
         public double Balance
         {
             get { return (double)GetValue(BalanceProperty); }
@@ -3903,13 +3972,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the DownloadProgress dependency property.
         /// </summary>
-        public static readonly DependencyProperty DownloadProgressProperty = RegisterDependencyProperty<double>("DownloadProgress", DefaultDownloadProgress);
+        public static DependencyProperty DownloadProgressProperty { get { return downloadProgressProperty; } }
+        static readonly DependencyProperty downloadProgressProperty = RegisterDependencyProperty<double>("DownloadProgress", DefaultDownloadProgress);
 
         /// <summary>
         /// Gets a percentage value indicating the amount of download completed for content located on a remote server.
         /// The value ranges from 0 to 1. Multiply by 100 to obtain a percentage.
         /// </summary>
-        [Category(Categories.Info)]
         public double DownloadProgress
         {
             get { return (double)GetValue(DownloadProgressProperty); }
@@ -3920,12 +3989,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the DownloadProgressOffset dependency property.
         /// </summary>
-        public static readonly DependencyProperty DownloadProgressOffsetProperty = RegisterDependencyProperty<double>("DownloadProgressOffset", DefaultDownloadProgressOffset);
+        public static DependencyProperty DownloadProgressOffsetProperty { get { return downloadProgressOffsetProperty; } }
+        static readonly DependencyProperty downloadProgressOffsetProperty = RegisterDependencyProperty<double>("DownloadProgressOffset", DefaultDownloadProgressOffset);
 
         /// <summary>
         /// Gets the offset of the download progress.
         /// </summary>
-        [Category(Categories.Info)]
         public double DownloadProgressOffset
         {
             get { return (double)GetValue(DownloadProgressOffsetProperty); }
@@ -3936,18 +4005,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsMuted dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsMutedProperty = RegisterDependencyProperty<bool>("IsMuted", (t, o, n) => t.OnIsMutedChanged(o, n), DefaultIsMuted);
+        public static DependencyProperty IsMutedProperty { get { return isMutedProperty; } }
+        static readonly DependencyProperty isMutedProperty = RegisterDependencyProperty<bool>("IsMuted", (t, o, n) => t.OnIsMutedChanged(o, n), DefaultIsMuted);
 
         void OnIsMutedChanged(bool oldValue, bool newValue)
         {
             _IsMuted = newValue;
-            OnIsMutedChanged(new RoutedPropertyChangedEventArgs<bool>(oldValue, newValue));
+            OnIsMutedChanged(new RoutedEventArgs());
         }
 
         /// <summary>
         /// Gets or sets a value indicating whether the audio is muted.
         /// </summary>
-        [Category(Categories.Common)]
         public bool IsMuted
         {
             get { return (bool)GetValue(IsMutedProperty); }
@@ -3959,7 +4028,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the NaturalDuration dependency property.
         /// </summary>
-        public static readonly DependencyProperty NaturalDurationProperty = RegisterDependencyProperty<Duration>("NaturalDuration", (t, o, n) => t.OnNaturalDurationChanged(n), DefaultNaturalDuration);
+        public static DependencyProperty NaturalDurationProperty { get { return naturalDurationProperty; } }
+        static readonly DependencyProperty naturalDurationProperty = RegisterDependencyProperty<Duration>("NaturalDuration", (t, o, n) => t.OnNaturalDurationChanged(n), DefaultNaturalDuration);
 
         void OnNaturalDurationChanged(Duration newValue)
         {
@@ -3972,7 +4042,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// The natural duration of the media. The default value is Duration.Automatic, which is the value held if you query this property before MediaOpened.
         /// </summary>
-        [Category(Categories.Info)]
         public Duration NaturalDuration
         {
             get { return (Duration)GetValue(NaturalDurationProperty); }
@@ -3983,13 +4052,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the NaturalVideoHeight dependency property.
         /// </summary>
-        public static readonly DependencyProperty NaturalVideoHeightProperty = RegisterDependencyProperty<int>("NaturalVideoHeight", DefaultNaturalVideoHeight);
+        public static DependencyProperty NaturalVideoHeightProperty { get { return naturalVideoHeightProperty; } }
+        static readonly DependencyProperty naturalVideoHeightProperty = RegisterDependencyProperty<int>("NaturalVideoHeight", DefaultNaturalVideoHeight);
 
         /// <summary>
         /// Gets the height of the video associated with the media.
         /// The height of the video that is associated with the media, in pixels. Audio files will return 0.
         /// </summary>
-        [Category(Categories.Info)]
         public int NaturalVideoHeight
         {
             get { return (int)GetValue(NaturalVideoHeightProperty); }
@@ -4000,13 +4069,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the NaturalVideoWidth dependency property.
         /// </summary>
-        public static readonly DependencyProperty NaturalVideoWidthProperty = RegisterDependencyProperty<int>("NaturalVideoWidth", DefaultNaturalVideoWidth);
+        public static DependencyProperty NaturalVideoWidthProperty { get { return naturalVideoWidthProperty; } }
+        static readonly DependencyProperty naturalVideoWidthProperty = RegisterDependencyProperty<int>("NaturalVideoWidth", DefaultNaturalVideoWidth);
 
         /// <summary>
         /// Gets the width of the video associated with the media.
         /// The width of the video associated with the media, in pixels. Audio files will return 0.
         /// </summary>
-        [Category(Categories.Info)]
         public int NaturalVideoWidth
         {
             get { return (int)GetValue(NaturalVideoWidthProperty); }
@@ -4017,7 +4086,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PlaybackRate dependency property.
         /// </summary>
-        public static readonly DependencyProperty PlaybackRateProperty = RegisterDependencyProperty<double>("PlaybackRate", (t, o, n) => t.OnPlaybackRateChanged(n), DefaultRate);
+        public static DependencyProperty PlaybackRateProperty { get { return playbackRateProperty; } }
+        static readonly DependencyProperty playbackRateProperty = RegisterDependencyProperty<double>("PlaybackRate", (t, o, n) => t.OnPlaybackRateChanged(n), DefaultRate);
 
         void OnPlaybackRateChanged(double newValue)
         {
@@ -4028,7 +4098,6 @@ namespace Microsoft.PlayerFramework
         /// Gets or sets the playback rate of the media. Use this property to directly control features like fast forward, reverse, and slow motion.
         /// IncreasePlaybackRate, DecreasePlaybackRate, and IsSlowMotion are also available to help control this.
         /// </summary>
-        [Category(Categories.Common)]
         public double PlaybackRate
         {
             get { return (double)GetValue(PlaybackRateProperty); }
@@ -4040,7 +4109,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Position dependency property.
         /// </summary>
-        public static readonly DependencyProperty PositionProperty = RegisterDependencyProperty<TimeSpan>("Position", (t, o, n) => t.OnPositionChanged(n, o), DefaultPosition);
+        public static DependencyProperty PositionProperty { get { return positionProperty; } }
+        static readonly DependencyProperty positionProperty = RegisterDependencyProperty<TimeSpan>("Position", (t, o, n) => t.OnPositionChanged(n, o), DefaultPosition);
 
         void OnPositionChanged(TimeSpan newValue, TimeSpan oldValue)
         {
@@ -4051,7 +4121,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the current position of progress through the media's playback time (or the amount of time since the beginning of the media).
         /// </summary>
-        [Category(Categories.Common)]
         public TimeSpan Position
         {
             get { return (TimeSpan)GetValue(PositionProperty); }
@@ -4063,14 +4132,14 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the CurrentState dependency property.
         /// </summary>
-        public static readonly DependencyProperty CurrentStateProperty = RegisterDependencyProperty<MediaElementState>("CurrentState", DefaultCurrentState);
+        public static DependencyProperty CurrentStateProperty { get { return currentStateProperty; } }
+        static readonly DependencyProperty currentStateProperty = RegisterDependencyProperty<MediaElementState>("CurrentState", DefaultCurrentState);
 
         /// <summary>
         /// Gets the status of the MediaElement.
         /// The state can be one of the following (as defined in the MediaElementState enumeration):
         /// Buffering, Closed, Opening, Paused, Playing, Stopped.
         /// </summary>
-        [Category(Categories.Info)]
         public MediaElementState CurrentState
         {
             get { return (MediaElementState)GetValue(CurrentStateProperty); }
@@ -4081,13 +4150,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Source dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceProperty = RegisterDependencyProperty<Uri>("Source", (t, o, n) => t.OnSourceChanged(n), DefaultSource);
+        public static DependencyProperty SourceProperty { get { return sourceProperty; } }
+        static readonly DependencyProperty sourceProperty = RegisterDependencyProperty<Uri>("Source", (t, o, n) => t.OnSourceChanged(n), DefaultSource);
 
         /// <summary>
         /// Gets or sets a media source on the MediaElement.
         /// A string that specifies the source of the element, as a Uniform Resource Identifier (URI).
         /// </summary>
-        [Category(Categories.Common)]
         public Uri Source
         {
             get { return (Uri)GetValue(SourceProperty); }
@@ -4229,7 +4298,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Volume dependency property.
         /// </summary>
-        public static readonly DependencyProperty VolumeProperty = RegisterDependencyProperty<double>("Volume", (t, o, n) => t.OnVolumeChanged(o, n), DefaultVolume);
+        public static DependencyProperty VolumeProperty { get { return volumeProperty; } }
+        static readonly DependencyProperty volumeProperty = RegisterDependencyProperty<double>("Volume", (t, o, n) => t.OnVolumeChanged(o, n), DefaultVolume);
 
         void OnVolumeChanged(double oldValue, double newValue)
         {
@@ -4241,7 +4311,7 @@ namespace Microsoft.PlayerFramework
             {
                 // raise the volume changed event if the player is unloaded because VolumeChanged does not fire on the MediaElement.
                 // this enables the scenario of playing ads without loading a source. Without it, ads would not receive volume change notifications and the volume slider will not work.
-                OnVolumeChanged(new RoutedPropertyChangedEventArgs<double>(oldValue, newValue));
+                OnVolumeChanged(new RoutedEventArgs());
             }
 #endif
         }
@@ -4250,7 +4320,6 @@ namespace Microsoft.PlayerFramework
         /// Gets or sets the media's volume.
         /// The media's volume represented on a linear scale between 0 and 1. The default is 0.5.
         /// </summary>
-        [Category(Categories.Common)]
         public double Volume
         {
             get { return (double)GetValue(VolumeProperty); }
@@ -4263,7 +4332,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the SupportedPlaybackRates dependency property.
         /// </summary>
-        public static readonly DependencyProperty SupportedPlaybackRatesProperty = RegisterDependencyProperty<IList<double>>("SupportedPlaybackRates", (t, o, n) => t.OnSupportedPlaybackRatesChanged(), null);
+        public static DependencyProperty SupportedPlaybackRatesProperty { get { return supportedPlaybackRatesProperty; } }
+        static readonly DependencyProperty supportedPlaybackRatesProperty = RegisterDependencyProperty<IList<double>>("SupportedPlaybackRates", (t, o, n) => t.OnSupportedPlaybackRatesChanged(), null);
 
         void OnSupportedPlaybackRatesChanged()
         {
@@ -4359,7 +4429,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gives a subclass the opportunity to perform custom behaviors when the media ends. Called after MediaEnded fires.
         /// </summary>
-        protected virtual void OnProcessMediaEndedBehavior()
+        void OnProcessMediaEndedBehavior()
         {
 #if SILVERLIGHT
             if (IsLooping)
@@ -4475,12 +4545,22 @@ namespace Microsoft.PlayerFramework
 #endif
         }
 #else
+
         /// <summary>
         /// Performs an async Seek. This can also be accomplished by setting the Position property and waiting for SeekCompleted to fire.
         /// </summary>
         /// <param name="position">The new position to seek to</param>
         /// <returns>The task to await on. If true, the seek was successful, if false, the seek was trumped by a new value while it was waiting for a pending seek to complete.</returns>
+#if NETFX_CORE
+        public IAsyncOperation<bool> SeekAsync(TimeSpan position)
+        {
+            return AsyncInfo.Run(c => seekAsync(position));
+        }
+
+        async Task<bool> seekAsync(TimeSpan position)
+#else
         public async Task<bool> SeekAsync(TimeSpan position)
+#endif
         {
             if (currentSeek != null)
             {
@@ -4542,7 +4622,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the timer updates
         /// </summary>
-        protected virtual void OnUpdate()
+        void OnUpdate()
         {
 #if !POSITIONBINDING
             previousPosition = this.Position;
@@ -4551,7 +4631,7 @@ namespace Microsoft.PlayerFramework
             {
                 SetValueWithoutCallback(PositionProperty, newPosition);
                 UpdateIsPositionLive();
-                OnPositionChanged(new RoutedPropertyChangedEventArgs<TimeSpan>(previousPosition, newPosition));
+                OnPositionChanged(new PositionChangedEventArgs(previousPosition, newPosition));
             }
             else
             {
@@ -4623,7 +4703,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Initializes the MediaPlayer once the media has opened but immediately before the MediaOpened event fires.
         /// </summary>
-        protected virtual void OnMediaOpened()
+        void OnMediaOpened()
         {
 #if SILVERLIGHT && !WINDOWS_PHONE
             SetValue(AttributesProperty, _Attributes);
@@ -4650,7 +4730,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Populates the available audio streams from the MediaElement.
         /// </summary>
-        protected virtual void PopulateAvailableAudioStreams()
+        void PopulateAvailableAudioStreams()
         {
             // only add audio streams if it is empty. Otherwise, it implies the app or a plugin is taking care of this for us.
             if (!AvailableAudioStreams.Any())
@@ -4700,7 +4780,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Cleans up the MediaPlayer when the media has closed but immediately before the MediaClosed event fires.
         /// </summary>
-        protected virtual void OnMediaClosed()
+        void OnMediaClosed()
         {
             IsMediaLoaded = false;
 #if SILVERLIGHT && !WINDOWS_PHONE
@@ -4739,47 +4819,43 @@ namespace Microsoft.PlayerFramework
             if (RateChanged != null) RateChanged(this, e);
         }
 
-        void OnPositionChanged(RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void OnPositionChanged(PositionChangedEventArgs e)
         {
             SetValue(TimeRemainingProperty, TimeSpanExtensions.Max(EndTime.Subtract(e.NewValue), TimeSpan.Zero));
             if (PositionChanged != null) PositionChanged(this, e);
         }
 
-#if SILVERLIGHT
-        void OnVolumeChanged(RoutedPropertyChangedEventArgs<double> e)
-#else
         void OnVolumeChanged(RoutedEventArgs e)
-#endif
         {
             if (VolumeChanged != null) VolumeChanged(this, e);
         }
 
-        void OnIsMutedChanged(RoutedPropertyChangedEventArgs<bool> e)
+        void OnIsMutedChanged(RoutedEventArgs e)
         {
             if (IsMutedChanged != null) IsMutedChanged(this, e);
         }
 
-        void OnIsLiveChanged(RoutedPropertyChangedEventArgs<bool> e)
+        void OnIsLiveChanged(RoutedEventArgs e)
         {
             if (IsLiveChanged != null) IsLiveChanged(this, e);
         }
 
-        void OnIsCaptionsActiveChanged(RoutedPropertyChangedEventArgs<bool> e)
+        void OnIsCaptionsActiveChanged(RoutedEventArgs e)
         {
             if (IsCaptionsActiveChanged != null) IsCaptionsActiveChanged(this, e);
         }
 
-        void OnIsFullScreenChanged(RoutedPropertyChangedEventArgs<bool> e)
+        void OnIsFullScreenChanged(RoutedEventArgs e)
         {
             if (IsFullScreenChanged != null) IsFullScreenChanged(this, e);
         }
 
-        void OnAdvertisingStateChanged(RoutedPropertyChangedEventArgs<AdvertisingState> e)
+        void OnAdvertisingStateChanged(AdvertisingStateChangedEventArgs e)
         {
             if (AdvertisingStateChanged != null) AdvertisingStateChanged(this, e);
         }
 
-        void OnAudioStreamIndexChanged(RoutedPropertyChangedEventArgs<int?> e)
+        void OnAudioStreamIndexChanged(AudioStreamIndexChangedEventArgs e)
         {
             if (AudioStreamIndexChanged != null) AudioStreamIndexChanged(this, e);
         }
@@ -4804,12 +4880,12 @@ namespace Microsoft.PlayerFramework
             if (ScrubbingStarted != null) ScrubbingStarted(this, e);
         }
 
-        void OnPlayerStateChanged(RoutedPropertyChangedEventArgs<PlayerState> e)
+        void OnPlayerStateChanged(PlayerStateChangedEventArgs e)
         {
             if (PlayerStateChanged != null) PlayerStateChanged(this, e);
         }
 
-        void OnSignalStrengthChanged(RoutedPropertyChangedEventArgs<double> e)
+        void OnSignalStrengthChanged(SignalStrengthChangedEventArgs e)
         {
             if (SignalStrengthChanged != null) SignalStrengthChanged(this, e);
         }
@@ -4819,42 +4895,42 @@ namespace Microsoft.PlayerFramework
             if (MediaQualityChanged != null) MediaQualityChanged(this, e);
         }
 
-        void OnIsSlowMotionChanged(RoutedPropertyChangedEventArgs<bool> e)
+        void OnIsSlowMotionChanged(RoutedEventArgs e)
         {
             if (IsSlowMotionChanged != null) IsSlowMotionChanged(this, e);
         }
 
-        void OnDurationChanged(RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void OnDurationChanged(DurationChangedEventArgs e)
         {
             if (DurationChanged != null) DurationChanged(this, e);
         }
 
-        void OnStartTimeChanged(RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void OnStartTimeChanged(StartTimeChangedEventArgs e)
         {
             if (StartTimeChanged != null) StartTimeChanged(this, e);
         }
 
-        void OnEndTimeChanged(RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void OnEndTimeChanged(EndTimeChangedEventArgs e)
         {
             if (EndTimeChanged != null) EndTimeChanged(this, e);
         }
 
-        void OnTimeRemainingChanged(RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void OnTimeRemainingChanged(TimeRemainingChangedEventArgs e)
         {
             if (TimeRemainingChanged != null) TimeRemainingChanged(this, e);
         }
 
-        void OnLivePositionChanged(RoutedPropertyChangedEventArgs<TimeSpan?> e)
+        void OnLivePositionChanged(LivePositionChangedEventArgs e)
         {
             if (LivePositionChanged != null) LivePositionChanged(this, e);
         }
 
-        void OnTimeFormatConverterChanged(RoutedPropertyChangedEventArgs<IValueConverter> e)
+        void OnTimeFormatConverterChanged(TimeFormatConverterChangedEventArgs e)
         {
             if (TimeFormatConverterChanged != null) TimeFormatConverterChanged(this, e);
         }
 
-        void OnSelectedCaptionChanged(RoutedPropertyChangedEventArgs<Caption> e)
+        void OnSelectedCaptionChanged(SelectedCaptionChangedEventArgs e)
         {
             if (SelectedCaptionChanged != null) SelectedCaptionChanged(this, e);
         }
@@ -4864,12 +4940,12 @@ namespace Microsoft.PlayerFramework
             if (SelectedAudioStreamChanged != null) SelectedAudioStreamChanged(this, e);
         }
 
-        void OnSkipBackIntervalChanged(RoutedPropertyChangedEventArgs<TimeSpan?> e)
+        void OnSkipBackIntervalChanged(SkipBackIntervalChangedEventArgs e)
         {
             if (SkipBackIntervalChanged != null) SkipBackIntervalChanged(this, e);
         }
 
-        void OnSkipAheadIntervalChanged(RoutedPropertyChangedEventArgs<TimeSpan?> e)
+        void OnSkipAheadIntervalChanged(SkipAheadIntervalChangedEventArgs e)
         {
             if (SkipAheadIntervalChanged != null) SkipAheadIntervalChanged(this, e);
         }
@@ -4983,7 +5059,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="dp">The identifier of the dependency property to set.</param>
         /// <param name="value">The new local value.</param>
-        protected void SetValueWithoutCallback(DependencyProperty dp, object value)
+        void SetValueWithoutCallback(DependencyProperty dp, object value)
         {
             ignoreCallback = true;
             try
@@ -5013,13 +5089,13 @@ namespace Microsoft.PlayerFramework
         /// Disposes of the active session and frees up all memory associated with this instance.
         /// </summary>
         /// <param name="disposing">Is called from the Dispose method.</param>
-        protected virtual void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (!_disposed)
             {
                 if (disposing)
                 {
-                    Close();
+                    Unload();
                     LoadPlugins(null);
                     UninitializeTemplateChildren();
                     DestroyTemplateChildren();

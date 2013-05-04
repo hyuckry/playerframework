@@ -11,7 +11,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides a base class to make it easy to implement a plugin
     /// </summary>
-    public abstract class PluginBase :
+    public class PluginBase :
 #if SILVERLIGHT
         DependencyObject
 #else
@@ -19,6 +19,8 @@ namespace Microsoft.PlayerFramework
 #endif
 , IPlugin
     {
+        internal PluginBase() { }
+
         /// <summary>
         /// Gets the current IMediaSource implemenation being used by the player framework.
         /// </summary>
@@ -129,17 +131,27 @@ namespace Microsoft.PlayerFramework
         /// Activates the plugin at the appropriate time.
         /// </summary>
         /// <returns>A boolean indicating whether or not it was successfully activated.</returns>
-        protected abstract bool OnActivate();
+        protected virtual bool OnActivate()
+        {
+            return true;
+        }
 
         /// <summary>
         /// Deactivates the plugin at the appropriate time.
         /// </summary>
-        protected abstract void OnDeactivate();
+        protected virtual void OnDeactivate() { }
 
+        static readonly DependencyProperty isEnabledProperty = DependencyProperty.RegisterAttached("IsEnabled", typeof(bool), typeof(PluginBase), new PropertyMetadata(true));
         /// <summary>
         /// Identifies the IsEnabled attached property.
         /// </summary>
-        public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.RegisterAttached("IsEnabled", typeof(bool), typeof(PluginBase), new PropertyMetadata(true));
+        public static DependencyProperty IsEnabledProperty
+        {
+            get
+            {
+                return isEnabledProperty;
+            }
+        }
 
         /// <summary>
         /// Sets the IsEnabled attached property value.

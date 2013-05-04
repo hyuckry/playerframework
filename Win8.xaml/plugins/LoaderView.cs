@@ -15,7 +15,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that is used to kick off the loading of media.
     /// </summary>
-    public class LoaderView : Control
+    public sealed class LoaderView : Control
     {
         /// <summary>
         /// Occurs when a button control is clicked.

@@ -22,7 +22,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that allows the user to change the volume.
     /// </summary>
-    public class VolumeSlider : Control
+    public sealed class VolumeSlider : Control
     {
         //<local:SeekableSlider x:Name="HorizontalVolumeSlider" local:RangeBaseBehavior.Command="{Binding VolumeCommand, Source={StaticResource Commands}}" ActualValue="{Binding Volume}" Maximum="1" HorizontalAlignment="Center" Width="83" Visibility="Collapsed">
         //    <ToolTipService.ToolTip>
@@ -30,10 +30,7 @@ namespace Microsoft.PlayerFramework
         //    </ToolTipService.ToolTip>
         //</local:SeekableSlider>
 
-        /// <summary>
-        /// Gets the underlying Slider control.
-        /// </summary>
-        protected SeekableSlider Slider { get; private set; }
+        SeekableSlider slider;
 
         /// <summary>
         /// Creates a new instance of the VolumeSlider control.
@@ -54,18 +51,18 @@ namespace Microsoft.PlayerFramework
         {
             base.OnApplyTemplate();
 
-            if (Slider != null)
+            if (slider != null)
             {
-                Slider.ValueChanged -= slider_ValueChanged;
-                Slider.SetBinding(SeekableSlider.ActualValueProperty, null);
+                slider.ValueChanged -= slider_ValueChanged;
+                slider.SetBinding(SeekableSlider.ActualValueProperty, null);
             }
 
-            Slider = GetTemplateChild("Slider") as SeekableSlider;
-            
-            if (Slider != null)
+            slider = GetTemplateChild("Slider") as SeekableSlider;
+
+            if (slider != null)
             {
-                Slider.ValueChanged += slider_ValueChanged;
-                Slider.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Volume"), Source = ViewModel });
+                slider.ValueChanged += slider_ValueChanged;
+                slider.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Volume"), Source = ViewModel });
             }
         }
 
@@ -84,18 +81,19 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ViewModel dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(VolumeSlider), new PropertyMetadata(null, (d, e) => ((VolumeSlider)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(VolumeSlider), new PropertyMetadata(null, (d, e) => ((VolumeSlider)d).OnViewModelChanged(e.OldValue as IInteractiveViewModel, e.NewValue as IInteractiveViewModel)));
 
         /// <summary>
         /// Provides notification that the view model has changed.
         /// </summary>
         /// <param name="oldValue">The old view model. Note: this could be null.</param>
         /// <param name="newValue">The new view model. Note: this could be null.</param>
-        protected virtual void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
-            if (Slider != null)
+            if (slider != null)
             {
-                Slider.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Volume"), Source = ViewModel });
+                slider.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Volume"), Source = ViewModel });
             }
         }
 
@@ -113,8 +111,9 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Orientation dependency property.
         /// </summary>
-        public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register("Orientation", typeof(Orientation), typeof(VolumeSlider), new PropertyMetadata(Orientation.Vertical));
-        
+        public static DependencyProperty OrientationProperty { get { return orientationProperty; } }
+        static readonly DependencyProperty orientationProperty = DependencyProperty.Register("Orientation", typeof(Orientation), typeof(VolumeSlider), new PropertyMetadata(Orientation.Vertical));
+
         /// <summary>
         /// Gets or sets the InteractiveOrientation object used to provide state updates and serve user interaction requests.
         /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
@@ -131,7 +130,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public FocusState InnerFocusState
         {
-            get { return Slider != null ? Slider.FocusState : FocusState; }
+            get { return slider != null ? slider.FocusState : FocusState; }
         }
 #endif
     }

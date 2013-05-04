@@ -20,7 +20,7 @@ namespace Microsoft.PlayerFramework
     /// <remarks>
     /// The Timeline keeps track of the current position, start position, and end position. 
     /// </remarks>
-    public partial class SeekableSlider : Slider
+    public sealed partial class SeekableSlider : Slider
     {
         private bool pointerCaptured;
         private Action pointerReleaseAction;
@@ -43,7 +43,7 @@ namespace Microsoft.PlayerFramework
         {
             get
             {
-                return pointerCaptured || (Thumb != null && Thumb.IsDragging);
+                return pointerCaptured || (thumb != null && thumb.IsDragging);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the Seeked event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        protected void OnSeeked(ValueRoutedEventArgs e)
+        void OnSeeked(ValueRoutedEventArgs e)
         {
             if (Seeked != null)
             {
@@ -88,7 +88,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the ScrubbingCompleted event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        protected void OnScrubbingCompleted(ValueRoutedEventArgs e)
+        void OnScrubbingCompleted(ValueRoutedEventArgs e)
         {
             if (ScrubbingCompleted != null)
             {
@@ -105,7 +105,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the Scrubbing event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        protected void OnScrubbing(ValueRoutedEventArgs e)
+        void OnScrubbing(ValueRoutedEventArgs e)
         {
             if (Scrubbing != null)
             {
@@ -122,7 +122,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the ScrubbingStarted event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        protected void OnScrubbingStarted(ValueRoutedEventArgs e)
+        void OnScrubbingStarted(ValueRoutedEventArgs e)
         {
             if (ScrubbingStarted != null)
             {
@@ -214,58 +214,58 @@ namespace Microsoft.PlayerFramework
 
             // convert the available unit to a pixel width
 
-            if (AvailableBar != null)
+            if (availableBar != null)
             {
                 if (Orientation == Orientation.Horizontal)
                 {
-                    if (Panel != null && Panel.ActualWidth > 0 && range > 0)
+                    if (panel != null && panel.ActualWidth > 0 && range > 0)
                     {
-                        var thumbWidth = Thumb == null ? 0 : Thumb.ActualWidth;
+                        var thumbWidth = thumb == null ? 0 : thumb.ActualWidth;
                         // calculate the pixel width of the available bar, need to take into
                         // account the _horizontalThumb width, otherwise the _horizontalThumb position is calculated differently
                         // then the available bar (the _horizontalThumb position takes into account the _horizontalThumb width)
                         double availableRange = Max - Minimum;
-                        double pixelValue = (availableRange / range) * (Panel.ActualWidth - thumbWidth);
+                        double pixelValue = (availableRange / range) * (panel.ActualWidth - thumbWidth);
 
                         // want the width of the available bar to be aligned with the right of the _horizontalThumb, this
                         // allows the maxposition indictor to be correctly positioned to the right of the _horizontalThumb
                         pixelValue += thumbWidth;
 
                         // make sure within range, Available can be negative when it first starts
-                        pixelValue = Math.Min(Panel.ActualWidth, pixelValue);
+                        pixelValue = Math.Min(panel.ActualWidth, pixelValue);
                         pixelValue = Math.Max(0, pixelValue);
 
-                        AvailableBar.Width = pixelValue;
+                        availableBar.Width = pixelValue;
                     }
                     else
                     {
-                        AvailableBar.Width = Panel.ActualWidth;
+                        availableBar.Width = panel.ActualWidth;
                     }
                 }
                 else
                 {
-                    if (Panel != null && Panel.ActualHeight > 0 && range > 0)
+                    if (panel != null && panel.ActualHeight > 0 && range > 0)
                     {
-                        var thumbHeight = Thumb == null ? 0 : Thumb.ActualHeight;
+                        var thumbHeight = thumb == null ? 0 : thumb.ActualHeight;
                         // calculate the pixel width of the available bar, need to take into
                         // account the Thumb width, otherwise the Thumb position is calculated differently
                         // then the available bar (the Thumb position takes into account the Thumb width)
                         double availableRange = Max - Minimum;
-                        double pixelValue = (availableRange / range) * (Panel.ActualHeight - thumbHeight);
+                        double pixelValue = (availableRange / range) * (panel.ActualHeight - thumbHeight);
 
                         // want the width of the available bar to be aligned with the right of the Thumb, this
                         // allows the maxposition indictor to be correctly positioned to the right of the Thumb
                         pixelValue += thumbHeight;
 
                         // make sure within range, Available can be negative when it first starts
-                        pixelValue = Math.Min(Panel.ActualHeight, pixelValue);
+                        pixelValue = Math.Min(panel.ActualHeight, pixelValue);
                         pixelValue = Math.Max(0, pixelValue);
 
-                        AvailableBar.Height = pixelValue;
+                        availableBar.Height = pixelValue;
                     }
                     else
                     {
-                        AvailableBar.Height = 0;
+                        availableBar.Height = 0;
                     }
                 }
             }
@@ -278,8 +278,8 @@ namespace Microsoft.PlayerFramework
 #endif
         {
             // take into account the scrubber _horizontalThumb size
-            double thumbWidth = (Thumb == null) ? 0 : Thumb.ActualWidth;
-            double panelWidth = Panel.ActualWidth - thumbWidth;
+            double thumbWidth = (thumb == null) ? 0 : thumb.ActualWidth;
+            double panelWidth = panel.ActualWidth - thumbWidth;
 
             if (panelWidth > 0)
             {
@@ -289,13 +289,13 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
                 Point mousePosition = e.GetPosition(Panel);
 #else
-                Point mousePosition = e.GetCurrentPoint(Panel).Position;
+                Point mousePosition = e.GetCurrentPoint(panel).Position;
 #endif
                 double value = (mousePosition.X * range) / panelWidth;
 
                 // right now, the _horizontalThumb will be left-justified to the cursor, take
                 // into account the size of the _horizontalThumb and center it under the cursor
-                value -= ((thumbWidth / 2) * range) / Panel.ActualWidth;
+                value -= ((thumbWidth / 2) * range) / panel.ActualWidth;
 
                 // offset from the min newValue
                 value += Minimum;
@@ -312,8 +312,8 @@ namespace Microsoft.PlayerFramework
 #endif
         {
             // take into account the scrubber _horizontalThumb size
-            double thumbHeight = (Thumb == null) ? 0 : Thumb.ActualHeight;
-            double panelHeight = Panel.ActualHeight - thumbHeight;
+            double thumbHeight = (thumb == null) ? 0 : thumb.ActualHeight;
+            double panelHeight = panel.ActualHeight - thumbHeight;
 
             if (panelHeight > 0)
             {
@@ -323,13 +323,13 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
                 Point mousePosition = e.GetPosition(Panel);
 #else
-                Point mousePosition = e.GetCurrentPoint(Panel).Position;
+                Point mousePosition = e.GetCurrentPoint(panel).Position;
 #endif
-                double value = ((Panel.ActualHeight - mousePosition.Y) * range) / panelHeight;
+                double value = ((panel.ActualHeight - mousePosition.Y) * range) / panelHeight;
 
                 // right now, the _horizontalThumb will be left-justified to the cursor, take
                 // into account the size of the _horizontalThumb and center it under the cursor
-                value -= ((thumbHeight / 2) * range) / Panel.ActualHeight;
+                value -= ((thumbHeight / 2) * range) / panel.ActualHeight;
 
                 // offset from the min newValue
                 value += Minimum;
@@ -343,7 +343,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// EventArgs class to return a double.
     /// </summary>
-    public class ValueRoutedEventArgs : RoutedEventArgs
+    public sealed class ValueRoutedEventArgs : RoutedEventArgs
     {
         internal ValueRoutedEventArgs(double Value)
         {

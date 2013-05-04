@@ -17,7 +17,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Title attached property.
         /// </summary>
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached("Title", typeof(string), typeof(PlaylistItemMetadata), null);
+        public static DependencyProperty TitleProperty { get { return titleProperty; } }
+        static readonly DependencyProperty titleProperty = DependencyProperty.RegisterAttached("Title", typeof(string), typeof(PlaylistItemMetadata), null);
 
         /// <summary>
         /// Sets the Title attached property value.
@@ -41,7 +42,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Description attached property.
         /// </summary>
-        public static readonly DependencyProperty DescriptionProperty = DependencyProperty.RegisterAttached("Description", typeof(string), typeof(PlaylistItemMetadata), null);
+        public static DependencyProperty DescriptionProperty { get { return descriptionProperty; } }
+        static readonly DependencyProperty descriptionProperty = DependencyProperty.RegisterAttached("Description", typeof(string), typeof(PlaylistItemMetadata), null);
 
         /// <summary>
         /// Sets the Description attached property value.
@@ -65,7 +67,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Thumbnail attached property.
         /// </summary>
-        public static readonly DependencyProperty ThumbnailProperty = DependencyProperty.RegisterAttached("Thumbnail", typeof(ImageSource), typeof(PlaylistItemMetadata), null);
+        public static DependencyProperty ThumbnailProperty { get { return thumbnailProperty; } }
+        static readonly DependencyProperty thumbnailProperty = DependencyProperty.RegisterAttached("Thumbnail", typeof(ImageSource), typeof(PlaylistItemMetadata), null);
 
         /// <summary>
         /// Sets the Thumbnail attached property value.
@@ -89,7 +92,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the Duration attached property.
         /// </summary>
-        public static readonly DependencyProperty DurationProperty = DependencyProperty.RegisterAttached("Duration", typeof(TimeSpan), typeof(PlaylistItemMetadata), null);
+        public static DependencyProperty DurationProperty { get { return durationProperty; } }
+        static readonly DependencyProperty durationProperty = DependencyProperty.RegisterAttached("Duration", typeof(TimeSpan), typeof(PlaylistItemMetadata), null);
 
         /// <summary>
         /// Sets the Duration attached property value.

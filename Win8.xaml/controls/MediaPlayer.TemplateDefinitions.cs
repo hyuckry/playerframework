@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,18 +26,18 @@ using Windows.Devices.Input;
 
 namespace Microsoft.PlayerFramework
 {
-    [TemplatePart(Name = MediaPlayerTemplateParts.MediaElement, Type = typeof(MediaElement))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.MediaContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.LayoutRootElement, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.CaptionsContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.AdvertisingContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.BufferingContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.ErrorsContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.InteractivityContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.LoaderViewContainer, Type = typeof(Panel))]
-    [TemplatePart(Name = MediaPlayerTemplateParts.ControlPanel, Type = typeof(Control))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.mediaElement, Type = typeof(MediaElement))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.mediaContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.layoutRootElement, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.captionsContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.advertisingContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.bufferingContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.errorsContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.interactivityContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.loaderViewContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.controlPanel, Type = typeof(Control))]
 #if SILVERLIGHT
-    [TemplatePart(Name = MediaPlayerTemplateParts.PosterContainer, Type = typeof(Panel))]
+    [TemplatePart(Name = MediaPlayerTemplateParts.posterContainer, Type = typeof(Panel))]
 #else
     [TemplateVisualState(Name = MediaPlayerVisualStates.PlayToStates.Connected, GroupName = MediaPlayerVisualStates.GroupNames.PlayToStates)]
     [TemplateVisualState(Name = MediaPlayerVisualStates.PlayToStates.Disconnected, GroupName = MediaPlayerVisualStates.GroupNames.PlayToStates)]
@@ -87,9 +87,9 @@ namespace Microsoft.PlayerFramework
         TimelineMarkerCollection preTemplateAppliedMarkers = null;
 
         /// <summary>
-        /// Gets the state at the time the last media failure occured.
+        /// Gets or Sets the state at the time the last media failure occured.
         /// </summary>
-        protected MediaState FailedMediaState { get; private set; }
+        MediaState failedMediaState;
 
         #region Template Children
 
@@ -102,17 +102,17 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// The main panel of the player that contains all interactive elements.
         /// </summary>
-        protected Panel MediaContainer { get; private set; }
+        Panel mediaContainer;
 
         /// <summary>
         /// The main panel of the player that contains all interactive elements.
         /// </summary>
-        protected Panel InteractivityContainer { get; private set; }
+        Panel interactivityContainer;
 
         /// <summary>
         /// The main panel of the player that contains all child elements.
         /// </summary>
-        protected Panel LayoutRootElement { get; private set; }
+        Panel layoutRootElement;
 
 #if SILVERLIGHT
         private IMediaElement mediaElement;
@@ -125,11 +125,11 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         protected IMediaElement MediaElementElement
 #else
-        protected MediaElement MediaElementElement
+        MediaElement MediaElementElement
 #endif
         {
             get { return mediaElement; }
-            private set
+            set
             {
                 if (mediaElement != value)
                 {
@@ -186,19 +186,19 @@ namespace Microsoft.PlayerFramework
             Containers.Clear();
 
             MediaElementElement = null;
-            LayoutRootElement = null;
-            InteractivityContainer = null;
-            MediaContainer = null;
+            layoutRootElement = null;
+            interactivityContainer = null;
+            mediaContainer = null;
             ControlPanel = null;
         }
 
         void GetTemplateChildren()
         {
-            LayoutRootElement = GetTemplateChild(MediaPlayerTemplateParts.LayoutRootElement) as Panel;
-            InteractivityContainer = GetTemplateChild(MediaPlayerTemplateParts.InteractivityContainer) as Panel;
-            MediaContainer = GetTemplateChild(MediaPlayerTemplateParts.MediaContainer) as Panel;
+            layoutRootElement = GetTemplateChild(MediaPlayerTemplateParts.layoutRootElement) as Panel;
+            interactivityContainer = GetTemplateChild(MediaPlayerTemplateParts.InteractivityContainer) as Panel;
+            mediaContainer = GetTemplateChild(MediaPlayerTemplateParts.MediaContainer) as Panel;
             ControlPanel = GetTemplateChild(MediaPlayerTemplateParts.ControlPanel) as Control;
-            
+
 #if SILVERLIGHT
             //MediaElementElement = GetTemplateChild(MediaPlayerTemplateParts.MediaElement) as IMediaElement;
             var mediaPlugin = Plugins.OfType<IMediaPlugin>().FirstOrDefault();
@@ -214,12 +214,12 @@ namespace Microsoft.PlayerFramework
             MediaContainer.Children.Insert(0, mediaElementElement);
             MediaElementElement = mediaElementElement as IMediaElement;
 #else
-            MediaElementElement = GetTemplateChild(MediaPlayerTemplateParts.MediaElement) as MediaElement;
+            MediaElementElement = GetTemplateChild(MediaPlayerTemplateParts.mediaElement) as MediaElement;
 #endif
 
-            if (LayoutRootElement != null)
+            if (layoutRootElement != null)
             {
-                foreach (var containers in LayoutRootElement.Children)
+                foreach (var containers in layoutRootElement.Children)
                 {
                     Containers.Add(containers);
                 }
@@ -235,14 +235,14 @@ namespace Microsoft.PlayerFramework
             autoHideTimer = new DispatcherTimer();
             autoHideTimer.Tick += autoHideTimer_Tick;
 
-            if (MediaContainer != null)
+            if (mediaContainer != null)
             {
 #if SILVERLIGHT
                 MediaContainer.MouseMove += MediaContainer_MouseMove;
                 MediaContainer.MouseLeftButtonDown += MediaContainer_MouseLeftButtonDown;
 #else
-                MediaContainer.PointerMoved += MediaContainer_PointerMoved;
-                MediaContainer.PointerPressed += MediaContainer_PointerPressed;
+                mediaContainer.PointerMoved += MediaContainer_PointerMoved;
+                mediaContainer.PointerPressed += MediaContainer_PointerPressed;
 #endif
             }
 
@@ -272,14 +272,14 @@ namespace Microsoft.PlayerFramework
                 autoHideTimer = null;
             }
 
-            if (MediaContainer != null)
+            if (mediaContainer != null)
             {
 #if SILVERLIGHT
                 MediaContainer.MouseMove -= MediaContainer_MouseMove;
                 MediaContainer.MouseLeftButtonDown -= MediaContainer_MouseLeftButtonDown;
 #else
-                MediaContainer.PointerMoved -= MediaContainer_PointerMoved;
-                MediaContainer.PointerPressed -= MediaContainer_PointerPressed;
+                mediaContainer.PointerMoved -= MediaContainer_PointerMoved;
+                mediaContainer.PointerPressed -= MediaContainer_PointerPressed;
 #endif
             }
 
@@ -481,13 +481,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoHideInterval dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoHideIntervalProperty = RegisterDependencyProperty<TimeSpan>("AutoHideInterval", TimeSpan.FromSeconds(3));
+        public static DependencyProperty AutoHideIntervalProperty { get { return autoHideIntervalProperty; } }
+        static readonly DependencyProperty autoHideIntervalProperty = RegisterDependencyProperty<TimeSpan>("AutoHideInterval", TimeSpan.FromSeconds(3));
 
         /// <summary>
         /// Gets or sets the time before the control will automatically collapse all interactive elements.
         /// This is only used if AutoHide = true. The default is 3 seconds.
         /// </summary>
-        [Category(Categories.Advanced)]
         public TimeSpan AutoHideInterval
         {
             get { return (TimeSpan)GetValue(AutoHideIntervalProperty); }
@@ -500,7 +500,6 @@ namespace Microsoft.PlayerFramework
         /// Gets the colleciton of UIElement in the player.
         /// This is useful for programmatically adding UIElements to the player without having to template the control.
         /// </summary>
-        [Category(Categories.Advanced)]
         public IList<UIElement> Containers { get; set; }
         #endregion
 
@@ -508,7 +507,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the InteractiveViewModel dependency property.
         /// </summary>
-        public static readonly DependencyProperty InteractiveViewModelProperty = RegisterDependencyProperty<IInteractiveViewModel>("InteractiveViewModel", (t, o, n) => t.OnInteractiveViewModelChanged(o, n));
+        public static DependencyProperty InteractiveViewModelProperty { get { return interactiveViewModelProperty; } }
+        static readonly DependencyProperty interactiveViewModelProperty = RegisterDependencyProperty<IInteractiveViewModel>("InteractiveViewModel", (t, o, n) => t.OnInteractiveViewModelChanged(o, n));
 
         void OnInteractiveViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
@@ -522,7 +522,7 @@ namespace Microsoft.PlayerFramework
                 newValue.Interacting += InteractiveViewModel_Interacting;
             }
 
-            if (InteractiveViewModelChanged != null) InteractiveViewModelChanged(this, new RoutedPropertyChangedEventArgs<IInteractiveViewModel>(oldValue, newValue));
+            if (InteractiveViewModelChanged != null) InteractiveViewModelChanged(this, new InteractiveViewModelChangedEventArgs(oldValue, newValue));
         }
 
         void InteractiveViewModel_Interacting(object sender, InteractionEventArgs e)
@@ -533,13 +533,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the InteractiveViewModel property changes.
         /// </summary>
-        public event RoutedPropertyChangedEventHandler<IInteractiveViewModel> InteractiveViewModelChanged;
+        public event InteractiveViewModelChangedEventHandler InteractiveViewModelChanged;
 
         /// <summary>
         /// Gets or sets the view model used by all interactive elements to control playback or report on the status of playback.
         /// By default this is set to the current object but can be substituted for a custom implementation for supporting features such as advertising.
         /// </summary>
-        [Category(Categories.Advanced)]
         public IInteractiveViewModel InteractiveViewModel
         {
             get { return GetValue(InteractiveViewModelProperty) as IInteractiveViewModel; }
@@ -556,7 +555,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the InteractiveActivationMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty InteractiveActivationModeProperty = RegisterDependencyProperty<InteractionType>("InteractiveActivationMode", DefaultInteractiveActivationMode);
+        public static DependencyProperty InteractiveActivationModeProperty { get { return interactiveActivationModeProperty; } }
+        static readonly DependencyProperty interactiveActivationModeProperty = RegisterDependencyProperty<InteractionType>("InteractiveActivationMode", DefaultInteractiveActivationMode);
 
         static InteractionType DefaultInteractiveActivationMode
         {
@@ -573,7 +573,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the action that will cause the player to be in interactive mode. (IsInteractive = true)
         /// </summary>
-        [Category(Categories.Advanced)]
         public InteractionType InteractiveActivationMode
         {
             get { return (InteractionType)GetValue(InteractiveActivationModeProperty); }
@@ -586,7 +585,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the InteractiveDeactivationMode dependency property.
         /// </summary>
-        public static readonly DependencyProperty InteractiveDeactivationModeProperty = RegisterDependencyProperty<InteractionType>("InteractiveDeactivationMode", (t, o, n) => t.OnInteractiveDeactivationModeChanged(o, n), DefaultInteractiveDeactivationMode);
+        public static DependencyProperty InteractiveDeactivationModeProperty { get { return interactiveDeactivationModeProperty; } }
+        static readonly DependencyProperty interactiveDeactivationModeProperty = RegisterDependencyProperty<InteractionType>("InteractiveDeactivationMode", (t, o, n) => t.OnInteractiveDeactivationModeChanged(o, n), DefaultInteractiveDeactivationMode);
 
         static InteractionType DefaultInteractiveDeactivationMode
         {
@@ -618,7 +618,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the action that will cause the player to be taken out of interactive mode. (IsInteractive = false)
         /// </summary>
-        [Category(Categories.Advanced)]
         public InteractionType InteractiveDeactivationMode
         {
             get { return (InteractionType)GetValue(InteractiveDeactivationModeProperty); }
@@ -631,7 +630,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoHide dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoHideProperty = RegisterDependencyProperty<bool>("AutoHide", (t, o, n) => t.OnAutoHideChanged(n), true);
+        public static DependencyProperty AutoHideProperty { get { return autoHideProperty; } }
+        static readonly DependencyProperty autoHideProperty = RegisterDependencyProperty<bool>("AutoHide", (t, o, n) => t.OnAutoHideChanged(n), true);
 
         void OnAutoHideChanged(bool newValue)
         {
@@ -651,7 +651,6 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets if the control panel (and other interactive elements) will automatically be hidden. Default is true.
         /// </summary>
-        [Category(Categories.Common)]
         public bool AutoHide
         {
             get { return (bool)GetValue(AutoHideProperty); }
@@ -663,20 +662,20 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the AutoHideBehavior dependency property.
         /// </summary>
-        public static readonly DependencyProperty AutoHideBehaviorProperty = RegisterDependencyProperty<AutoHideBehavior>("AutoHideBehavior", AutoHideBehavior.PreventDuringInteractiveHover);
+        public static DependencyProperty AutoHideBehaviorProperty { get { return autoHideBehaviorProperty; } }
+        static readonly DependencyProperty autoHideBehaviorProperty = RegisterDependencyProperty<AutoHideBehavior>("AutoHideBehavior", AutoHideBehavior.PreventDuringInteractiveHover);
 
         /// <summary>
         /// Gets or sets when the control panel (and other interactive elements) will automatically be hidden. Default is AlwaysAllow.
         /// This is only applicable if AutoHide = true
         /// </summary>
-        [Category(Categories.Common)]
         public AutoHideBehavior AutoHideBehavior
         {
             get { return (AutoHideBehavior)GetValue(AutoHideBehaviorProperty); }
             set { SetValue(AutoHideBehaviorProperty, value); }
         }
         #endregion
-        
+
         #region IsInteractive
         /// <summary>
         /// Occurs when the IsInteractive property changes.
@@ -686,7 +685,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the IsInteractive dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsInteractiveProperty = RegisterDependencyProperty<bool>("IsInteractive", (t, o, n) => t.OnIsInteractiveChanged(o, n), false);
+        public static DependencyProperty IsInteractiveProperty { get { return isInteractiveProperty; } }
+        static readonly DependencyProperty isInteractiveProperty = RegisterDependencyProperty<bool>("IsInteractive", (t, o, n) => t.OnIsInteractiveChanged(o, n), false);
 
         void OnIsInteractiveChanged(bool oldValue, bool newValue)
         {
@@ -734,7 +734,6 @@ namespace Microsoft.PlayerFramework
         /// Gest or sets whether the UI used to control playback should be displayed.
         /// If AutoHide = true, this is automatically set to true when the user interacts in any way with the player and set back to false after a length of time specified by the AutoHideInterval property.
         /// </summary>
-        [Category(Categories.Advanced)]
         public bool IsInteractive
         {
             get { return (bool)GetValue(IsInteractiveProperty); }
@@ -746,7 +745,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PlayerState dependency property.
         /// </summary>
-        public static readonly DependencyProperty PlayerStateProperty = RegisterDependencyProperty<PlayerState>("PlayerState", (t, o, n) => t.OnPlayerStateChanged(n, o), PlayerState.Unloaded);
+        public static DependencyProperty PlayerStateProperty { get { return playerStateProperty; } }
+        static readonly DependencyProperty playerStateProperty = RegisterDependencyProperty<PlayerState>("PlayerState", (t, o, n) => t.OnPlayerStateChanged(n, o), PlayerState.Unloaded);
 
         void OnPlayerStateChanged(PlayerState newValue, PlayerState oldValue)
         {
@@ -767,14 +767,13 @@ namespace Microsoft.PlayerFramework
             NotifyIsScrubbingAllowedChanged();
 
             this.GoToVisualState(newValue.ToString());
-            OnPlayerStateChanged(new RoutedPropertyChangedEventArgs<PlayerState>(oldValue, newValue));
+            OnPlayerStateChanged(new PlayerStateChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
         /// Gets the player state. This is is different from the MediaState (CurrentState property) in that it indicates what stage of loading the media the player is in.
         /// Once the media is loaded, you should use CurrentState to examine the state of the media.
         /// </summary>
-        [Category(Categories.Common)]
         public PlayerState PlayerState
         {
             get { return (PlayerState)GetValue(PlayerStateProperty); }
@@ -1647,7 +1646,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="uiElement">The UIElement to participate in the interactivity state of the control</param>
         /// <param name="hoverParticipation">Prevent autohide if pointer is hovering over UIElement. Requires AutoHideBehavior to be set to PreventDuringInteractiveHover to have any affect.</param>
-        public void AddInteractiveElement(UIElement uiElement, bool hoverParticipation = false)
+        public void AddInteractiveElement(UIElement uiElement, bool hoverParticipation)
         {
 #if SILVERLIGHT
             uiElement.MouseMove += uiElement_MouseMove;
@@ -1684,18 +1683,18 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Retries the media after an error by reopening the media and seeking to the last position
         /// </summary>
-        public virtual void Retry()
+        public void Retry()
         {
-            RestoreMediaState(FailedMediaState ?? GetMediaState());
+            RestoreMediaState(failedMediaState ?? GetMediaState());
         }
 
         /// <summary>
         /// Restores the state of playback
         /// </summary>
         /// <param name="mediaState">An object containing information about the state of playback.</param>
-        public virtual void RestoreMediaState(MediaState mediaState)
+        public void RestoreMediaState(MediaState mediaState)
         {
-            Close();
+            Unload();
             AutoLoad = true;
             StartupPosition = mediaState.IsStarted ? mediaState.Position : (TimeSpan?)null;
             AutoPlay = mediaState.IsPlaying;
@@ -1706,7 +1705,7 @@ namespace Microsoft.PlayerFramework
         /// Gets the current state of the MediaElement so it can be restored later.
         /// </summary>
         /// <returns>The MediaElement state</returns>
-        public virtual MediaState GetMediaState()
+        public MediaState GetMediaState()
         {
             var result = new MediaState();
             result.Source = Source;
@@ -1974,8 +1973,8 @@ namespace Microsoft.PlayerFramework
         private void OnMediaFailure(ExceptionRoutedEventArgs e)
         {
             // it is important to save the state here as opposed to within OnMediaFailed because that method may get called from a retry failure and we don't want to reset the state from a retry.
-            FailedMediaState = GetMediaState();
-            FailedMediaState.Position = previousPosition; // Position will be reset to zero by the time we get here. Therefore remember the previous position instead.
+            failedMediaState = GetMediaState();
+            failedMediaState.Position = previousPosition; // Position will be reset to zero by the time we get here. Therefore remember the previous position instead.
             OnMediaFailed(e);
         }
 
@@ -1986,7 +1985,7 @@ namespace Microsoft.PlayerFramework
 
         void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
-            FailedMediaState = null;
+            failedMediaState = null;
             OnMediaOpened(e);
         }
         #endregion
@@ -2010,7 +2009,7 @@ namespace Microsoft.PlayerFramework
                 ((AutoHideBehavior & AutoHideBehavior.AllowDuringPlaybackOnly) == AutoHideBehavior.AllowDuringPlaybackOnly && InteractiveViewModel.CurrentState != MediaElementState.Playing) ||
                 ((AutoHideBehavior & AutoHideBehavior.PreventDuringInteractiveHover) == AutoHideBehavior.PreventDuringInteractiveHover && IsPointerOverInteractiveElement())
 #if NETFX_CORE
-                || interactiveElements.Any(ie => ie.HasKeyboardFocus())
+ || interactiveElements.Any(ie => ie.HasKeyboardFocus())
                 || IsPlayToConnected()
 #endif
 );
@@ -2021,7 +2020,7 @@ namespace Microsoft.PlayerFramework
                 IsInteractive = false;
             }
         }
-        
+
 #if SILVERLIGHT
         void uiElement_MouseMove(object sender, MouseEventArgs e)
 #else
@@ -2039,7 +2038,7 @@ namespace Microsoft.PlayerFramework
         {
             OnUserInteraction(InteractionType.Hard, true);
         }
-        
+
         #endregion
 
         #endregion

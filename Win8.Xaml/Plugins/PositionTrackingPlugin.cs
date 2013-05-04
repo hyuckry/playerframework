@@ -16,7 +16,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A plugin used to help track when specific events occur during playback.
     /// </summary>
-    public class PositionTrackingPlugin : TrackingPluginBase<PositionTrackingEvent>
+    public sealed class PositionTrackingPlugin : TrackingPluginBase
     {
         private readonly Dictionary<string, PositionTrackingEvent> activeMarkers = new Dictionary<string, PositionTrackingEvent>();
         private readonly List<PositionTrackingEvent> trackingEventsToInitializeOnStart = new List<PositionTrackingEvent>();
@@ -24,12 +24,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// The TimelineMarker ID used to store tracking events.
         /// </summary>
-        public const string MarkerType_TrackingEvent = "TrackingEvent";
+        public static string MarkerType_TrackingEvent { get { return "TrackingEvent"; } }
 
         /// <summary>
         /// Identifies the EvaluateOnForwardOnly dependency property.
         /// </summary>
-        public static readonly DependencyProperty EvaluateOnForwardOnlyProperty = DependencyProperty.Register("EvaluateOnForwardOnly", typeof(bool), typeof(PositionTrackingPlugin), new PropertyMetadata(true));
+        public static DependencyProperty EvaluateOnForwardOnlyProperty { get { return evaluateOnForwardOnlyProperty; } }
+        static readonly DependencyProperty evaluateOnForwardOnlyProperty = DependencyProperty.Register("EvaluateOnForwardOnly", typeof(bool), typeof(PositionTrackingPlugin), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets whether seeking or scrubbing back in time can trigger ads. Set to false to allow ads to be played when seeking backwards. Default is true.
@@ -41,8 +42,9 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <inheritdoc /> 
-        protected override void InitializeTrackingEvent(PositionTrackingEvent positionTrackingEvent)
+        protected override void InitializeTrackingEvent(TrackingEventBase trackingEvent)
         {
+            PositionTrackingEvent positionTrackingEvent = trackingEvent as PositionTrackingEvent;
             if (MediaPlayer.PlayerState == PlayerState.Opened || MediaPlayer.PlayerState == PlayerState.Starting || MediaPlayer.PlayerState == PlayerState.Started)
             {
                 InitializePositionTrackingEvent(positionTrackingEvent);
@@ -74,8 +76,9 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <inheritdoc /> 
-        protected override void UninitializeTrackingEvent(PositionTrackingEvent positionTrackingEvent)
+        protected override void UninitializeTrackingEvent(TrackingEventBase trackingEvent)
         {
+            PositionTrackingEvent positionTrackingEvent = trackingEvent as PositionTrackingEvent;
             if (trackingEventsToInitializeOnStart.Contains(positionTrackingEvent))
             {
                 trackingEventsToInitializeOnStart.Remove(positionTrackingEvent);
@@ -144,7 +147,7 @@ namespace Microsoft.PlayerFramework
         {
             if (!MediaPlayer.StartupPosition.HasValue)
             {
-                foreach (var trackingEvent in TrackingEvents.Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 0).ToList())
+                foreach (var trackingEvent in TrackingEvents.OfType<PositionTrackingEvent>().Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 0).ToList())
                 {
                     OnTrackEvent(new PositionEventTrackedEventArgs(trackingEvent, false));
                 }
@@ -153,7 +156,7 @@ namespace Microsoft.PlayerFramework
 
         private void MediaPlayer_MediaEnded(object sender, MediaPlayerActionEventArgs e)
         {
-            foreach (var trackingEvent in TrackingEvents.Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 1).ToList())
+            foreach (var trackingEvent in TrackingEvents.OfType<PositionTrackingEvent>().Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 1).ToList())
             {
                 OnTrackEvent(new PositionEventTrackedEventArgs(trackingEvent, false));
             }
@@ -197,7 +200,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Used to identify and track when the media reaches a specific position.
     /// </summary>
-    public class PositionTrackingEvent : TrackingEventBase
+    public sealed class PositionTrackingEvent : TrackingEventBase
     {
         /// <summary>
         /// Gets or sets the playback position when the tracking event will fire.
@@ -214,7 +217,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Contains additional information about a tracking event that has occurred.
     /// </summary>
-    public class PositionEventTrackedEventArgs : EventTrackedEventArgs
+    public sealed class PositionEventTrackedEventArgs : EventTrackedEventArgs
     {
         /// <summary>
         /// Creates a new instance of PositionEventTrackedEventArgs

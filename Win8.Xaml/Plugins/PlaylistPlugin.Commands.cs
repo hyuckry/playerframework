@@ -11,7 +11,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides a set of commands that can be used to control the PlaylistPlugin. Useful for binding in Xaml
     /// </summary>
-    public class PlaylistCommands : DependencyObject
+    public sealed class PlaylistCommands : DependencyObject
     {
         /// <summary>
         /// Creates a new instance of the PlaylistCommands class.
@@ -49,7 +49,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PlaylistPlugin dependency property.
         /// </summary>
-        public static readonly DependencyProperty PlaylistPluginProperty = DependencyProperty.Register("PlaylistPlugin", typeof(PlaylistPlugin), typeof(PlaylistCommands), null);
+        public static DependencyProperty PlaylistPluginProperty { get { return playlistPluginProperty; } }
+        static readonly DependencyProperty playlistPluginProperty = DependencyProperty.Register("PlaylistPlugin", typeof(PlaylistPlugin), typeof(PlaylistCommands), null);
         /// <summary>
         /// Gets or sets the instance of the PlaylistPlugin that the commands should operate on.
         /// </summary>

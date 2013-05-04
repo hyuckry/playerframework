@@ -12,7 +12,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a marker to appear visually in the timeline.
     /// </summary>
-    public class VisualMarker : DependencyObject
+    public sealed class VisualMarker : DependencyObject
     {
         /// <summary>
         /// Creates a new instance of VisualMarker
@@ -26,7 +26,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Text DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(VisualMarker), null);
+        public static DependencyProperty TextProperty { get { return textProperty; } }
+        static readonly DependencyProperty textProperty = DependencyProperty.Register("Text", typeof(string), typeof(VisualMarker), null);
 
         /// <summary>
         /// Gets or sets the actual value of the slider to be able to maintain the value of the slider while the user is scrubbing.
@@ -43,7 +44,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Time DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty TimeProperty = DependencyProperty.Register("Time", typeof(TimeSpan), typeof(VisualMarker), new PropertyMetadata(TimeSpan.Zero));
+        public static DependencyProperty TimeProperty { get { return timeProperty; } }
+        static readonly DependencyProperty timeProperty = DependencyProperty.Register("Time", typeof(TimeSpan), typeof(VisualMarker), new PropertyMetadata(TimeSpan.Zero));
 
         /// <summary>
         /// Gets or sets the actual value of the slider to be able to maintain the value of the slider while the user is scrubbing.
@@ -60,7 +62,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// IsSeekable DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty IsSeekableProperty = DependencyProperty.Register("IsSeekable", typeof(bool), typeof(VisualMarker), new PropertyMetadata(false));
+        public static DependencyProperty IsSeekableProperty { get { return isSeekableProperty; } }
+        static readonly DependencyProperty isSeekableProperty = DependencyProperty.Register("IsSeekable", typeof(bool), typeof(VisualMarker), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets the actual value of the slider to be able to maintain the value of the slider while the user is scrubbing.
@@ -77,7 +80,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Style DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty StyleProperty = DependencyProperty.Register("Style", typeof(Style), typeof(VisualMarker), null);
+        public static DependencyProperty StyleProperty { get { return styleProperty; } }
+        static readonly DependencyProperty styleProperty = DependencyProperty.Register("Style", typeof(Style), typeof(VisualMarker), null);
 
         /// <summary>
         /// Gets or sets the style of the button to show in the timeline.

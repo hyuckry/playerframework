@@ -54,20 +54,13 @@ namespace Microsoft.PlayerFramework
     [TemplateVisualState(Name = VolumeVisibilityStates.Dismissed, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
     [TemplateVisualState(Name = VolumeVisibilityStates.Hidden, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
     [TemplateVisualState(Name = VolumeVisibilityStates.Visible, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
-    public class VolumeButton : Control
+    public sealed class VolumeButton : Control
     {
-        /// <summary>
-        /// The  volume slider panel (used for video media).
-        /// </summary>
-        protected FrameworkElement VolumeSliderContainerElement { get; private set; }
-        /// <summary>
-        /// The  volume slider control (used for video media).
-        /// </summary>
-        protected VolumeSlider VolumeSliderElement { get; private set; }
-        /// <summary>
-        /// The mute and volume slider toggle button (used for video media).
-        /// </summary>
-        protected MediaPlayerButton MuteButtonElement { get; private set; }
+        FrameworkElement volumeSliderContainerElement;
+
+        VolumeSlider volumeSliderElement;
+
+        MediaPlayerButton muteButtonElement;
 
         /// <summary>
         /// Creates a new instance of VolumeButton.
@@ -92,11 +85,11 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <inheritdoc /> 
-        protected virtual void GetTemplateChildren()
+        void GetTemplateChildren()
         {
-            VolumeSliderContainerElement = GetTemplateChild(VolumeTemplateParts.VolumeSliderContainer) as FrameworkElement;
-            VolumeSliderElement = GetTemplateChild(VolumeTemplateParts.VolumeSlider) as VolumeSlider;
-            MuteButtonElement = GetTemplateChild(VolumeTemplateParts.MuteButton) as MediaPlayerButton;
+            volumeSliderContainerElement = GetTemplateChild(VolumeTemplateParts.VolumeSliderContainer) as FrameworkElement;
+            volumeSliderElement = GetTemplateChild(VolumeTemplateParts.VolumeSlider) as VolumeSlider;
+            muteButtonElement = GetTemplateChild(VolumeTemplateParts.MuteButton) as MediaPlayerButton;
         }
 
         void SetDefaultVisualStates()
@@ -119,36 +112,36 @@ namespace Microsoft.PlayerFramework
 
         private void UpdateVolumeLabel()
         {
-            if (MuteButtonElement != null)
+            if (muteButtonElement != null)
             {
                 if (IsVolumeVisible)
                 {
-                    MuteButtonElement.UnselectedName = MediaPlayer.GetResourceString("MuteButtonLabel");
+                    muteButtonElement.UnselectedName = MediaPlayer.GetResourceString("MuteButtonLabel");
                 }
                 else
                 {
-                    MuteButtonElement.UnselectedName = MediaPlayer.GetResourceString("VolumeMuteButtonLabel");
+                    muteButtonElement.UnselectedName = MediaPlayer.GetResourceString("VolumeMuteButtonLabel");
                 }
             }
         }
 
         void InitializeTemplateChildren()
         {
-            if (MuteButtonElement != null)
+            if (muteButtonElement != null)
             {
-                MuteButtonElement.GotFocus += VolumeButtonElement_GotFocus;
-                var vmCommand = MuteButtonElement.Command as ViewModelCommand;
+                muteButtonElement.GotFocus += VolumeButtonElement_GotFocus;
+                var vmCommand = muteButtonElement.Command as ViewModelCommand;
                 if (vmCommand != null) vmCommand.Executing += vmCommand_Executing;
             }
 
-            if (VolumeSliderContainerElement != null)
+            if (volumeSliderContainerElement != null)
             {
 #if SILVERLIGHT
                 VolumeSliderContainerElement.MouseEnter += VolumeSliderContainerElement_MouseEnter;
                 VolumeSliderContainerElement.MouseLeave += VolumeSliderContainerElement_MouseLeave;
 #else
-                VolumeSliderContainerElement.PointerEntered += VolumeSliderContainerElement_PointerEntered;
-                VolumeSliderContainerElement.PointerExited += VolumeSliderContainerElement_PointerExited;
+                volumeSliderContainerElement.PointerEntered += VolumeSliderContainerElement_PointerEntered;
+                volumeSliderContainerElement.PointerExited += VolumeSliderContainerElement_PointerExited;
 #endif
             }
 
@@ -157,21 +150,21 @@ namespace Microsoft.PlayerFramework
 
         void UninitializeTemplateChildren()
         {
-            if (MuteButtonElement != null)
+            if (muteButtonElement != null)
             {
-                MuteButtonElement.GotFocus -= VolumeButtonElement_GotFocus;
-                var vmCommand = MuteButtonElement.Command as ViewModelCommand;
+                muteButtonElement.GotFocus -= VolumeButtonElement_GotFocus;
+                var vmCommand = muteButtonElement.Command as ViewModelCommand;
                 if (vmCommand != null) vmCommand.Executing -= vmCommand_Executing;
             }
 
-            if (VolumeSliderContainerElement != null)
+            if (volumeSliderContainerElement != null)
             {
 #if SILVERLIGHT
                 VolumeSliderContainerElement.MouseEnter -= VolumeSliderContainerElement_MouseEnter;
                 VolumeSliderContainerElement.MouseLeave -= VolumeSliderContainerElement_MouseLeave;
 #else
-                VolumeSliderContainerElement.PointerEntered -= VolumeSliderContainerElement_PointerEntered;
-                VolumeSliderContainerElement.PointerExited -= VolumeSliderContainerElement_PointerExited;
+                volumeSliderContainerElement.PointerEntered -= VolumeSliderContainerElement_PointerEntered;
+                volumeSliderContainerElement.PointerExited -= VolumeSliderContainerElement_PointerExited;
 #endif
             }
 
@@ -246,7 +239,7 @@ namespace Microsoft.PlayerFramework
 #else
         void volumeCollapseTimer_Tick(object sender, object e)
         {
-            if (VolumeSliderElement == null || VolumeSliderElement.InnerFocusState != FocusState.Keyboard)
+            if (volumeSliderElement == null || volumeSliderElement.InnerFocusState != FocusState.Keyboard)
             {
                 DismissVolume();
             }
@@ -268,7 +261,7 @@ namespace Microsoft.PlayerFramework
         void VolumeButtonElement_GotFocus(object sender, RoutedEventArgs e)
         {
 #if !SILVERLIGHT
-            if (MuteButtonElement.FocusState == FocusState.Keyboard)
+            if (muteButtonElement.FocusState == FocusState.Keyboard)
 #endif
             {
                 RequestVolume();
@@ -290,7 +283,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the ViewModel dependency property.
         /// </summary>
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(VolumeButton), null);
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(VolumeButton), null);
 
         /// <summary>
         /// Gets or sets the IInteractiveViewModel implementation used to provide state updates and serve user interaction requests.
@@ -306,7 +300,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the MuteButtonStyle dependency property.
         /// </summary>
-        public static readonly DependencyProperty MuteButtonStyleProperty = DependencyProperty.Register("MuteButtonStyle", typeof(Style), typeof(VolumeButton), null);
+        public static DependencyProperty MuteButtonStyleProperty { get { return muteButtonStyleProperty; } }
+        static readonly DependencyProperty muteButtonStyleProperty = DependencyProperty.Register("MuteButtonStyle", typeof(Style), typeof(VolumeButton), null);
 
         /// <summary>
         /// Gets or sets the Style used to display the mute button.
@@ -320,7 +315,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PanelBackground dependency property.
         /// </summary>
-        public static readonly DependencyProperty PanelBackgroundProperty = DependencyProperty.Register("PanelBackground", typeof(Brush), typeof(VolumeButton), null);
+        public static DependencyProperty PanelBackgroundProperty { get { return panelBackgroundProperty; } }
+        static readonly DependencyProperty panelBackgroundProperty = DependencyProperty.Register("PanelBackground", typeof(Brush), typeof(VolumeButton), null);
 
         /// <summary>
         /// Gets or sets the Background brush on the volume panel.
@@ -334,7 +330,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the PanelPosition dependency property.
         /// </summary>
-        public static readonly DependencyProperty PanelPositionProperty = DependencyProperty.Register("PanelPosition", typeof(Thickness), typeof(VolumeButton), null);
+        public static DependencyProperty PanelPositionProperty { get { return panelPositionProperty; } }
+        static readonly DependencyProperty panelPositionProperty = DependencyProperty.Register("PanelPosition", typeof(Thickness), typeof(VolumeButton), null);
 
         /// <summary>
         /// Gets or sets the Background position on the volume panel.

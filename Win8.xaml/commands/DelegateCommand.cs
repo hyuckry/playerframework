@@ -6,7 +6,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides an ICommand implementation that allows delgates to be used to handle requests to the interface.
     /// </summary>
-    public class DelegateCommand : ICommand
+    internal class DelegateCommand : ICommand
     {
         /// <summary>
         /// The action to invoke when the Execute method is called.
@@ -52,7 +52,7 @@ namespace Microsoft.PlayerFramework
         /// Indicates whether or not the command can execute without a parameter
         /// </summary>
         /// <returns>boolean indicating whether the command can execute.</returns>
-        public virtual bool CanExecute()
+        public bool CanExecute()
         {
             if (CanExecuteMethod == null) return true;
             return CanExecuteMethod();
@@ -61,7 +61,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Executes the command without a parameter
         /// </summary>
-        public virtual void Execute()
+        public void Execute()
         {
             if (ExecuteMethod != null)
             {
@@ -70,13 +70,13 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <inheritdoc /> 
-        public virtual bool CanExecute(object parameter)
+        public bool CanExecute(object parameter)
         {
             return CanExecute();
         }
 
         /// <inheritdoc /> 
-        public virtual void Execute(object parameter)
+        public void Execute(object parameter)
         {
             Execute();
         }

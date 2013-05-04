@@ -15,7 +15,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// An ItemsControl used to position items in a linear path based on relative coordinates (defined by attached properties).
     /// </summary>
-    public class PositionedItemsControl : PositionedItemsPanel
+    public sealed class PositionedItemsControl : PositionedItemsPanel
     {
         /// <summary>
         /// Raised when a new item is loaded/added
@@ -32,11 +32,13 @@ namespace Microsoft.PlayerFramework
         /// ItemsSource DependencyProperty definition.
         /// </summary>
 #if SILVERLIGHT
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(PositionedItemsControl), new PropertyMetadata(null, (d, e) => ((PositionedItemsControl)d).OnItemsSourceChanged(e.OldValue as IEnumerable, e.NewValue as IEnumerable)));
+        public static DependencyProperty ItemsSourceProperty { get { return itemsSourceProperty; } }
+        static readonly DependencyProperty itemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(PositionedItemsControl), new PropertyMetadata(null, (d, e) => ((PositionedItemsControl)d).OnItemsSourceChanged(e.OldValue as IEnumerable, e.NewValue as IEnumerable)));
 
 #else
         // TODO: Bug in Win8 doesn't allow us to bind to IEnumerable. Remove when fixed.
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(object), typeof(PositionedItemsControl), new PropertyMetadata(null, (d, e) => ((PositionedItemsControl)d).OnItemsSourceChanged(e.OldValue as IEnumerable, e.NewValue as IEnumerable)));
+        public static DependencyProperty ItemsSourceProperty { get { return itemsSourceProperty; } }
+        static readonly DependencyProperty itemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(object), typeof(PositionedItemsControl), new PropertyMetadata(null, (d, e) => ((PositionedItemsControl)d).OnItemsSourceChanged(e.OldValue as IEnumerable, e.NewValue as IEnumerable)));
 
 #endif
         void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
@@ -118,7 +120,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// ItemTemplate DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(PositionedItemsControl), new PropertyMetadata(null, (d, e) => ((PositionedItemsControl)d).OnItemTemplateChanged(e.NewValue as DataTemplate)));
+        public static DependencyProperty ItemTemplateProperty { get { return itemTemplateProperty; } }
+        static readonly DependencyProperty itemTemplateProperty = DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(PositionedItemsControl), new PropertyMetadata(null, (d, e) => ((PositionedItemsControl)d).OnItemTemplateChanged(e.NewValue as DataTemplate)));
 
         void OnItemTemplateChanged(DataTemplate newValue)
         {
@@ -138,7 +141,11 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents event args that contain a FrameworkElement.
     /// </summary>
-    public class FrameworkElementEventArgs : EventArgs
+#if SILVERLIGHT
+    public sealed class FrameworkElementEventArgs : EventArgs
+#else
+    public sealed class FrameworkElementEventArgs
+#endif
     {
         /// <summary>
         /// Creates a new instance of FrameworkElementEventArgs.

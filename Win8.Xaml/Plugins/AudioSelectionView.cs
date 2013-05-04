@@ -16,7 +16,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that allows the user to select which captions they want or to turn off closed captioning.
     /// </summary>
-    public class AudioSelectionView : Control
+    public sealed class AudioSelectionView : Control
     {
         /// <summary>
         /// Creates a new instance of the control
@@ -29,7 +29,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates the caption selector view should be closed.
         /// </summary>
+#if SILVERLIGHT
         public event EventHandler Close;
+#else
+        public event EventHandler<object> Close;
+#endif
 
         ListBox AudioList;
         Panel LayoutRoot;

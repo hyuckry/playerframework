@@ -27,7 +27,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Can be called by UI elements to indicate that the user is interacting
         /// </summary>
-        void OnInteracting(InteractionType activityType);
+        void OnInteracting(InteractionType interactionType);
 
         /// <summary>
         /// Raised when the user interacts
@@ -357,8 +357,9 @@ namespace Microsoft.PlayerFramework
         /// A scrub action has completed.
         /// </summary>
         /// <param name="position">The position that the scrubbing action was completed.</param>
-        /// <param name="canceled">Gets or sets whether the operation should be cancelled</param>
-        void CompleteScrub(TimeSpan position, ref bool canceled);
+        /// <param name="canceled">Gets whether the operation was already cancelled</param>
+        /// <param name="cancel">Sets whether the operation should be cancelled</param>
+        void CompleteScrub(TimeSpan position, bool canceled, out bool cancel);
 
         /// <summary>
         /// Skip back to the previous marker in the timeline.
@@ -429,7 +430,11 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides information about the interaction that occurred.
     /// </summary>
+#if SILVERLIGHT
     public sealed class InteractionEventArgs : EventArgs
+#else
+    public sealed class InteractionEventArgs
+#endif
     {
         /// <summary>
         /// Creates a new instance of the InteractionEventArgs

@@ -16,7 +16,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a pause button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreatePauseCommand()
+        public static IViewModelCommand CreatePauseCommand()
         {
             return new ViewModelCommand(
                 vm => vm.Pause(),
@@ -29,7 +29,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a play button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreatePlayResumeCommand()
+        public static IViewModelCommand CreatePlayResumeCommand()
         {
             return new ViewModelCommand(
                 vm => vm.PlayResume(),
@@ -42,7 +42,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a stop button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateStopCommand()
+        public static IViewModelCommand CreateStopCommand()
         {
             return new ViewModelCommand(
                 vm => vm.Stop(),
@@ -55,7 +55,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to an instant replay button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateReplayCommand()
+        public static IViewModelCommand CreateReplayCommand()
         {
             return new ViewModelCommand(
                 vm => vm.Replay(),
@@ -68,7 +68,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a rewind button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateRewindCommand()
+        public static IViewModelCommand CreateRewindCommand()
         {
             return new ViewModelCommand(
                 vm => vm.DecreasePlaybackRate(),
@@ -81,7 +81,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a fast forward button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateFastForwardCommand()
+        public static IViewModelCommand CreateFastForwardCommand()
         {
             return new ViewModelCommand(
                 vm => vm.IncreasePlaybackRate(),
@@ -94,7 +94,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a slow motion button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateSlowMotionCommand()
+        public static IViewModelCommand CreateSlowMotionCommand()
         {
             return new ViewModelCommand(
                 vm => vm.IsSlowMotion = !vm.IsSlowMotion,
@@ -107,9 +107,9 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a volume slider. Note: the volume value is expected to be passed in as a CommandParameter.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateVolumeCommand()
+        public static IViewModelCommand CreateVolumeCommand()
         {
-            return new ViewModelCommand<double>(
+            return new TypedViewModelCommand<double>(
                 (vm, volume) => vm.Volume = volume,
                 (vm, volume) => true
                 );
@@ -119,7 +119,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a mute button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateMuteCommand()
+        public static IViewModelCommand CreateMuteCommand()
         {
             return new ViewModelCommand(
                 vm => vm.IsMuted = !vm.IsMuted,
@@ -131,7 +131,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a caption selection button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateCaptionsCommand()
+        public static IViewModelCommand CreateCaptionsCommand()
         {
             return new ViewModelCommand(
                 vm => vm.InvokeCaptionSelection(),
@@ -144,7 +144,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a audio stream selection button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateAudioSelectionCommand()
+        public static IViewModelCommand CreateAudioSelectionCommand()
         {
             return new ViewModelCommand(
                 vm => vm.InvokeAudioSelection(),
@@ -157,7 +157,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a fullscreen button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateFullScreenCommand()
+        public static IViewModelCommand CreateFullScreenCommand()
         {
             return new ViewModelCommand(
                 vm => vm.IsFullScreen = !vm.IsFullScreen,
@@ -169,9 +169,9 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a seek button. Note: the new position is expected to be passed in as a CommandParameter.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateSeekCommand()
+        public static IViewModelCommand CreateSeekCommand()
         {
-            return new ViewModelCommand<TimeSpan>(
+            return new TypedViewModelCommand<TimeSpan>(
                 (vm, position) => { bool canceled; vm.Seek(position, out canceled); },
                 (vm, position) => vm.IsSeekEnabled,
                 new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSeekEnabledChanged -= eh, (vm, eh) => vm.IsSeekEnabledChanged += eh)
@@ -182,9 +182,9 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a skip previous marker/playlist item button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateSkipPreviousCommand()
+        public static IViewModelCommand CreateSkipPreviousCommand()
         {
-            return new ViewModelCommand<VisualMarker>(
+            return new TypedViewModelCommand<VisualMarker>(
                 (vm, position) => vm.SkipPrevious(),
                 (vm, position) => vm.IsSkipPreviousEnabled,
                 new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSkipPreviousEnabledChanged -= eh, (vm, eh) => vm.IsSkipPreviousEnabledChanged += eh)
@@ -195,9 +195,9 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a skip next marker/playlist item button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateSkipNextCommand()
+        public static IViewModelCommand CreateSkipNextCommand()
         {
-            return new ViewModelCommand<VisualMarker>(
+            return new TypedViewModelCommand<VisualMarker>(
                 (vm, position) => vm.SkipNext(),
                 (vm, position) => vm.IsSkipNextEnabled,
                 new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSkipNextEnabledChanged -= eh, (vm, eh) => vm.IsSkipNextEnabledChanged += eh)
@@ -208,7 +208,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a skip back button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateSkipBackCommand()
+        public static IViewModelCommand CreateSkipBackCommand()
         {
             return new ViewModelCommand(
                 vm => vm.SkipBack(),
@@ -221,7 +221,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a skip ahead button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateSkipAheadCommand()
+        public static IViewModelCommand CreateSkipAheadCommand()
         {
             return new ViewModelCommand(
                 vm => vm.SkipAhead(),
@@ -234,7 +234,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a go live button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreateGoLiveCommand()
+        public static IViewModelCommand CreateGoLiveCommand()
         {
             return new ViewModelCommand(
                 vm => vm.GoLive(),
@@ -247,7 +247,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a play/pause button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static ViewModelCommand CreatePlayPauseCommand()
+        public static IViewModelCommand CreatePlayPauseCommand()
         {
             return new ViewModelCommand(
                 vm =>

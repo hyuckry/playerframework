@@ -29,21 +29,11 @@ namespace Microsoft.PlayerFramework
     [TemplateVisualState(Name = TimelineVisualStates.ScrubbingStates.IsNotScrubbing, GroupName = TimelineVisualStates.GroupNames.ScrubbingStates)]
     public partial class SeekableSlider
     {
-        // template controls
-        /// <summary>
-        /// The bar used to restrict the available area that can be scrubbed to.
-        /// </summary>
-        protected FrameworkElement AvailableBar { get; private set; }
+        FrameworkElement availableBar;
 
-        /// <summary>
-        /// The Panel used to host the control.
-        /// </summary>
-        protected FrameworkElement Panel { get; private set; }
+        FrameworkElement panel;
 
-        /// <summary>
-        /// The thumb used to allow the user to seek.
-        /// </summary>
-        protected Thumb Thumb { get; private set; }
+        Thumb thumb;
 
         #region Template Children
 
@@ -64,71 +54,71 @@ namespace Microsoft.PlayerFramework
         {
             if (Orientation == Orientation.Horizontal)
             {
-                Panel = GetTemplateChild(SeekableSliderTemplateParts.HorizontalTemplate) as FrameworkElement;
-                Thumb = GetTemplateChild(SeekableSliderTemplateParts.HorizontalThumb) as Thumb;
-                AvailableBar = GetTemplateChild(SeekableSliderTemplateParts.HorizontalAvailableBar) as FrameworkElement;
+                panel = GetTemplateChild(SeekableSliderTemplateParts.HorizontalTemplate) as FrameworkElement;
+                thumb = GetTemplateChild(SeekableSliderTemplateParts.HorizontalThumb) as Thumb;
+                availableBar = GetTemplateChild(SeekableSliderTemplateParts.HorizontalAvailableBar) as FrameworkElement;
             }
             else
             {
-                Panel = GetTemplateChild(SeekableSliderTemplateParts.VerticalTemplate) as FrameworkElement;
-                Thumb = GetTemplateChild(SeekableSliderTemplateParts.VerticalThumb) as Thumb;
-                AvailableBar = GetTemplateChild(SeekableSliderTemplateParts.VerticalAvailableBar) as FrameworkElement;
+                panel = GetTemplateChild(SeekableSliderTemplateParts.VerticalTemplate) as FrameworkElement;
+                thumb = GetTemplateChild(SeekableSliderTemplateParts.VerticalThumb) as Thumb;
+                availableBar = GetTemplateChild(SeekableSliderTemplateParts.VerticalAvailableBar) as FrameworkElement;
             }
         }
 
         private void InitializeTemplateChildren()
         {
-            if (AvailableBar != null)
+            if (availableBar != null)
             {
 #if SILVERLIGHT
                 AvailableBar.MouseLeftButtonDown += bar_PointerPressed;
                 AvailableBar.MouseLeftButtonUp += bar_PointerReleased;
                 AvailableBar.MouseMove += bar_PointerMoved;
 #else
-                AvailableBar.PointerPressed += bar_PointerPressed;
-                AvailableBar.PointerReleased += bar_PointerReleased;
-                AvailableBar.PointerMoved += bar_PointerMoved;
+                availableBar.PointerPressed += bar_PointerPressed;
+                availableBar.PointerReleased += bar_PointerReleased;
+                availableBar.PointerMoved += bar_PointerMoved;
 #endif
             }
-            if (Panel != null)
+            if (panel != null)
             {
-                Panel.SizeChanged += PanelSizeChanged;
+                panel.SizeChanged += PanelSizeChanged;
             }
 
-            if (Thumb != null)
+            if (thumb != null)
             {
-                Thumb.DragStarted += ThumbDragStarted;
-                Thumb.DragDelta += ThumbDragDelta;
-                Thumb.DragCompleted += ThumbDragCompleted;
+                thumb.DragStarted += ThumbDragStarted;
+                thumb.DragDelta += ThumbDragDelta;
+                thumb.DragCompleted += ThumbDragCompleted;
             }
         }
 
         private void UninitializeTemplateChildren()
         {
             // main container
-            if (AvailableBar != null)
+            if (availableBar != null)
             {
 #if SILVERLIGHT
                 AvailableBar.MouseLeftButtonDown -= bar_PointerPressed;
                 AvailableBar.MouseLeftButtonUp -= bar_PointerReleased;
                 AvailableBar.MouseMove -= bar_PointerMoved;
 #else
-                AvailableBar.PointerPressed -= bar_PointerPressed;
-                AvailableBar.PointerReleased -= bar_PointerReleased;
-                AvailableBar.PointerMoved -= bar_PointerMoved;
+                availableBar.PointerPressed -= bar_PointerPressed;
+                availableBar.PointerReleased -= bar_PointerReleased;
+                availableBar.PointerMoved -= bar_PointerMoved;
 #endif
             }
-            if (Panel != null)
+            if (panel != null)
             {
-                Panel.SizeChanged -= PanelSizeChanged;
+                panel.SizeChanged -= PanelSizeChanged;
             }
 
             // thumb
-            if (Thumb != null)
+            if (thumb != null)
             {
-                Thumb.DragStarted -= ThumbDragStarted;
-                Thumb.DragDelta -= ThumbDragDelta;
-                Thumb.DragCompleted -= ThumbDragCompleted;
+                thumb.DragStarted -= ThumbDragStarted;
+                thumb.DragDelta -= ThumbDragDelta;
+                thumb.DragCompleted -= ThumbDragCompleted;
             }
         }
 
@@ -140,7 +130,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// ActualValue DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ActualValueProperty = DependencyProperty.Register("ActualValue", typeof(double), typeof(SeekableSlider), new PropertyMetadata(0.0, (d, e) => ((SeekableSlider)d).OnActualValueChanged((double)e.NewValue)));
+        public static DependencyProperty ActualValueProperty { get { return actualValueProperty; } }
+        static readonly DependencyProperty actualValueProperty = DependencyProperty.Register("ActualValue", typeof(double), typeof(SeekableSlider), new PropertyMetadata(0.0, (d, e) => ((SeekableSlider)d).OnActualValueChanged((double)e.NewValue)));
 
         void OnActualValueChanged(double newValue)
         {
@@ -173,7 +164,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// MaxValue DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double), typeof(SeekableSlider), new PropertyMetadata(double.NaN, (d, e) => ((SeekableSlider)d).OnMaxValueChanged()));
+        public static DependencyProperty MaxValueProperty { get { return maxValueProperty; } }
+        static readonly DependencyProperty maxValueProperty = DependencyProperty.Register("MaxValue", typeof(double), typeof(SeekableSlider), new PropertyMetadata(double.NaN, (d, e) => ((SeekableSlider)d).OnMaxValueChanged()));
 
         void OnMaxValueChanged()
         {
@@ -203,7 +195,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbStyle DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbStyleProperty = DependencyProperty.Register("SliderThumbStyle", typeof(Style), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbStyleProperty { get { return sliderThumbStyleProperty; } }
+        static readonly DependencyProperty sliderThumbStyleProperty = DependencyProperty.Register("SliderThumbStyle", typeof(Style), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the style for the slider thumb
@@ -220,7 +213,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// HorizontalBackgroundContent DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty HorizontalBackgroundContentProperty = DependencyProperty.Register("HorizontalBackgroundContent", typeof(UIElement), typeof(SeekableSlider), null);
+        public static DependencyProperty HorizontalBackgroundContentProperty { get { return horizontalBackgroundContentProperty; } }
+        static readonly DependencyProperty horizontalBackgroundContentProperty = DependencyProperty.Register("HorizontalBackgroundContent", typeof(UIElement), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the UIElement to display behind the control
@@ -237,7 +231,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// HorizontalForegroundContent DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty HorizontalForegroundContentProperty = DependencyProperty.Register("HorizontalForegroundContent", typeof(UIElement), typeof(SeekableSlider), null);
+        public static DependencyProperty HorizontalForegroundContentProperty { get { return horizontalForegroundContentProperty; } }
+        static readonly DependencyProperty horizontalForegroundContentProperty = DependencyProperty.Register("HorizontalForegroundContent", typeof(UIElement), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the UIElement to display in the foreground
@@ -254,7 +249,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// VerticalBackgroundContent DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty VerticalBackgroundContentProperty = DependencyProperty.Register("VerticalBackgroundContent", typeof(UIElement), typeof(SeekableSlider), null);
+        public static DependencyProperty VerticalBackgroundContentProperty { get { return verticalBackgroundContentProperty; } }
+        static readonly DependencyProperty verticalBackgroundContentProperty = DependencyProperty.Register("VerticalBackgroundContent", typeof(UIElement), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the UIElement to display behind the control
@@ -271,7 +267,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// VerticalForegroundContent DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty VerticalForegroundContentProperty = DependencyProperty.Register("VerticalForegroundContent", typeof(UIElement), typeof(SeekableSlider), null);
+        public static DependencyProperty VerticalForegroundContentProperty { get { return verticalForegroundContentProperty; } }
+        static readonly DependencyProperty verticalForegroundContentProperty = DependencyProperty.Register("VerticalForegroundContent", typeof(UIElement), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the UIElement to display in the foreground
@@ -288,7 +285,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderTrackDecreasePressedBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderTrackDecreasePressedBackgroundProperty = DependencyProperty.Register("SliderTrackDecreasePressedBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderTrackDecreasePressedBackgroundProperty { get { return sliderTrackDecreasePressedBackgroundProperty; } }
+        static readonly DependencyProperty sliderTrackDecreasePressedBackgroundProperty = DependencyProperty.Register("SliderTrackDecreasePressedBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -305,7 +303,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderTrackPressedBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderTrackPressedBackgroundProperty = DependencyProperty.Register("SliderTrackPressedBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderTrackPressedBackgroundProperty { get { return sliderTrackPressedBackgroundProperty; } }
+        static readonly DependencyProperty sliderTrackPressedBackgroundProperty = DependencyProperty.Register("SliderTrackPressedBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -322,7 +321,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbPressedBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbPressedBackgroundProperty = DependencyProperty.Register("SliderThumbPressedBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbPressedBackgroundProperty { get { return sliderThumbPressedBackgroundProperty; } }
+        static readonly DependencyProperty sliderThumbPressedBackgroundProperty = DependencyProperty.Register("SliderThumbPressedBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -339,7 +339,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbPressedBorder DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbPressedBorderProperty = DependencyProperty.Register("SliderThumbPressedBorder", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbPressedBorderProperty { get { return sliderThumbPressedBorderProperty; } }
+        static readonly DependencyProperty sliderThumbPressedBorderProperty = DependencyProperty.Register("SliderThumbPressedBorder", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -356,7 +357,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderDisabledBorder DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderDisabledBorderProperty = DependencyProperty.Register("SliderDisabledBorder", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderDisabledBorderProperty { get { return sliderDisabledBorderProperty; } }
+        static readonly DependencyProperty sliderDisabledBorderProperty = DependencyProperty.Register("SliderDisabledBorder", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -373,7 +375,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderTrackDecreaseDisabledBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderTrackDecreaseDisabledBackgroundProperty = DependencyProperty.Register("SliderTrackDecreaseDisabledBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderTrackDecreaseDisabledBackgroundProperty { get { return sliderTrackDecreaseDisabledBackgroundProperty; } }
+        static readonly DependencyProperty sliderTrackDecreaseDisabledBackgroundProperty = DependencyProperty.Register("SliderTrackDecreaseDisabledBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -390,7 +393,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderTrackDisabledBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderTrackDisabledBackgroundProperty = DependencyProperty.Register("SliderTrackDisabledBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderTrackDisabledBackgroundProperty { get { return sliderTrackDisabledBackgroundProperty; } }
+        static readonly DependencyProperty sliderTrackDisabledBackgroundProperty = DependencyProperty.Register("SliderTrackDisabledBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -407,7 +411,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbDisabledBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbDisabledBackgroundProperty = DependencyProperty.Register("SliderThumbDisabledBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbDisabledBackgroundProperty { get { return sliderThumbDisabledBackgroundProperty; } }
+        static readonly DependencyProperty sliderThumbDisabledBackgroundProperty = DependencyProperty.Register("SliderThumbDisabledBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -424,7 +429,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderTrackDecreasePointerOverBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderTrackDecreasePointerOverBackgroundProperty = DependencyProperty.Register("SliderTrackDecreasePointerOverBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderTrackDecreasePointerOverBackgroundProperty { get { return sliderTrackDecreasePointerOverBackgroundProperty; } }
+        static readonly DependencyProperty sliderTrackDecreasePointerOverBackgroundProperty = DependencyProperty.Register("SliderTrackDecreasePointerOverBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -441,7 +447,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderTrackPointerOverBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderTrackPointerOverBackgroundProperty = DependencyProperty.Register("SliderTrackPointerOverBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderTrackPointerOverBackgroundProperty { get { return sliderTrackPointerOverBackgroundProperty; } }
+        static readonly DependencyProperty sliderTrackPointerOverBackgroundProperty = DependencyProperty.Register("SliderTrackPointerOverBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -458,7 +465,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbPointerOverBackground DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbPointerOverBackgroundProperty = DependencyProperty.Register("SliderThumbPointerOverBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbPointerOverBackgroundProperty { get { return sliderThumbPointerOverBackgroundProperty; } }
+        static readonly DependencyProperty sliderThumbPointerOverBackgroundProperty = DependencyProperty.Register("SliderThumbPointerOverBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -475,7 +483,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbPointerOverBorder DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbPointerOverBorderProperty = DependencyProperty.Register("SliderThumbPointerOverBorder", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbPointerOverBorderProperty { get { return sliderThumbPointerOverBorderProperty; } }
+        static readonly DependencyProperty sliderThumbPointerOverBorderProperty = DependencyProperty.Register("SliderThumbPointerOverBorder", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -492,7 +501,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// SliderThumbPointerOverBorder DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty SliderThumbBackgroundProperty = DependencyProperty.Register("SliderThumbBackground", typeof(Brush), typeof(SeekableSlider), null);
+        public static DependencyProperty SliderThumbBackgroundProperty { get { return sliderThumbBackgroundProperty; } }
+        static readonly DependencyProperty sliderThumbBackgroundProperty = DependencyProperty.Register("SliderThumbBackground", typeof(Brush), typeof(SeekableSlider), null);
 
         /// <summary>
         /// Gets or sets the Brush to display in the foreground
@@ -523,7 +533,7 @@ namespace Microsoft.PlayerFramework
 
         private void ThumbDragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (Thumb.IsDragging)
+            if (thumb.IsDragging)
             {
                 if (Value > Max) Value = Max;
             }
@@ -647,13 +657,13 @@ namespace Microsoft.PlayerFramework
                 pointerReleaseAction = null;
                 pointerCaptured = false;
             }
-            else if (Thumb.IsDragging)
+            else if (thumb.IsDragging)
             {
-                Thumb.CancelDrag();
+                thumb.CancelDrag();
 #if SILVERLIGHT
                 Thumb.ReleaseMouseCapture();
 #else
-                Thumb.ReleasePointerCaptures();
+                thumb.ReleasePointerCaptures();
 #endif
             }
             UpdateScrubbingVisualState();

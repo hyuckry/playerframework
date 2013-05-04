@@ -21,7 +21,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the CheckedContent dependency property.
         /// </summary>
-        public static DependencyProperty CheckedContentProperty = DependencyProperty.RegisterAttached("CheckedContent", typeof(object), typeof(ToggleButtonExtensions), null);
+        public static DependencyProperty CheckedContentProperty { get { return checkedContentProperty; } }
+        static readonly DependencyProperty checkedContentProperty = DependencyProperty.RegisterAttached("CheckedContent", typeof(object), typeof(ToggleButtonExtensions), null);
 
         /// <summary>
         /// Sets the content for the toggle button when in a checked state.

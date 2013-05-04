@@ -15,7 +15,7 @@ namespace Microsoft.PlayerFramework
     /// </summary>
     /// <typeparam name="T1">Additional info passed to the actions.</typeparam>
     /// <typeparam name="T2">The type of event handler.</typeparam>
-    public sealed class HandlerReference<T1, T2>
+    internal class HandlerReference<T1, T2>
     {
         /// <summary>
         /// Creates a new instance of HandlerReference
@@ -42,7 +42,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a command associated with a view model.
     /// </summary>
-    public class ViewModelCommand : ICommand
+    internal class ViewModelCommand : IViewModelCommand
     {
         private IInteractiveViewModel viewModel;
 
@@ -199,7 +199,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a strongly typed command associated with a view model.
     /// </summary>
-    internal class ViewModelCommand<T> : ViewModelCommand
+    internal class TypedViewModelCommand<T> : ViewModelCommand
     {
         /// <summary>
         /// The strongly typed delegate to handle the Execute method with the parameter cast.
@@ -217,7 +217,7 @@ namespace Microsoft.PlayerFramework
         /// <param name="executeMethod">A delegate to handle the Execute method</param>
         /// <param name="canExecuteMethod">A delegate to handle the CanExecute method</param>
         /// <param name="changeHandlers">A param array of delegates to call to wire and unwire notification for the CanExecuteChanged event.</param>
-        public ViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, T, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, RoutedEventHandler>[] changeHandlers)
+        public TypedViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, T, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, RoutedEventHandler>[] changeHandlers)
         {
             this.ExecuteParameterMethod = executeMethod;
             this.CanExecuteParameterMethod = canExecuteMethod;
@@ -229,7 +229,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="executeMethod">A delegate to handle the Execute method</param>
         /// <param name="canExecuteMethod">A delegate to handle the CanExecute method</param>
-        public ViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, bool> canExecuteMethod)
+        public TypedViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, bool> canExecuteMethod)
         {
             this.ExecuteParameterMethod = executeMethod;
             base.CanExecuteMethod = canExecuteMethod;
@@ -239,13 +239,13 @@ namespace Microsoft.PlayerFramework
         /// Instantiates a new instance of the DelegateCommand class.
         /// </summary>
         /// <param name="executeMethod">A delegate to handle the Execute method</param>
-        public ViewModelCommand(Action<IInteractiveViewModel, T> executeMethod)
+        public TypedViewModelCommand(Action<IInteractiveViewModel, T> executeMethod)
         {
             this.ExecuteParameterMethod = executeMethod;
         }
 
         /// <inheritdoc /> 
-        protected ViewModelCommand()
+        protected TypedViewModelCommand()
         { }
 
         /// <inheritdoc /> 
