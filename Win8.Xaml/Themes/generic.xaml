@@ -1401,7 +1401,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:LoaderView">
                     <Grid Background="{TemplateBinding Background}">
-                        <local:PlayButton x:Name="LoadButton" FontSize="75" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <local:PlayButton x:Name="LoadButton" IsEnabled="True" FontSize="75" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -1416,7 +1416,7 @@
                     <Grid Background="{TemplateBinding Background}">
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{TemplateBinding ErrorText}" Margin="0,0,0,12" FontSize="24" HorizontalAlignment="Center"/>
-                            <local:PlayButton x:Name="RetryButton" FontSize="75" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <local:PlayButton x:Name="RetryButton" IsEnabled="True" FontSize="75" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <TextBlock x:Name="RetryInstructions" Margin="0,12,0,12" FontSize="24" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
