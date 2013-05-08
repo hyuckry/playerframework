@@ -19,7 +19,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Provides an IInteractiveViewModel implementation for MediaPlayer
     /// </summary>
-    public sealed class InteractiveViewModel : IInteractiveViewModel
+    public sealed class InteractiveViewModel : IInteractiveViewModel, INotifyPropertyChanged
     {
         private MediaPlayer mediaPlayer;
 
@@ -36,6 +36,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="mediaPlayer">The mediaplayer instance to adapt.</param>
         public InteractiveViewModel(MediaPlayer mediaPlayer)
+            : this()
         {
             MediaPlayer = mediaPlayer;
         }
