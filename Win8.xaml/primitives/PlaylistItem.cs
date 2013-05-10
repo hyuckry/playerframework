@@ -30,8 +30,8 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public PlaylistItem()
         {
-            SetValue(AvailableAudioStreamsProperty, new List<AudioStream>());
-            SetValue(AvailableCaptionsProperty, new List<Caption>());
+            SetValue(AvailableAudioStreamsProperty, new List<IAudioStream>());
+            SetValue(AvailableCaptionsProperty, new List<ICaption>());
             SetValue(VisualMarkersProperty, new List<VisualMarker>());
         }
 
@@ -240,14 +240,14 @@ namespace Microsoft.PlayerFramework
         /// Identifies the AudioStreamNames dependency property.
         /// </summary>
         public static DependencyProperty AvailableAudioStreamsProperty { get { return availableAudioStreamsProperty; } }
-        static readonly DependencyProperty availableAudioStreamsProperty = DependencyProperty.Register("AvailableAudioStreams", typeof(IList<AudioStream>), typeof(PlaylistItem), null);
+        static readonly DependencyProperty availableAudioStreamsProperty = DependencyProperty.Register("AvailableAudioStreams", typeof(IList<IAudioStream>), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the list of audio stream names.
         /// </summary>
-        public IList<AudioStream> AvailableAudioStreams
+        public IList<IAudioStream> AvailableAudioStreams
         {
-            get { return GetValue(AvailableAudioStreamsProperty) as IList<AudioStream>; }
+            get { return GetValue(AvailableAudioStreamsProperty) as IList<IAudioStream>; }
         }
 
         /// <summary>
@@ -269,14 +269,14 @@ namespace Microsoft.PlayerFramework
         /// Identifies the AvailableCaptions dependency property.
         /// </summary>
         public static DependencyProperty AvailableCaptionsProperty { get { return availableCaptionsProperty; } }
-        static readonly DependencyProperty availableCaptionsProperty = DependencyProperty.Register("AvailableCaptions", typeof(IList<Caption>), typeof(PlaylistItem), null);
+        static readonly DependencyProperty availableCaptionsProperty = DependencyProperty.Register("AvailableCaptions", typeof(IList<ICaption>), typeof(PlaylistItem), null);
 
         /// <summary>
         /// Gets or sets the list of captions that can be chosen by the user.
         /// </summary>
-        public IList<Caption> AvailableCaptions
+        public IList<ICaption> AvailableCaptions
         {
-            get { return GetValue(AvailableCaptionsProperty) as IList<Caption>; }
+            get { return GetValue(AvailableCaptionsProperty) as IList<ICaption>; }
         }
         #endregion
 

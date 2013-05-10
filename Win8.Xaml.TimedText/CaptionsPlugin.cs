@@ -20,18 +20,15 @@ using Windows.Foundation;
 
 namespace Microsoft.PlayerFramework.TimedText
 {
-#if MEF
-    [System.ComponentModel.Composition.PartCreationPolicy(System.ComponentModel.Composition.CreationPolicy.NonShared)]
-    [System.ComponentModel.Composition.Export(typeof(IPlugin))]
-#endif
     /// <summary>
     /// A player framework plugin capable of displaying timed text captions.
     /// </summary>
-    public class CaptionsPlugin : PluginBase
+    public sealed class CaptionsPlugin : IPlugin
     {
         Panel captionsContainer;
         DispatcherTimer timer;
-        protected TimedTextCaptions captionsPanel;
+        TimedTextCaptions captionsPanel;
+        bool isLoaded;
 
         /// <summary>
         /// Creates a new instance of the CaptionsPlugin
@@ -56,7 +53,7 @@ namespace Microsoft.PlayerFramework.TimedText
         /// </summary>
         public Style TimedTextCaptionsStyle { get; set; }
 
-        void MediaPlayer_SelectedCaptionChanged(object sender, RoutedPropertyChangedEventArgs<PlayerFramework.Caption> e)
+        void MediaPlayer_SelectedCaptionChanged(object sender, SelectedCaptionChangedEventArgs e)
         {
             if (e.OldValue != null)
             {
@@ -72,7 +69,7 @@ namespace Microsoft.PlayerFramework.TimedText
             }
         }
 
-        void MediaPlayer_PositionChanged(object sender, RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void MediaPlayer_PositionChanged(object sender, PositionChangedEventArgs e)
         {
             if (MediaPlayer.SelectedCaption != null)
             {
@@ -85,7 +82,7 @@ namespace Microsoft.PlayerFramework.TimedText
             captionsPanel.NaturalVideoSize = new Size(MediaPlayer.NaturalVideoWidth, MediaPlayer.NaturalVideoHeight);
         }
 
-        void MediaPlayer_IsLiveChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void MediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
         {
             if (MediaPlayer.IsLive)
             {
@@ -122,7 +119,10 @@ namespace Microsoft.PlayerFramework.TimedText
         }
 
         /// <inheritdoc /> 
-        protected override bool OnActivate()
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
         {
             var mediaContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.MediaContainer);
             captionsContainer = mediaContainer.Children.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.CaptionsContainer);
@@ -142,25 +142,36 @@ namespace Microsoft.PlayerFramework.TimedText
                 MediaPlayer.SelectedCaptionChanged += MediaPlayer_SelectedCaptionChanged;
                 MediaPlayer.IsLiveChanged += MediaPlayer_IsLiveChanged;
                 if (MediaPlayer.IsLive) InitializeTimer();
-
-                return true;
             }
-            return false;
+            isLoaded = true;
         }
 
         /// <inheritdoc /> 
-        protected override void OnDeactivate()
+        public void Update(IMediaSource mediaSource)
+        {
+            // nothing to do
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
         {
             MediaPlayer.MediaOpened -= MediaPlayer_MediaOpened;
             MediaPlayer.PositionChanged -= MediaPlayer_PositionChanged;
             MediaPlayer.SelectedCaptionChanged -= MediaPlayer_SelectedCaptionChanged;
             MediaPlayer.IsLiveChanged -= MediaPlayer_IsLiveChanged;
             MediaPlayer.IsCaptionsActive = false;
-            captionsContainer.Children.Remove(captionsPanel);
-            captionsContainer = null;
-            captionsPanel.Clear();
-            captionsPanel = null;
+            if (captionsContainer != null)
+            {
+                if (captionsPanel != null)
+                {
+                    captionsContainer.Children.Remove(captionsPanel);
+                    captionsPanel.Clear();
+                    captionsPanel = null;
+                }
+                captionsContainer = null;
+            }
             IsSourceLoaded = false;
+            isLoaded = false;
         }
 
         /// <summary>
@@ -174,7 +185,7 @@ namespace Microsoft.PlayerFramework.TimedText
             RefreshCaption(caption, true);
         }
 
-        void caption_PayloadChanged(object sender, EventArgs e)
+        void caption_PayloadChanged(object sender, object e)
         {
             RefreshCaption(sender as Caption, false);
         }
@@ -250,7 +261,7 @@ namespace Microsoft.PlayerFramework.TimedText
                     IsSourceLoaded = true;
 
                     // refresh the caption based on the current position. Fixes issue where caption is changed while paused.
-                    if (IsLoaded) // make sure we didn't get unloaded by the time this completed.
+                    if (isLoaded) // make sure we didn't get unloaded by the time this completed.
                     {
                         captionsPanel.UpdateCaptions(MediaPlayer.Position);
                     }

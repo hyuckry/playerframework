@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DA1F6F23-4C7F-4E0C-8884-F283EE0F3633}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.PlayerFramework.Analytics</RootNamespace>
     <AssemblyName>Microsoft.PlayerFramework.Analytics</AssemblyName>
@@ -105,7 +105,7 @@
       <Project>{961ce8ee-f4be-403f-ac06-a53ce1c7ce4c}</Project>
       <Name>Microsoft.VideoAnalytics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Win8.Xaml\Microsoft.PlayerFramework.Xaml.csproj">
+    <ProjectReference Include="..\Win8.xaml\Microsoft.PlayerFramework.Xaml.csproj">
       <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
       <Name>Microsoft.PlayerFramework.Xaml</Name>
     </ProjectReference>
@@ -128,6 +128,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Microsoft.PlayerFramework.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

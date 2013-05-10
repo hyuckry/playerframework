@@ -515,14 +515,64 @@ namespace Microsoft.PlayerFramework
             if (oldValue != null)
             {
                 oldValue.Interacting -= InteractiveViewModel_Interacting;
+                oldValue.Scrubbing -= InteractiveViewModel_Scrubbing;
+                oldValue.StartingScrub -= InteractiveViewModel_StartingScrub;
+                oldValue.CompletingScrub -= InteractiveViewModel_CompletingScrub;
+                oldValue.Seeking -= InteractiveViewModel_Seeking;
+                oldValue.SkippingAhead -= InteractiveViewModel_SkippingAhead;
+                oldValue.SkippingBack -= InteractiveViewModel_SkippingBack;
             }
 
             if (newValue != null)
             {
                 newValue.Interacting += InteractiveViewModel_Interacting;
+                newValue.Scrubbing += InteractiveViewModel_Scrubbing;
+                newValue.StartingScrub += InteractiveViewModel_StartingScrub;
+                newValue.CompletingScrub += InteractiveViewModel_CompletingScrub;
+                newValue.Seeking += InteractiveViewModel_Seeking;
+                newValue.SkippingAhead += InteractiveViewModel_SkippingAhead;
+                newValue.SkippingBack += InteractiveViewModel_SkippingBack;
             }
 
             if (InteractiveViewModelChanged != null) InteractiveViewModelChanged(this, new InteractiveViewModelChangedEventArgs(oldValue, newValue));
+        }
+
+        void InteractiveViewModel_SkippingBack(object sender, SkippingEventArgs e)
+        {
+            SkipBack(e.Position);
+        }
+
+        void InteractiveViewModel_SkippingAhead(object sender, SkippingEventArgs e)
+        {
+            SkipAhead(e.Position);
+        }
+
+        void InteractiveViewModel_Seeking(object sender, SeekingEventArgs e)
+        {
+            bool cancel;
+            Seek(e.Position, out cancel);
+            e.Cancel = cancel;
+        }
+
+        void InteractiveViewModel_CompletingScrub(object sender, CompletingScrubEventArgs e)
+        {
+            bool cancel;
+            CompleteScrub(e.Position, e.Canceled, out cancel);
+            e.Cancel = cancel;
+        }
+
+        void InteractiveViewModel_StartingScrub(object sender, StartingScrubEventArgs e)
+        {
+            bool cancel;
+            StartScrub(e.Position, out cancel);
+            e.Cancel = cancel;
+        }
+
+        void InteractiveViewModel_Scrubbing(object sender, ScrubbingEventArgs e)
+        {
+            bool cancel;
+            Scrub(e.Position, out cancel);
+            e.Cancel = cancel;
         }
 
         void InteractiveViewModel_Interacting(object sender, InteractionEventArgs e)
@@ -1980,7 +2030,7 @@ namespace Microsoft.PlayerFramework
 
         void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            OnMediaEnded(new MediaPlayerActionEventArgs());
+            OnMediaEnded(new MediaEndedEventArgs());
         }
 
         void MediaElement_MediaOpened(object sender, RoutedEventArgs e)

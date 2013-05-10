@@ -61,22 +61,6 @@ namespace Microsoft.PlayerFramework.Advertising
         /// Gets or sets a WebRequest object to use when requesting the URLs over HTTP
         /// </summary>
         public WebRequest WebRequest { get; set; }
-#else
-        /// <summary>
-        /// Creates a new instance of RemoteAdSource
-        /// </summary>
-        /// <param name="httpClient">The HttpClient object to use to download the payload.</param>
-        /// <param name="type">The type of the ad. Normally this is "vast"</param>
-        public RemoteAdSource(HttpClient httpClient, string type)
-        {
-            HttpClient = httpClient;
-            Type = type;
-        }
-
-        /// <summary>
-        /// Gets or sets an HttpClient object to use when requesting the URLs over HTTP
-        /// </summary>
-        public HttpClient HttpClient { get; set; }
 #endif
 
         /// <summary>
@@ -114,13 +98,8 @@ namespace Microsoft.PlayerFramework.Advertising
                 {
                     loadingTask = WebRequest.GetStreamAsync();
                 }
-#else
-                if (HttpClient != null)
-                {
-                    loadingTask = HttpClient.GetStreamAsync(Uri);
-                }
-#endif
                 else
+#endif
                 {
                     loadingTask = Extensions.LoadStreamAsync(Uri);
                 }

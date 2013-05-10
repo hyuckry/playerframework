@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -104,7 +104,7 @@
       <Project>{a3abccaa-b41b-4ab6-a1d9-a1e0d939b140}</Project>
       <Name>Microsoft.WebVTT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Win8.Xaml\Microsoft.PlayerFramework.Xaml.csproj">
+    <ProjectReference Include="..\Win8.xaml\Microsoft.PlayerFramework.Xaml.csproj">
       <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
       <Name>Microsoft.PlayerFramework.Xaml</Name>
     </ProjectReference>

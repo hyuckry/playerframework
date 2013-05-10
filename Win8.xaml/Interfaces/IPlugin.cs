@@ -31,5 +31,4 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         MediaPlayer MediaPlayer { get; set; }
     }
-
 }

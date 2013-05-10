@@ -19,11 +19,7 @@ namespace Microsoft.PlayerFramework
     /// A plugin used to display a UI with a play button on it to let the user choose to load the media.
     /// </summary>
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
-#if MEF
-    [System.ComponentModel.Composition.PartCreationPolicy(System.ComponentModel.Composition.CreationPolicy.NonShared)]
-    [System.ComponentModel.Composition.Export(typeof(IPlugin))]
-#endif
-    public sealed class LoaderPlugin : PluginBase
+    public sealed class LoaderPlugin : IPlugin
     {
         LoaderView loaderViewElement;
         Panel loaderViewContainer;
@@ -34,7 +30,10 @@ namespace Microsoft.PlayerFramework
         public Style LoaderViewStyle { get; set; }
 
         /// <inheritdoc /> 
-        protected override bool OnActivate()
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
         {
             loaderViewContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(e => e.Name == MediaPlayerTemplateParts.LoaderViewContainer);
             if (loaderViewContainer != null)
@@ -45,18 +44,17 @@ namespace Microsoft.PlayerFramework
                 };
                 loaderViewElement.Load += loaderViewElement_Load;
                 loaderViewContainer.Children.Add(loaderViewElement);
-                return true;
             }
-            return false;
-        }
-
-        void loaderViewElement_Load(object sender, RoutedEventArgs e)
-        {
-            MediaPlayer.AutoLoad = true;
         }
 
         /// <inheritdoc /> 
-        protected override void OnDeactivate()
+        public void Update(IMediaSource mediaSource)
+        {
+            // nothing to do
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
         {
             if (loaderViewContainer != null)
             {
@@ -68,6 +66,11 @@ namespace Microsoft.PlayerFramework
                 }
                 loaderViewContainer = null;
             }
+        }
+
+        void loaderViewElement_Load(object sender, RoutedEventArgs e)
+        {
+            MediaPlayer.AutoLoad = true;
         }
     }
 }

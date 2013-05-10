@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{54FB8BF9-02DF-490F-9837-0195AFD3F1AA}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.PlayerFramework.TimedText</RootNamespace>
     <AssemblyName>Microsoft.PlayerFramework.TimedText</AssemblyName>
@@ -107,13 +107,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\Win8.Xaml\Microsoft.PlayerFramework.Xaml.csproj">
-      <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Win8.TimedText\Microsoft.TimedText.csproj">
       <Project>{d1f1ea17-4a91-4f3b-a243-f2b41d6cbce6}</Project>
       <Name>Microsoft.TimedText</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Win8.xaml\Microsoft.PlayerFramework.Xaml.csproj">
+      <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
+      <Name>Microsoft.PlayerFramework.Xaml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +133,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Microsoft.PlayerFramework.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -48,7 +48,10 @@ namespace Microsoft.PlayerFramework.Analytics
                     mediaPlayer.SelectedCaptionChanged -= mediaPlayer_SelectedCaptionChanged;
                     mediaPlayer.SelectedAudioStreamChanged -= mediaPlayer_SelectedAudioStreamChanged;
                     mediaPlayer.AdvertisingStateChanged -= mediaPlayer_AdvertisingStateChanged;
-                    mediaPlayer.Plugins.CollectionChanged -= Plugins_CollectionChanged;
+                    if (mediaPlayer.Plugins is INotifyCollectionChanged)
+                    {
+                        ((INotifyCollectionChanged)mediaPlayer.Plugins).CollectionChanged -= Plugins_CollectionChanged;
+                    }
                     foreach (var trackingPlugin in mediaPlayer.Plugins.OfType<IEventTracker>())
                     {
                         trackingPlugin.EventTracked -= trackingPlugin_EventTracked;
@@ -74,9 +77,12 @@ namespace Microsoft.PlayerFramework.Analytics
                     mediaPlayer.AdvertisingStateChanged += mediaPlayer_AdvertisingStateChanged;
                     foreach (var trackingPlugin in mediaPlayer.Plugins.OfType<IEventTracker>())
                     {
-                        trackingPlugin.EventTracked += trackingPlugin_EventTracked;   
+                        trackingPlugin.EventTracked += trackingPlugin_EventTracked;
                     }
-                    mediaPlayer.Plugins.CollectionChanged += Plugins_CollectionChanged;
+                    if (mediaPlayer.Plugins is INotifyCollectionChanged)
+                    {
+                        ((INotifyCollectionChanged)mediaPlayer.Plugins).CollectionChanged += Plugins_CollectionChanged;
+                    }
                 }
             }
         }
@@ -100,7 +106,7 @@ namespace Microsoft.PlayerFramework.Analytics
             }
         }
 
-        void trackingPlugin_EventTracked(object sender, EventTrackedEventArgs e)
+        void trackingPlugin_EventTracked(object sender, IEventTrackedEventArgs e)
         {
             if (e.TrackingEvent.Area == AnalyticsPlugin.TrackingEventArea)
             {
@@ -131,7 +137,7 @@ namespace Microsoft.PlayerFramework.Analytics
             }
         }
 
-        void mediaPlayer_AdvertisingStateChanged(object sender, RoutedPropertyChangedEventArgs<AdvertisingState> e)
+        void mediaPlayer_AdvertisingStateChanged(object sender, AdvertisingStateChangedEventArgs e)
         {
             if (e.NewValue == AdvertisingState.Linear)
             {
@@ -148,12 +154,12 @@ namespace Microsoft.PlayerFramework.Analytics
             if (AudioTrackChanged != null) AudioTrackChanged(this, EventArgs.Empty);
         }
 
-        void mediaPlayer_SelectedCaptionChanged(object sender, RoutedPropertyChangedEventArgs<Caption> e)
+        void mediaPlayer_SelectedCaptionChanged(object sender, SelectedCaptionChangedEventArgs e)
         {
             if (CaptionTrackChanged != null) CaptionTrackChanged(this, EventArgs.Empty);
         }
 
-        void mediaPlayer_IsLiveChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void mediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
         {
             if (IsLiveChanged != null) IsLiveChanged(this, EventArgs.Empty);
         }
@@ -185,7 +191,7 @@ namespace Microsoft.PlayerFramework.Analytics
             if (Seeked != null) Seeked(this, new SeekedEventArgs(e.PreviousPosition, e.Position));
         }
 
-        void mediaPlayer_IsFullScreenChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void mediaPlayer_IsFullScreenChanged(object sender, RoutedEventArgs e)
         {
             if (FullScreenChanged != null) FullScreenChanged(this, EventArgs.Empty);
         }

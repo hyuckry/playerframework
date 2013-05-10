@@ -5,25 +5,9 @@ namespace Microsoft.PlayerFramework.Advertising
 {
     // TODO: make DependencyObjects with DependencyProperties for better Xaml binding
     /// <summary>
-    /// An abstract base class to store an advertisement.
-    /// </summary>
-    public abstract class Advertisement
-    {
-        /// <summary>
-        /// Gets or sets the source for the ad.
-        /// </summary>
-        public IAdSource Source { get; set; }
-
-        /// <summary>
-        /// Gets the ID for the ad. This is only used for internal purposes to help associate the ad with a marker.
-        /// </summary>
-        internal protected string Id { get; protected set; }
-    }
-
-    /// <summary>
     /// Represents a midroll ad to be played during the main content.
     /// </summary>
-    public class MidrollAdvertisement : Advertisement
+    public sealed class MidrollAdvertisement : IAdvertisement
     {
         /// <summary>
         /// Creates a new instance of MidrollAdvertisement
@@ -49,33 +33,51 @@ namespace Microsoft.PlayerFramework.Advertising
         /// Warning: Set to TimeSpan.Zero if your main content is not altered to contain blank video during ad slots.
         /// </summary>
         public TimeSpan Duration { get; set; }
+
+        /// <inheritdoc /> 
+        public IAdSource Source { get; set; }
+
+        /// <inheritdoc /> 
+        public string Id { get; set; }
     }
 
     /// <summary>
     /// Represents a preroll ad to be played before the main content starts.
     /// </summary>
-    public class PrerollAdvertisement : Advertisement
+    public sealed class PrerollAdvertisement : IAdvertisement
     {
         /// <summary>
         /// Creates a new instance of PrerollAdvertisement
         /// </summary>
         public PrerollAdvertisement()
         {
-            Id = "preroll";
+            Id = Guid.NewGuid().ToString();
         }
+
+        /// <inheritdoc /> 
+        public IAdSource Source { get; set; }
+
+        /// <inheritdoc /> 
+        public string Id { get; set; }
     }
 
     /// <summary>
     /// Represents a postroll ad to be played after the main content finishes.
     /// </summary>
-    public class PostrollAdvertisement : Advertisement
+    public sealed class PostrollAdvertisement : IAdvertisement
     {
         /// <summary>
         /// Creates a new instance of PostrollAdvertisement
         /// </summary>
         public PostrollAdvertisement()
         {
-            Id = "postroll";
+            Id = Guid.NewGuid().ToString();
         }
+
+        /// <inheritdoc /> 
+        public IAdSource Source { get; set; }
+
+        /// <inheritdoc /> 
+        public string Id { get; set; }
     }
 }

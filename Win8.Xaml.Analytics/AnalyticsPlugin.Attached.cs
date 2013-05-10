@@ -9,7 +9,7 @@ using Windows.UI.Xaml;
 #endif
 
 namespace Microsoft.PlayerFramework.Analytics
-{    
+{
     /// <summary>
     /// Helper class used to attach config data specific to each playlist item.
     /// </summary>
@@ -18,7 +18,8 @@ namespace Microsoft.PlayerFramework.Analytics
         /// <summary>
         /// Identifies the AdditionalData attached property.
         /// </summary>
-        public static readonly DependencyProperty AdditionalDataProperty = DependencyProperty.RegisterAttached("AdditionalData", typeof(IDictionary<string, object>), typeof(Analytics), null);
+        public static DependencyProperty AdditionalDataProperty { get { return additionalDataProperty; } }
+        static readonly DependencyProperty additionalDataProperty = DependencyProperty.RegisterAttached("AdditionalData", typeof(IDictionary<string, object>), typeof(Analytics), null);
 
         /// <summary>
         /// Sets the AdditionalData attached property value.

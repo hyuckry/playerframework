@@ -20,12 +20,15 @@ namespace Microsoft.PlayerFramework.Advertising
     /// Binds a vpaid ad player to the UI. This does 2 things: 1) reacts to changes in the vpaid player 2) pushes commands at the vpaid player to pause, resume, stop and skip.
     /// Supports both VPAID 1.1 and VPAID 2.0 players
     /// </summary>
-    public class VpaidLinearAdViewModel : InteractiveViewModelBase
+    public sealed partial class VpaidLinearAdViewModel
     {
         /// <summary>
         /// HACK: Allows an instance to be created from Xaml. Without this, xamltypeinfo is not generated and binding will not work.
         /// </summary>
-        public VpaidLinearAdViewModel() { }
+        public VpaidLinearAdViewModel()
+        {
+            SkipPreviousThreshold = TimeSpan.FromSeconds(2);
+        }
 
         /// <summary>
         /// Gets the VPAID 1.1 player associated with the view model.
@@ -56,6 +59,7 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         internal VpaidLinearAdViewModel(IVpaid vpaid, MediaPlayer mediaPlayer)
+            : this()
         {
             MediaPlayer = mediaPlayer;
             Vpaid = vpaid;
@@ -88,12 +92,12 @@ namespace Microsoft.PlayerFramework.Advertising
             OnPropertyChanged(() => Volume);
         }
 
-        void MediaPlayer_IsMutedChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void MediaPlayer_IsMutedChanged(object sender, RoutedEventArgs e)
         {
             OnPropertyChanged(() => IsMuted);
         }
 
-        void MediaPlayer_IsFullScreenChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void MediaPlayer_IsFullScreenChanged(object sender, RoutedEventArgs e)
         {
             OnPropertyChanged(() => IsFullScreen);
         }
@@ -149,7 +153,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
         void Vpaid_AdClickThru(object sender, ClickThroughEventArgs e)
         {
-            OnInteracting();
+            OnInteracting(InteractionType.Hard);
         }
 
         void vpaid_AdPaused(object sender, object e)
@@ -214,249 +218,249 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        protected override void OnStop()
+        void OnStop()
         {
             Vpaid.StopAd();
         }
 
         /// <inheritdoc /> 
-        protected override void OnPause()
+        void OnPause()
         {
             Vpaid.PauseAd();
         }
-        
+
         /// <inheritdoc /> 
-        protected override void OnInvokeCaptionSelection()
+        void OnInvokeCaptionSelection()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnInvokeAudioSelection()
+        void OnInvokeAudioSelection()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnSkipPrevious(VisualMarker marker)
+        void OnSkipPrevious(VisualMarker marker)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnSkipNext(VisualMarker marker)
+        void OnSkipNext(VisualMarker marker)
         {
             if (Vpaid2 != null) Vpaid2.SkipAd();
         }
 
         /// <inheritdoc /> 
-        protected override void OnSkipBack(TimeSpan position)
+        void OnSkipBack(TimeSpan position)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnSkipAhead(TimeSpan position)
+        void OnSkipAhead(TimeSpan position)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnSeek(TimeSpan position, out bool canceled)
+        void OnSeek(TimeSpan position, out bool canceled)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnCompleteScrub(TimeSpan position, ref bool canceled)
+        void OnCompleteScrub(TimeSpan position, bool canceled, out bool cancel)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnStartScrub(TimeSpan position, out bool canceled)
+        void OnStartScrub(TimeSpan position, out bool canceled)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnScrub(TimeSpan position, out bool canceled)
+        void OnScrub(TimeSpan position, out bool canceled)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnGoLive()
+        void OnGoLive()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnPlayResume()
+        void OnPlayResume()
         {
             Vpaid.ResumeAd();
         }
 
         /// <inheritdoc /> 
-        protected override void OnReplay()
+        void OnReplay()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnDecreasePlaybackRate()
+        void OnDecreasePlaybackRate()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        protected override void OnIncreasePlaybackRate()
+        void OnIncreasePlaybackRate()
         {
             throw new NotImplementedException();
         }
 
 #if SILVERLIGHT
         /// <inheritdoc /> 
-        protected override void OnCycleDisplayMode()
+        void OnCycleDisplayMode()
         {
             throw new NotImplementedException();
         }
 #endif
 
         /// <inheritdoc /> 
-        public override IEnumerable<Caption> AvailableCaptions
+        public IEnumerable<ICaption> AvailableCaptions
         {
-            get { return Enumerable.Empty<Caption>(); }
+            get { return Enumerable.Empty<ICaption>(); }
         }
 
         /// <inheritdoc /> 
-        public override Caption SelectedCaption { get; set; }
+        public ICaption SelectedCaption { get; set; }
 
         /// <inheritdoc /> 
-        public override IEnumerable<VisualMarker> VisualMarkers
+        public IEnumerable<VisualMarker> VisualMarkers
         {
             get { return Enumerable.Empty<VisualMarker>(); }
         }
 
         /// <inheritdoc /> 
-        public override bool IsGoLiveEnabled
+        public bool IsGoLiveEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsPlayResumeEnabled
+        public bool IsPlayResumeEnabled
         {
             get { return state == vPaidState.Paused; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsPauseEnabled
+        public bool IsPauseEnabled
         {
             get { return state == vPaidState.Playing; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsStopEnabled
+        public bool IsStopEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsReplayEnabled
+        public bool IsReplayEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsAudioSelectionEnabled
+        public bool IsAudioSelectionEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsCaptionSelectionEnabled
+        public bool IsCaptionSelectionEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsRewindEnabled
+        public bool IsRewindEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsFastForwardEnabled
+        public bool IsFastForwardEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsSlowMotionEnabled
+        public bool IsSlowMotionEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsSeekEnabled
+        public bool IsSeekEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsSkipPreviousEnabled
+        public bool IsSkipPreviousEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsSkipNextEnabled
+        public bool IsSkipNextEnabled
         {
             get { return Vpaid2 != null ? Vpaid2.AdSkippableState : false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsSkipBackEnabled
+        public bool IsSkipBackEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsSkipAheadEnabled
+        public bool IsSkipAheadEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        public override bool IsScrubbingEnabled
+        public bool IsScrubbingEnabled
         {
             get { return false; }
         }
 
         /// <inheritdoc /> 
-        protected override bool _IsMuted
+        bool _IsMuted
         {
             get { return MediaPlayer.IsMuted; }
             set { MediaPlayer.IsMuted = value; }
         }
 
         /// <inheritdoc /> 
-        protected override bool _IsFullScreen
+        bool _IsFullScreen
         {
             get { return MediaPlayer.IsFullScreen; }
             set { MediaPlayer.IsFullScreen = value; }
         }
-        
+
         /// <inheritdoc /> 
-        protected override bool _IsSlowMotion
+        bool _IsSlowMotion
         {
             get { return false; }
             set { throw new NotImplementedException(); }
         }
 
         /// <inheritdoc /> 
-        protected override double _Volume
+        double _Volume
         {
             get { return MediaPlayer.Volume; }
             set
@@ -467,19 +471,19 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public override double BufferingProgress
+        public double BufferingProgress
         {
             get { return 0; }
         }
 
         /// <inheritdoc /> 
-        public override double DownloadProgress
+        public double DownloadProgress
         {
             get { return 1; }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan Duration
+        public TimeSpan Duration
         {
             get
             {
@@ -495,37 +499,37 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan EndTime
+        public TimeSpan EndTime
         {
             get { return Duration; }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan StartTime
+        public TimeSpan StartTime
         {
             get { return TimeSpan.Zero; }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan TimeRemaining
+        public TimeSpan TimeRemaining
         {
             get { return Vpaid.AdRemainingTime; }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan Position
+        public TimeSpan Position
         {
             get { return Duration.Subtract(TimeRemaining); }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan MaxPosition
+        public TimeSpan MaxPosition
         {
             get { return Position; }
         }
 
         /// <inheritdoc /> 
-        public override MediaElementState CurrentState
+        public MediaElementState CurrentState
         {
             get
             {
@@ -550,40 +554,40 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public override IEnumerable<AudioStream> AvailableAudioStreams
+        public IEnumerable<IAudioStream> AvailableAudioStreams
         {
-            get { return Enumerable.Empty<AudioStream>(); }
+            get { return Enumerable.Empty<IAudioStream>(); }
         }
 
         /// <inheritdoc /> 
-        public override AudioStream SelectedAudioStream { get; set; }
+        public IAudioStream SelectedAudioStream { get; set; }
 
         /// <inheritdoc /> 
-        public override IValueConverter TimeFormatConverter
+        public IValueConverter TimeFormatConverter
         {
             get { return new StringFormatConverter() { StringFormat = MediaPlayer.DefaultTimeFormat }; }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan? SkipBackInterval
+        public TimeSpan? SkipBackInterval
         {
             get { return TimeSpan.FromSeconds(5); }
         }
 
         /// <inheritdoc /> 
-        public override TimeSpan? SkipAheadInterval
+        public TimeSpan? SkipAheadInterval
         {
             get { return TimeSpan.FromSeconds(5); }
         }
 
         /// <inheritdoc /> 
-        public override double SignalStrength
+        public double SignalStrength
         {
             get { return 1; }
         }
 
         /// <inheritdoc /> 
-        public override MediaQuality MediaQuality
+        public MediaQuality MediaQuality
         {
             get
             {

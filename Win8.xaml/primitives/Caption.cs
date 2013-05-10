@@ -15,12 +15,10 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
     public sealed class Caption : DependencyObject
 #else
-    public sealed class Caption : FrameworkElement
+    public sealed class Caption : FrameworkElement, ICaption
 #endif
     {
-        /// <summary>
-        /// Indicates that the Payload property has changed
-        /// </summary>
+        /// <inheritdoc /> 
 #if SILVERLIGHT
         public event EventHandler PayloadChanged;
 #else
@@ -35,9 +33,7 @@ namespace Microsoft.PlayerFramework
             if (PayloadChanged != null) PayloadChanged(this, EventArgs.Empty);
         }
 
-        /// <summary>
-        /// Indicates that the Payload should be appended
-        /// </summary>
+        /// <inheritdoc /> 
         public event EventHandler<PayloadAugmentedEventArgs> PayloadAugmented;
 
         /// <summary>
@@ -54,9 +50,7 @@ namespace Microsoft.PlayerFramework
         public static DependencyProperty IdProperty { get { return idProperty; } }
         static readonly DependencyProperty idProperty = DependencyProperty.Register("Id", typeof(string), typeof(Caption), null);
 
-        /// <summary>
-        /// Gets or sets the Id of the caption track.
-        /// </summary>
+        /// <inheritdoc /> 
         public string Id
         {
             get { return GetValue(IdProperty) as string; }
@@ -69,9 +63,7 @@ namespace Microsoft.PlayerFramework
         public static DependencyProperty DescriptionProperty { get { return descriptionProperty; } }
         static readonly DependencyProperty descriptionProperty = DependencyProperty.Register("Description", typeof(string), typeof(Caption), null);
 
-        /// <summary>
-        /// Gets or sets the description of the caption track.
-        /// </summary>
+        /// <inheritdoc /> 
         public string Description
         {
             get { return GetValue(DescriptionProperty) as string; }
@@ -84,9 +76,7 @@ namespace Microsoft.PlayerFramework
         public static DependencyProperty PayloadProperty { get { return payloadProperty; } }
         static readonly DependencyProperty payloadProperty = DependencyProperty.Register("Payload", typeof(object), typeof(Caption), new PropertyMetadata(null, (d, o) => ((Caption)d).OnPayloadChanged()));
 
-        /// <summary>
-        /// Gets or sets the payload of the caption track. This can be any object.
-        /// </summary>
+        /// <inheritdoc /> 
         public object Payload
         {
             get { return GetValue(PayloadProperty) as object; }
@@ -107,44 +97,5 @@ namespace Microsoft.PlayerFramework
         {
             return Description;
         }
-    }
-
-    /// <summary>
-    /// Includes information that allows a caption engine to augment the existing caption information.
-    /// Useful for in-stream caption support where caption data comes in chunks.
-    /// </summary>
-#if SILVERLIGHT
-    public sealed class PayloadAugmentedEventArgs : EventArgs
-#else
-    public sealed class PayloadAugmentedEventArgs
-#endif
-    {
-        /// <summary>
-        /// Creates a new instance of PayloadAugmentedEventArgs.
-        /// </summary>
-        /// <param name="payload">The caption payload (typically a bytearry or string).</param>
-        /// <param name="startTime">The offset for the caption data. Typically set from the chunk timestamp.</param>
-        /// <param name="endTime">The end time of the caption data. Typically set from the chunk starttime + duration (or timestamp of next chunk for sparse text tracks).</param>
-        public PayloadAugmentedEventArgs(object payload, TimeSpan startTime, TimeSpan endTime)
-        {
-            Payload = payload;
-            StartTime = startTime;
-            EndTime = endTime;
-        }
-
-        /// <summary>
-        /// The caption payload (typically a bytearry or string).
-        /// </summary>
-        public object Payload { get; private set; }
-
-        /// <summary>
-        /// The offset for the caption data. Typically set from the chunk timestamp.
-        /// </summary>
-        public TimeSpan StartTime { get; private set; }
-
-        /// <summary>
-        /// The end time of the caption data. Typically set from the chunk starttime + duration (or timestamp of next chunk for sparse text tracks).
-        /// </summary>
-        public TimeSpan EndTime { get; private set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
     /// <summary>
     /// Represents a panel control to host closed captions
     /// </summary>
-    public class CaptionsPanel : Control
+    public sealed class CaptionsPanel : Control
     {
         /// <summary>
         /// Creates a new instances of CaptionsPanel
@@ -28,14 +28,15 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
         /// <summary>
         /// ActiveCaptions DependencyProperty definition.
         /// </summary>
-        public static readonly DependencyProperty ActiveCaptionsProperty = DependencyProperty.Register("ActiveCaptions", typeof(ObservableCollection<ActiveCaption>), typeof(CaptionsPanel), null);
+        public static DependencyProperty ActiveCaptionsProperty { get { return activeCaptionsProperty; } }
+        static readonly DependencyProperty activeCaptionsProperty = DependencyProperty.Register("ActiveCaptions", typeof(IList<ActiveCaption>), typeof(CaptionsPanel), null);
 
         /// <summary>
         /// Gets or sets the active captions to be displayed
         /// </summary>
-        public ObservableCollection<ActiveCaption> ActiveCaptions
+        public IList<ActiveCaption> ActiveCaptions
         {
-            get { return (ObservableCollection<ActiveCaption>)GetValue(ActiveCaptionsProperty); }
+            get { return GetValue(ActiveCaptionsProperty) as IList<ActiveCaption>; }
             set { SetValue(ActiveCaptionsProperty, value); }
         }
 

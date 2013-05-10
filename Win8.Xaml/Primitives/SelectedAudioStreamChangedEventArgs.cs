@@ -20,7 +20,7 @@ namespace Microsoft.PlayerFramework
     /// </summary>
     public sealed class SelectedAudioStreamChangedEventArgs
     {
-        internal SelectedAudioStreamChangedEventArgs(AudioStream oldValue, AudioStream newValue)
+        internal SelectedAudioStreamChangedEventArgs(IAudioStream oldValue, IAudioStream newValue)
         {
             OldValue = oldValue;
             NewValue = newValue;
@@ -35,11 +35,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public AudioStream NewValue { get; internal set; }
+        public IAudioStream NewValue { get; internal set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public AudioStream OldValue { get; internal set; }
+        public IAudioStream OldValue { get; internal set; }
     }
 }

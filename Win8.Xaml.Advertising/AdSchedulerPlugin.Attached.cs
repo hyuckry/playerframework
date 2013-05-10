@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 #if SILVERLIGHT
 using System.Windows;
 #else
@@ -16,14 +17,15 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Identifies the Advertisements attached property.
         /// </summary>
-        public static readonly DependencyProperty AdvertisementsProperty = DependencyProperty.RegisterAttached("Advertisements", typeof(AdvertisementsCollection), typeof(AdScheduler), null);
+        public static DependencyProperty AdvertisementsProperty { get { return advertisementsProperty; } }
+        static readonly DependencyProperty advertisementsProperty = DependencyProperty.RegisterAttached("Advertisements", typeof(IList<IAdvertisement>), typeof(AdScheduler), null);
 
         /// <summary>
         /// Sets the Advertisements attached property value.
         /// </summary>
         /// <param name="obj">An instance of the MediaPlayer or PlaylistItem.</param>
         /// <param name="propertyValue">A value containing the Advertisements to apply to the plugin.</param>
-        public static void SetAdvertisements(DependencyObject obj, AdvertisementsCollection propertyValue)
+        public static void SetAdvertisements(DependencyObject obj, IList<IAdvertisement> propertyValue)
         {
             if (obj == null) throw new ArgumentNullException("obj");
             obj.SetValue(AdvertisementsProperty, propertyValue);
@@ -34,17 +36,11 @@ namespace Microsoft.PlayerFramework.Advertising
         /// </summary>
         /// <param name="obj">An instance of the MediaPlayer or PlaylistItem.</param>
         /// <returns>A value containing the Advertisements to apply to the plugin.</returns>
-        public static AdvertisementsCollection GetAdvertisements(DependencyObject obj)
+        public static IList<IAdvertisement> GetAdvertisements(DependencyObject obj)
         {
             if (obj == null) throw new ArgumentNullException("obj");
-            return obj.GetValue(AdvertisementsProperty) as AdvertisementsCollection;
+            return obj.GetValue(AdvertisementsProperty) as IList<IAdvertisement>;
         }
 
     }
-
-    /// <summary>
-    /// A collection class containing the TrackingEvent objects associated with a PlaylistItem
-    /// </summary>
-    public class AdvertisementsCollection : ObservableCollection<Advertisement>
-    { }
 }

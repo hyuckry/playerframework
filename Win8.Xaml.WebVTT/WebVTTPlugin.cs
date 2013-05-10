@@ -23,12 +23,19 @@ namespace Microsoft.PlayerFramework.WebVTT
     /// <summary>
     /// A player framework plugin capable of displaying timed text captions.
     /// </summary>
-    public partial class WebVTTPlugin : PluginBase
+    public sealed class WebVTTPlugin :
+#if SILVERLIGHT
+        DependencyObject
+#else
+ FrameworkElement
+#endif
+, IPlugin
     {
         WebVTTPanel captionsPanel;
         Panel captionsContainer;
         DispatcherTimer timer;
         MediaMarkerManager markerManager;
+        bool isLoaded;
 
         /// <summary>
         /// Creates a new instance of the CaptionsPlugin
@@ -58,7 +65,7 @@ namespace Microsoft.PlayerFramework.WebVTT
         /// </summary>
         public Style CaptionsPanelStyle { get; set; }
 
-        void MediaPlayer_SelectedCaptionChanged(object sender, RoutedPropertyChangedEventArgs<PlayerFramework.Caption> e)
+        void MediaPlayer_SelectedCaptionChanged(object sender, SelectedCaptionChangedEventArgs e)
         {
             if (e.OldValue != null)
             {
@@ -74,7 +81,7 @@ namespace Microsoft.PlayerFramework.WebVTT
             }
         }
 
-        void MediaPlayer_PositionChanged(object sender, RoutedPropertyChangedEventArgs<TimeSpan> e)
+        void MediaPlayer_PositionChanged(object sender, PositionChangedEventArgs e)
         {
             if (MediaPlayer.SelectedCaption != null)
             {
@@ -83,7 +90,7 @@ namespace Microsoft.PlayerFramework.WebVTT
             }
         }
 
-        void MediaPlayer_IsLiveChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void MediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
         {
             if (MediaPlayer.IsLive)
             {
@@ -120,7 +127,10 @@ namespace Microsoft.PlayerFramework.WebVTT
         }
 
         /// <inheritdoc /> 
-        protected override bool OnActivate()
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
         {
             var mediaContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.MediaContainer);
             captionsContainer = mediaContainer.Children.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.CaptionsContainer);
@@ -139,14 +149,18 @@ namespace Microsoft.PlayerFramework.WebVTT
                 MediaPlayer.SelectedCaptionChanged += MediaPlayer_SelectedCaptionChanged;
                 MediaPlayer.IsLiveChanged += MediaPlayer_IsLiveChanged;
                 if (MediaPlayer.IsLive) InitializeTimer();
-
-                return true;
             }
-            return false;
+            isLoaded = true;
         }
 
         /// <inheritdoc /> 
-        protected override void OnDeactivate()
+        public void Update(IMediaSource mediaSource)
+        {
+            // nothing to do
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
         {
             MediaPlayer.PositionChanged -= MediaPlayer_PositionChanged;
             MediaPlayer.SelectedCaptionChanged -= MediaPlayer_SelectedCaptionChanged;
@@ -161,8 +175,9 @@ namespace Microsoft.PlayerFramework.WebVTT
             markerManager.Clear();
             markerManager = null;
             IsSourceLoaded = false;
+            isLoaded = false;
         }
-
+        
         void MarkerManager_MarkerLeft(object sender, MediaMarkerEventArgs e)
         {
             HideCue((WebVTTCue)e.Marker.Content);
@@ -195,7 +210,7 @@ namespace Microsoft.PlayerFramework.WebVTT
             RefreshCaption(caption);
         }
 
-        void caption_PayloadChanged(object sender, EventArgs e)
+        void caption_PayloadChanged(object sender, object e)
         {
             RefreshCaption(sender as Caption);
         }
@@ -312,7 +327,7 @@ namespace Microsoft.PlayerFramework.WebVTT
                     IsSourceLoaded = true;
 
                     // refresh the caption based on the current position. Fixes issue where caption is changed while paused.
-                    if (IsLoaded) // make sure we didn't get unloaded by the time this completed.
+                    if (isLoaded) // make sure we didn't get unloaded by the time this completed.
                     {
                         captionsPanel.UpdatePosition(MediaPlayer.Position);
                     }

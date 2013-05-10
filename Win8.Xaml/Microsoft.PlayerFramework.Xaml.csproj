@@ -123,18 +123,25 @@
     <Compile Include="Commands\ViewModelCommandFactory.cs" />
     <Compile Include="Controls\ControlPanel\ControlPanel.cs" />
     <Compile Include="Controls\ControlPanel\ControlPanel.TemplateDefinitions.cs" />
-    <Compile Include="Controls\ControlPanel\MediaPlayerButton.cs" />
+    <Compile Include="Controls\ControlPanel\MediaPlayerControl.cs" />
     <Compile Include="Controls\ControlPanel\VolumeSlider.cs" />
     <Compile Include="Controls\ControlPanel\ResolutionIndicator.cs" />
     <Compile Include="Controls\ControlPanel\StandardButtons.cs" />
     <Compile Include="Controls\ControlPanel\VolumeButton.cs" />
     <Compile Include="Extensions\VisualTreeExtensions.cs" />
+    <Compile Include="Plugins\PositionTrackingPlugin.Attached.cs" />
     <Compile Include="Plugins\MediaControlPlugin.cs" />
     <Compile Include="Controls\MediaPackHelper.cs" />
+    <Compile Include="Plugins\MediaPlayerPlugin.cs" />
     <Compile Include="Primitives\AdvertisingStateEnum.cs" />
     <Compile Include="Primitives\AutoHideBehavior.cs" />
     <Compile Include="Primitives\AdvertisingStateChangedEventArgs.cs" />
     <Compile Include="Primitives\AudioStreamIndexChangedEventArgs.cs" />
+    <Compile Include="Interfaces\ICaption.cs" />
+    <Compile Include="Interfaces\IAudioStream.cs" />
+    <Compile Include="Primitives\MediaEndedEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Primitives\TimeFormatConverterChangedEventArgs.cs" />
     <Compile Include="Primitives\SkipAheadIntervalChangedEventArgs.cs" />
     <Compile Include="Primitives\SkipBackIntervalChangedEventArgs.cs" />
@@ -149,7 +156,6 @@
     <Compile Include="Primitives\InteractionType.cs" />
     <Compile Include="Primitives\InteractiveViewModelChangedEventArgs.cs" />
     <Compile Include="Primitives\MediaEndedBehaviorEnum.cs" />
-    <Compile Include="Primitives\MediaPlayerActionEventArgs.cs" />
     <Compile Include="Primitives\MediaPlayerTemplateParts.cs" />
     <Compile Include="Primitives\MediaPlayerVisualStates.cs" />
     <Compile Include="Primitives\MediaQualityEnum.cs" />
@@ -192,8 +198,7 @@
     <Compile Include="Plugins\ErrorView.cs" />
     <Compile Include="Plugins\LoaderPlugin.cs" />
     <Compile Include="Plugins\LoaderView.cs" />
-    <Compile Include="Plugins\PluginBase.cs" />
-    <Compile Include="Plugins\TrackingPlugin.Attached.cs" />
+    <Compile Include="Plugins\PlayTimeTrackingPlugin.Attached.cs" />
     <Compile Include="Plugins\PositionTrackingPlugin.cs" />
     <Compile Include="Primitives\Caption.cs" />
     <Compile Include="Primitives\AudioStream.cs" />
@@ -201,7 +206,6 @@
     <Compile Include="Primitives\PlaylistItem.cs" />
     <Compile Include="Plugins\PlaylistPlugin.cs" />
     <Compile Include="Controls\ControlPanel\PositionedItemsControl.cs" />
-    <Compile Include="Controls\ControlPanel\PositionedItemsPanel.cs" />
     <Compile Include="Controls\ControlPanel\SeekableSlider.cs" />
     <Compile Include="Controls\ControlPanel\SeekableSlider.TemplateDefinition.cs" />
     <Compile Include="Controls\ControlPanel\SeekableSliderTemplateParts.cs" />

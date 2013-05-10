@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2E19FE19-9B06-416D-8FFC-C432D6285CB9}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.PlayerFramework.Advertising</RootNamespace>
     <AssemblyName>Microsoft.PlayerFramework.Advertising</AssemblyName>
@@ -107,13 +107,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\Win8.Xaml\Microsoft.PlayerFramework.Xaml.csproj">
-      <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Win8.VideoAdvertising\Microsoft.VideoAdvertising.csproj">
       <Project>{f863edc6-2886-4d39-a578-89f4ff729d82}</Project>
       <Name>Microsoft.VideoAdvertising</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Win8.xaml\Microsoft.PlayerFramework.Xaml.csproj">
+      <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
+      <Name>Microsoft.PlayerFramework.Xaml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -123,8 +123,9 @@
     <Compile Include="AdSchedulerPlugin.cs" />
     <Compile Include="AdSource.cs" />
     <Compile Include="Advertisement.cs" />
-    <Compile Include="AdHandlerBase.cs" />
     <Compile Include="ClipAdPayload.cs" />
+    <Compile Include="AdScheduleController.cs" />
+    <Compile Include="IAdvertisement.cs" />
     <Compile Include="FreeWheelPlugin.cs" />
     <Compile Include="VmapScheduler.Attached.cs" />
     <Compile Include="Helpers\Extensions.cs" />
@@ -137,9 +138,11 @@
     <Compile Include="MastSchedulerPlugin.cs" />
     <Compile Include="MediaPlayerAdapter.cs" />
     <Compile Include="VmapSchedulerPlugin.cs" />
-    <Compile Include="Vpaid\AdHost.cs" />
+    <Compile Include="Vpaid\VpaidHtmlAdPlayer.cs" />
+    <Compile Include="Vpaid\VpaidIFrameAdPlayer.cs" />
+    <Compile Include="Vpaid\VpaidLinearAdViewModel.Base.cs" />
+    <Compile Include="Vpaid\VpaidNonLinearAdViewModel.Base.cs" />
     <Compile Include="Vpaid\VpaidImageAdPlayer.cs" />
-    <Compile Include="Vpaid\VpaidWebAdPlayer.cs" />
     <Compile Include="Vpaid\VpaidNonLinearAdViewModel.cs" />
     <Compile Include="Vpaid\VpaidVideoAdPlayer.cs" />
     <Compile Include="Vpaid\VpaidLinearAdViewModel.cs" />
@@ -163,6 +166,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Microsoft.PlayerFramework.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

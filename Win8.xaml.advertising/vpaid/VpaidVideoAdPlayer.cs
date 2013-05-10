@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.Foundation;
 #endif
 
 namespace Microsoft.PlayerFramework.Advertising
@@ -19,11 +20,11 @@ namespace Microsoft.PlayerFramework.Advertising
     /// <summary>
     /// A VPAID implementation for a linear video ad.
     /// </summary>
-    public class VpaidVideoAdPlayer : AdHost, IVpaid2
+    public sealed class VpaidVideoAdPlayer : ContentControl, IVpaid2
     {
-        private DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(250) };
-
-        protected MediaElement mediaElement;
+        DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(250) };
+        HyperlinkButton clickThroughButton;
+        MediaElement mediaElement;
 #if WINDOWS_PHONE
         private static bool IsActive;
         private Uri pendingMediaUri;
@@ -53,6 +54,7 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <param name="clickThru">The Uri to navigate to when the ad is clicked or tapped. Can be null of no action should take place.</param>
         public VpaidVideoAdPlayer(FlexibleOffset skippableOffset, TimeSpan? maxDuration, Uri clickThru)
         {
+            this.DefaultStyleKey = typeof(VpaidVideoAdPlayer);
             IsHitTestVisible = false;
             mediaElement = new MediaElement();
             Background = new SolidColorBrush(Colors.Black);
@@ -63,6 +65,90 @@ namespace Microsoft.PlayerFramework.Advertising
             SkippableOffset = skippableOffset;
             MaxDuration = maxDuration;
             this.NavigateUri = clickThru;
+        }
+
+        /// <summary>
+        /// Raised after nativation occurs.
+        /// </summary>
+        public event RoutedEventHandler Navigated;
+
+        /// <summary>
+        /// Indicates that the template has been loaded.
+        /// </summary>
+        bool IsTemplateLoaded;
+
+        /// <inheritdoc /> 
+#if SILVERLIGHT
+        public override void OnApplyTemplate()
+#else
+        protected override void OnApplyTemplate()
+#endif
+        {
+            base.OnApplyTemplate();
+
+            clickThroughButton = base.GetTemplateChild("ClickThroughButton") as HyperlinkButton;
+            if (clickThroughButton != null)
+            {
+                clickThroughButton.Visibility = navigateUri != null ? Visibility.Visible : Visibility.Collapsed;
+                clickThroughButton.Click += ClickThroughButton_Click;
+                clickThroughButton.NavigateUri = navigateUri;
+#if SILVERLIGHT
+                ClickThroughButton.TargetName = "_blank";
+#endif
+#if WINDOWS_PHONE
+                ClickThroughButton.Content = ClickThroughButton.Content ?? MediaPlayer.GetResourceString("AdLinkLabel");
+#endif
+            }
+
+            IsTemplateLoaded = true;
+            AdLinear = adLinear;
+        }
+
+        void ClickThroughButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Navigated != null) Navigated(this, e);
+        }
+
+        Uri navigateUri;
+        /// <summary>
+        /// Gets or sets the Uri to navigate to when the hyperlink button is clicked.
+        /// </summary>
+        public Uri NavigateUri
+        {
+            get { return navigateUri; }
+            set
+            {
+                navigateUri = value;
+                if (clickThroughButton != null)
+                {
+                    clickThroughButton.Visibility = navigateUri != null ? Visibility.Visible : Visibility.Collapsed;
+                    clickThroughButton.NavigateUri = navigateUri;
+                }
+            }
+        }
+
+        private bool adLinear;
+        /// <summary>
+        /// Gets or sets if the ad is linear or nonlinear
+        /// </summary>
+        public bool AdLinear
+        {
+            get { return adLinear; }
+            set
+            {
+                adLinear = value;
+                if (IsTemplateLoaded)
+                {
+                    if (adLinear)
+                    {
+                        VisualStateManager.GoToState(this, "Linear", true);
+                    }
+                    else
+                    {
+                        VisualStateManager.GoToState(this, "Nonlinear", true);
+                    }
+                }
+            }
         }
 
 #if NETFX_CORE
@@ -108,7 +194,7 @@ namespace Microsoft.PlayerFramework.Advertising
             OnInitAd(creativeData);
         }
 
-        protected virtual void OnInitAd(string creativeData)
+        void OnInitAd(string creativeData)
         {
 #if WINDOWS_PHONE
             if (!IsActive)
@@ -180,7 +266,7 @@ namespace Microsoft.PlayerFramework.Advertising
             mediaElement.MarkerReached += MediaElement_MarkerReached;
         }
 
-        protected void OnLoaded()
+        void OnLoaded()
         {
             if (State == AdState.Loading)
             {
@@ -240,7 +326,7 @@ namespace Microsoft.PlayerFramework.Advertising
             OnStartAd();
         }
 
-        protected virtual void OnStartAd()
+        void OnStartAd()
         {
 #if WINDOWS_PHONE
             if (pendingMediaUri == null)
@@ -332,7 +418,7 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Called when the ad is ending for any reason besides a failure.
         /// </summary>
-        protected void OnAdEnding()
+        void OnAdEnding()
         {
             if (State != AdState.Complete && State != AdState.Failed)
             {
@@ -360,7 +446,7 @@ namespace Microsoft.PlayerFramework.Advertising
             Opacity = 0;
         }
 
-        protected virtual void OnTeardown()
+        void OnTeardown()
         {
             mediaElement.Source = null;
 #if WINDOWS_PHONE
@@ -574,7 +660,7 @@ namespace Microsoft.PlayerFramework.Advertising
         public bool AdSkippableState
         {
             get { return adSkippableState; }
-            protected set
+            set
             {
                 if (adSkippableState != value)
                 {

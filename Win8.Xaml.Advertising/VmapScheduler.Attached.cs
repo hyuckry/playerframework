@@ -16,7 +16,8 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Identifies the Source attached property.
         /// </summary>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.RegisterAttached("Source", typeof(Uri), typeof(VmapScheduler), null);
+        public static DependencyProperty SourceProperty { get { return sourceProperty; } }
+        static readonly DependencyProperty sourceProperty = DependencyProperty.RegisterAttached("Source", typeof(Uri), typeof(VmapScheduler), null);
 
         /// <summary>
         /// Sets the Source attached property value.

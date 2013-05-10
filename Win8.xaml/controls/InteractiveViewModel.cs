@@ -153,49 +153,57 @@ namespace Microsoft.PlayerFramework
         /// <inheritdoc /> 
         void OnSkipPrevious(VisualMarker marker)
         {
-            MediaPlayer.SkipBack(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.StartTime);
+            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.StartTime));
         }
 
         /// <inheritdoc /> 
         void OnSkipNext(VisualMarker marker)
         {
-            MediaPlayer.SkipAhead(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime));
+            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)));
         }
 
         /// <inheritdoc /> 
         void OnSkipBack(TimeSpan position)
         {
-            MediaPlayer.SkipBack(GetMediaPlayerPosition(position));
+            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
         }
 
         /// <inheritdoc /> 
         void OnSkipAhead(TimeSpan position)
         {
-            MediaPlayer.SkipAhead(GetMediaPlayerPosition(position));
+            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
         }
 
         /// <inheritdoc /> 
         void OnSeek(TimeSpan position, out bool canceled)
         {
-            MediaPlayer.Seek(GetMediaPlayerPosition(position), out canceled);
+            var args = new SeekingEventArgs(GetMediaPlayerPosition(position));
+            if (Seeking != null) Seeking(this, args);
+            canceled = args.Cancel;
         }
 
         /// <inheritdoc /> 
         void OnCompleteScrub(TimeSpan position, bool canceled, out bool cancel)
         {
-            MediaPlayer.CompleteScrub(GetMediaPlayerPosition(position), canceled, out cancel);
+            var args = new CompletingScrubEventArgs(GetMediaPlayerPosition(position), canceled);
+            if (CompletingScrub != null) CompletingScrub(this, args);
+            cancel = canceled || args.Cancel;
         }
 
         /// <inheritdoc /> 
         void OnStartScrub(TimeSpan position, out bool canceled)
         {
-            MediaPlayer.StartScrub(GetMediaPlayerPosition(position), out canceled);
+            var args = new StartingScrubEventArgs(GetMediaPlayerPosition(position));
+            if (StartingScrub != null) StartingScrub(this, args);
+            canceled = args.Cancel;
         }
 
         /// <inheritdoc /> 
         void OnScrub(TimeSpan position, out bool canceled)
         {
-            MediaPlayer.Scrub(GetMediaPlayerPosition(position), out canceled);
+            var args = new ScrubbingEventArgs(GetMediaPlayerPosition(position));
+            if (Scrubbing != null) Scrubbing(this, args);
+            canceled = args.Cancel;
         }
 
         /// <inheritdoc /> 
@@ -264,7 +272,7 @@ namespace Microsoft.PlayerFramework
 
         #region AvailableCaptions
         /// <inheritdoc /> 
-        public IEnumerable<Caption> AvailableCaptions
+        public IEnumerable<ICaption> AvailableCaptions
         {
             get { return MediaPlayer.AvailableCaptions; }
         }
@@ -272,7 +280,7 @@ namespace Microsoft.PlayerFramework
 
         #region SelectedCaption
         /// <inheritdoc /> 
-        public Caption SelectedCaption
+        public ICaption SelectedCaption
         {
             get { return MediaPlayer.SelectedCaption; }
             set { MediaPlayer.SelectedCaption = value; }
@@ -281,7 +289,7 @@ namespace Microsoft.PlayerFramework
 
         #region AvailableAudioStreams
         /// <inheritdoc /> 
-        public IEnumerable<AudioStream> AvailableAudioStreams
+        public IEnumerable<IAudioStream> AvailableAudioStreams
         {
             get { return MediaPlayer.AvailableAudioStreams; }
         }
@@ -289,7 +297,7 @@ namespace Microsoft.PlayerFramework
 
         #region SelectedAudioStream
         /// <inheritdoc /> 
-        public AudioStream SelectedAudioStream
+        public IAudioStream SelectedAudioStream
         {
             get { return MediaPlayer.SelectedAudioStream; }
             set { MediaPlayer.SelectedAudioStream = value; }
@@ -986,5 +994,23 @@ namespace Microsoft.PlayerFramework
 
         /// <inheritdoc /> 
         public event RoutedEventHandler CurrentStateChanged;
+
+        /// <inheritdoc /> 
+        public event EventHandler<SkippingEventArgs> SkippingBack;
+
+        /// <inheritdoc /> 
+        public event EventHandler<SkippingEventArgs> SkippingAhead;
+
+        /// <inheritdoc /> 
+        public event EventHandler<SeekingEventArgs> Seeking;
+
+        /// <inheritdoc /> 
+        public event EventHandler<StartingScrubEventArgs> StartingScrub;
+
+        /// <inheritdoc /> 
+        public event EventHandler<ScrubbingEventArgs> Scrubbing;
+
+        /// <inheritdoc /> 
+        public event EventHandler<CompletingScrubEventArgs> CompletingScrub;
     }
 }

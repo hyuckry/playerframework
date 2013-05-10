@@ -20,7 +20,7 @@ namespace Microsoft.PlayerFramework
     /// </summary>
     public sealed class SelectedCaptionChangedEventArgs
     {
-        internal SelectedCaptionChangedEventArgs(Caption oldValue, Caption newValue)
+        internal SelectedCaptionChangedEventArgs(ICaption oldValue, ICaption newValue)
         {
             OldValue = oldValue;
             NewValue = newValue;
@@ -29,11 +29,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public Caption NewValue { get; internal set; }
+        public ICaption NewValue { get; internal set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public Caption OldValue { get; internal set; }
+        public ICaption OldValue { get; internal set; }
     }
 }

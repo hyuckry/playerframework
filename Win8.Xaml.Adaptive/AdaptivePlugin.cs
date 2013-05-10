@@ -8,14 +8,10 @@ using Windows.UI.Xaml;
 
 namespace Microsoft.PlayerFramework.Adaptive
 {
-#if MEF
-    [System.ComponentModel.Composition.PartCreationPolicy(CreationPolicy.NonShared)]
-    [System.ComponentModel.Composition.Export(typeof(IPlugin))]
-#endif
     /// <summary>
     /// Represents a plugin that can be used to automatically intialize the smooth streaming SDK.
     /// </summary>
-    public partial class AdaptivePlugin : IPlugin
+    public sealed class AdaptivePlugin : IPlugin
     {
         bool isLoaded;
         bool autoRestrictSize;
@@ -142,7 +138,7 @@ namespace Microsoft.PlayerFramework.Adaptive
                 var captionWrapper = MediaPlayer.SelectedCaption as CaptionStreamWrapper;
                 if (captionWrapper != null && captionWrapper.AdaptiveCaptionStream.ManifestStream.Name == e.Stream.Name)
                 {
-                    MediaPlayer.SelectedCaption.AugmentPayload(e.Data, new TimeSpan(e.StartTime), new TimeSpan(e.EndTime));
+                    captionWrapper.AugmentPayload(e.Data, new TimeSpan(e.StartTime), new TimeSpan(e.EndTime));
                 }
             }
         }
@@ -155,7 +151,7 @@ namespace Microsoft.PlayerFramework.Adaptive
         /// <summary>
         /// Called when the selected video track has changed. Used to update the signal strength and media quality properties on the MediaPlayer.
         /// </summary>
-        protected virtual void UpdateQuality()
+        void UpdateQuality()
         {
             MediaPlayer.SignalStrength = Math.Min(1.0, Math.Max(0.0, (double)Manager.CurrentBitrate / Manager.HighestBitrate));
             MediaPlayer.MediaQuality = Manager.CurrentHeight >= 720 ? MediaQuality.HighDefinition : MediaQuality.StandardDefinition;
@@ -192,7 +188,7 @@ namespace Microsoft.PlayerFramework.Adaptive
         }
 
 
-        void MediaPlayer_SelectedCaptionChanged(object sender, RoutedPropertyChangedEventArgs<Caption> e)
+        void MediaPlayer_SelectedCaptionChanged(object sender, SelectedCaptionChangedEventArgs e)
         {
             if (InstreamCaptionsEnabled)
             {
@@ -246,15 +242,13 @@ namespace Microsoft.PlayerFramework.Adaptive
             }
         }
 
-        void MediaPlayer_MediaLoading(object sender, MediaPlayerDeferrableEventArgs e)
+        void MediaPlayer_MediaLoading(object sender, MediaLoadingEventArgs e)
         {
-            var mediaLoadingEventArgs = e as MediaLoadingEventArgs;
-
             if (DownloaderPlugin != null && AutoSchemeDownloaderPlugin)
             {
-                var src = mediaLoadingEventArgs.Source;
+                var src = e.Source;
                 var newSrc = new Uri(src.OriginalString.Replace("http:", downloaderPluginHttpScheme).Replace("https:", downloaderPluginHttpsScheme));
-                mediaLoadingEventArgs.Source = newSrc;
+                e.Source = newSrc;
             }
 
             if (!Manager.IsInitialized) // only do this the first time
@@ -270,7 +264,7 @@ namespace Microsoft.PlayerFramework.Adaptive
                 }
             }
 
-            Manager.SourceUri = mediaLoadingEventArgs.Source;
+            Manager.SourceUri = e.Source;
         }
 
         void IPlugin.Load()

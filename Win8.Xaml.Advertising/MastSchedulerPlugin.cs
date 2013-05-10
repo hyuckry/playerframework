@@ -9,25 +9,31 @@ using System.Windows;
 #else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.Foundation;
+using System.Runtime.InteropServices.WindowsRuntime;
 #endif
 
 namespace Microsoft.PlayerFramework.Advertising
 {
-#if MEF
-    [System.ComponentModel.Composition.PartCreationPolicy(System.ComponentModel.Composition.CreationPolicy.NonShared)]
-    [System.ComponentModel.Composition.Export(typeof(IPlugin))]
-#endif
     /// <summary>
     /// A plugin that is capable of downloading a MAST source file, parsing it and using it to schedule when ads should play.
     /// </summary>
-    public partial class MastSchedulerPlugin : PluginBase
+    public sealed class MastSchedulerPlugin :
+#if SILVERLIGHT
+        DependencyObject
+#else
+ FrameworkElement
+#endif
+, IPlugin
     {
         readonly Mainsail mainsail;
         readonly Dictionary<Trigger, CancellationTokenSource> activeTriggers = new Dictionary<Trigger, CancellationTokenSource>();
         MastAdapter mastAdapter;
         bool capturetriggerTask = false;
         Task triggerTask = null;
-        private CancellationTokenSource cts;
+        CancellationTokenSource cts;
+        CancellationTokenSource adCts;
+        bool isLoaded;
 
         /// <summary>
         /// Creates a new instance of MastSchedulerPlugin
@@ -38,17 +44,28 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        protected override bool OnActivate()
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
         {
             cts = new CancellationTokenSource();
             WirePlayer();
             mainsail.ActivateTrigger += mainsail_ActivateTrigger;
             mainsail.DeactivateTrigger += mainsail_DeactivateTrigger;
-            return true;
+            isLoaded = true;
         }
 
         /// <inheritdoc /> 
-        protected override void OnDeactivate()
+        public void Update(IMediaSource mediaSource)
+        {
+            CancelActiveTriggers();
+            mainsail.Clear();
+            Source = MastScheduler.GetSource((DependencyObject)mediaSource);
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
         {
             cts.Cancel();
             cts = null;
@@ -56,15 +73,7 @@ namespace Microsoft.PlayerFramework.Advertising
             mainsail.ActivateTrigger -= mainsail_ActivateTrigger;
             mainsail.DeactivateTrigger -= mainsail_DeactivateTrigger;
             UnwirePlayer();
-        }
-
-        /// <inheritdoc /> 
-        protected override void OnUpdate()
-        {
-            CancelActiveTriggers();
-            mainsail.Clear();
-            Source = MastScheduler.GetSource((DependencyObject)CurrentMediaSource);
-            base.OnUpdate();
+            isLoaded = false;
         }
         
         void mainsail_DeactivateTrigger(object sender, TriggerEventArgs e)
@@ -82,7 +91,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
         void mainsail_ActivateTrigger(object sender, TriggerEventArgs e)
         {
-            if (IsEnabled)
+            if (isLoaded)
             {
                 var trigger = e.Trigger;
                 if (trigger.Sources.Any())
@@ -91,7 +100,11 @@ namespace Microsoft.PlayerFramework.Advertising
                     var remoteSource = new RemoteAdSource(new Uri(source.Uri), source.Format);
                     var cancellationToken = new CancellationTokenSource();
                     var progress = new Progress<AdStatus>();
+#if NETFX_CORE
+                    var task = MediaPlayer.PlayAd(remoteSource).AsTask(cancellationToken.Token, progress);
+#else
                     var task = MediaPlayer.PlayAd(remoteSource, progress, cancellationToken.Token);
+#endif
                     activeTriggers.Add(trigger, cancellationToken);
                     if (capturetriggerTask)
                     {
@@ -162,7 +175,7 @@ namespace Microsoft.PlayerFramework.Advertising
                 capturetriggerTask = false;
             }
         }
-        
+
         private void WirePlayer()
         {
             mastAdapter = new MastAdapter(MediaPlayer);
@@ -194,26 +207,53 @@ namespace Microsoft.PlayerFramework.Advertising
             activeTriggers.Clear();
         }
 
-        async void mediaPlayer_MediaLoading(object sender, MediaPlayerDeferrableEventArgs e)
+        async void mediaPlayer_MediaLoading(object sender, MediaLoadingEventArgs e)
         {
-            if (IsEnabled)
+            if (isLoaded)
             {
                 if (Source != null)
                 {
                     var deferral = e.DeferrableOperation.GetDeferral();
+                    adCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token);
+                    deferral.Canceled += deferral_Canceled;
                     try
                     {
-                        await LoadAds(Source, deferral.CancellationToken);
+#if NETFX_CORE
+                        await loadAds(Source, adCts.Token);
+#else
+                        await LoadAds(Source, adCts.Token);
+#endif
                     }
                     catch { /* ignore */ }
                     finally
                     {
                         deferral.Complete();
+                        deferral.Canceled -= deferral_Canceled;
+                        adCts.Dispose();
+                        adCts = null;
                     }
                 }
             }
         }
 
+        void deferral_Canceled(object sender, object e)
+        {
+            adCts.Cancel();
+        }
+
+#if NETFX_CORE
+        /// <summary>
+        /// Loads ads from a source URI. Note, this is called automatically if you set the source before the MediaLoading event fires and normally does not need to be called.
+        /// </summary>
+        /// <param name="source">The MAST source URI</param>
+        /// <returns>A task to await on.</returns>
+        public IAsyncAction LoadAds(Uri source)
+        {
+            return AsyncInfo.Run(c => loadAds(source, c)); 
+        }
+
+        async Task loadAds(Uri source, CancellationToken c)
+#else
         /// <summary>
         /// Loads ads from a source URI. Note, this is called automatically if you set the source before the MediaLoading event fires and normally does not need to be called.
         /// </summary>
@@ -221,6 +261,7 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <param name="c">A cancellation token that allows you to cancel a pending operation</param>
         /// <returns>A task to await on.</returns>
         public async Task LoadAds(Uri source, CancellationToken c)
+#endif
         {
             mainsail.Clear();
             var cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(c, cts.Token).Token;
@@ -242,7 +283,8 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Identifies the Source dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(Uri), typeof(MastSchedulerPlugin), null);
+        public static DependencyProperty SourceProperty { get { return sourceProperty; } }
+        static readonly DependencyProperty sourceProperty = DependencyProperty.Register("Source", typeof(Uri), typeof(MastSchedulerPlugin), null);
 
         /// <summary>
         /// Gets or sets the source Uri of the MAST file

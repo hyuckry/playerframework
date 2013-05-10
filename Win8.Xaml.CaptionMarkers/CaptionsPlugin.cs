@@ -17,14 +17,10 @@ using Windows.UI.Xaml.Media;
 
 namespace Microsoft.PlayerFramework.CaptionMarkers
 {
-#if MEF
-    [System.ComponentModel.Composition.PartCreationPolicy(System.ComponentModel.Composition.CreationPolicy.NonShared)]
-    [System.ComponentModel.Composition.Export(typeof(IPlugin))]
-#endif
     /// <summary>
     /// Represents a plugin for the player framework that can show closed captions
     /// </summary>
-    public partial class CaptionsPlugin : PluginBase
+    public sealed class CaptionsPlugin : IPlugin
     {
         const string DefaultMarkerType = "caption";
 
@@ -42,17 +38,47 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
         }
 
         /// <inheritdoc /> 
-        protected override void OnUpdate()
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
         {
-            ActiveCaptions.Clear();
-            base.OnUpdate();
+            var mediaContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.MediaContainer);
+            captionsContainer = mediaContainer.Children.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.CaptionsContainer);
+            if (captionsContainer != null)
+            {
+                if (!MediaPlayer.AvailableCaptions.Any()) // if there are caption tracks specified, this means there is another plugin that will handle this work. Do nothing.
+                {
+                    captionsPanel = new CaptionsPanel();
+                    captionsPanel.Style = CaptionsPanelStyle;
+                    ActiveCaptions = new ObservableCollection<ActiveCaption>();
+                    captionsPanel.ActiveCaptions = ActiveCaptions;
+                    captionsContainer.Children.Add(captionsPanel);
+                    cts = new CancellationTokenSource();
+                    MediaPlayer.MarkerReached += MediaPlayer_MarkerReached;
+                    MediaPlayer.CaptionsInvoked += MediaPlayer_CaptionsInvoked;
+                }
+            }
         }
 
         /// <inheritdoc /> 
-        protected override void OnUnload()
+        public void Update(IMediaSource mediaSource)
         {
+            ActiveCaptions.Clear();
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
+        {
+            MediaPlayer.MarkerReached -= MediaPlayer_MarkerReached;
+            MediaPlayer.CaptionsInvoked -= MediaPlayer_CaptionsInvoked;
+            cts.Cancel();
+            cts = null;
+            captionsContainer.Children.Remove(captionsPanel);
+            captionsContainer = null;
+            captionsPanel.ActiveCaptions = null;
+            captionsPanel = null;
             ActiveCaptions = null;
-            base.OnUnload();
         }
 
         /// <summary>
@@ -74,44 +100,7 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
         /// Gets the list of active captions
         /// </summary>
         protected ObservableCollection<ActiveCaption> ActiveCaptions { get; private set; }
-
-        /// <inheritdoc /> 
-        protected override bool OnActivate()
-        {
-            var mediaContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.MediaContainer);
-            captionsContainer = mediaContainer.Children.OfType<Panel>().FirstOrDefault(c => c.Name == MediaPlayerTemplateParts.CaptionsContainer);
-            if (captionsContainer != null)
-            {
-                if (!MediaPlayer.AvailableCaptions.Any()) // if there are caption tracks specified, this means there is another plugin that will handle this work. Do nothing.
-                {
-                    captionsPanel = new CaptionsPanel();
-                    captionsPanel.Style = CaptionsPanelStyle;
-                    ActiveCaptions = new ObservableCollection<ActiveCaption>();
-                    captionsPanel.ActiveCaptions = ActiveCaptions;
-                    captionsContainer.Children.Add(captionsPanel);
-                    cts = new CancellationTokenSource();
-                    MediaPlayer.MarkerReached += MediaPlayer_MarkerReached;
-                    MediaPlayer.CaptionsInvoked += MediaPlayer_CaptionsInvoked;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <inheritdoc /> 
-        protected override void OnDeactivate()
-        {
-            MediaPlayer.MarkerReached -= MediaPlayer_MarkerReached;
-            MediaPlayer.CaptionsInvoked -= MediaPlayer_CaptionsInvoked;
-            cts.Cancel();
-            cts = null;
-            captionsContainer.Children.Remove(captionsPanel);
-            captionsContainer = null;
-            captionsPanel.ActiveCaptions = null;
-            captionsPanel = null;
-            ActiveCaptions = null;
-        }
-
+        
         void MediaPlayer_CaptionsInvoked(object sender, RoutedEventArgs e)
         {
             MediaPlayer.IsCaptionsActive = !MediaPlayer.IsCaptionsActive;

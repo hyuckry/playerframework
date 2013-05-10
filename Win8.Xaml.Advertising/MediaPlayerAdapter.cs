@@ -41,7 +41,7 @@ namespace Microsoft.PlayerFramework.Advertising
             AdContainer.SizeChanged += AdContainer_SizeChanged;
         }
 
-        void MediaPlayer_IsMutedChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void MediaPlayer_IsMutedChanged(object sender, RoutedEventArgs e)
         {
             if (IsMutedChanged != null) IsMutedChanged(this, EventArgs.Empty);
         }
@@ -60,7 +60,7 @@ namespace Microsoft.PlayerFramework.Advertising
             if (DimensionsChanged != null) DimensionsChanged(this, EventArgs.Empty);
         }
 
-        void MediaPlayer_IsFullScreenChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void MediaPlayer_IsFullScreenChanged(object sender, RoutedEventArgs e)
         {
             if (FullscreenChanged != null) FullscreenChanged(this, EventArgs.Empty);
         }

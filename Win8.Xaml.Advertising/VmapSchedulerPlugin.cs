@@ -6,12 +6,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VideoAdvertising;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 #if SILVERLIGHT
 using System.Windows;
 using System.Windows.Threading;
 #else
 using Windows.UI.Xaml;
 using Windows.System.Threading;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
 #endif
 
 namespace Microsoft.PlayerFramework.Advertising
@@ -19,11 +22,19 @@ namespace Microsoft.PlayerFramework.Advertising
     /// <summary>
     /// A plugin that is capable of downloading a VMAP source file, parsing it and using it to schedule when ads should play.
     /// </summary>
-    public class VmapSchedulerPlugin : AdSchedulerPlugin
+    public sealed class VmapSchedulerPlugin :
+#if SILVERLIGHT
+        DependencyObject
+#else
+ FrameworkElement
+#endif
+, IPlugin
     {
-        readonly Dictionary<Advertisement, VmapAdBreak> adBreaks = new Dictionary<Advertisement, VmapAdBreak>();
+        readonly Dictionary<IAdvertisement, VmapAdBreak> adBreaks = new Dictionary<IAdvertisement, VmapAdBreak>();
         private CancellationTokenSource cts;
         private DispatcherTimer timer;
+        AdScheduleController adScheduler;
+        CancellationTokenSource adCts;
 
         /// <summary>
         /// Creates a new instance of VmapSchedulerPlugin
@@ -31,6 +42,161 @@ namespace Microsoft.PlayerFramework.Advertising
         public VmapSchedulerPlugin()
         {
             PollingInterval = TimeSpan.FromSeconds(10);
+            Advertisements = new ObservableCollection<IAdvertisement>();
+        }
+
+        /// <inheritdoc /> 
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
+        {
+            adScheduler = new AdScheduleController();
+            adScheduler.EvaluateOnForwardOnly = EvaluateOnForwardOnly;
+            adScheduler.SeekToAdPosition = SeekToAdPosition;
+            adScheduler.InterruptScrub = InterruptScrub;
+            adScheduler.PreloadTime = PreloadTime;
+            adScheduler.Advertisements = Advertisements;
+            adScheduler.AdStarting += adScheduler_AdStarting;
+            adScheduler.AdCompleted += adScheduler_AdCompleted;
+            adScheduler.Initialize();
+            cts = new CancellationTokenSource();
+            WirePlayer();
+        }
+
+        /// <inheritdoc /> 
+        public void Update(IMediaSource mediaSource)
+        {
+            adBreaks.Clear();
+            Source = VmapScheduler.GetSource((DependencyObject)mediaSource);
+            adScheduler.Update(AdScheduler.GetAdvertisements((DependencyObject)mediaSource));
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
+        {
+            cts.Cancel();
+            cts = null;
+            UnwirePlayer();
+            adScheduler.Uninitialize();
+            adScheduler.AdStarting -= adScheduler_AdStarting;
+            adScheduler.AdCompleted -= adScheduler_AdCompleted;
+            adScheduler.Dispose();
+        }
+
+        /// <summary>
+        /// Identifies the EvaluateOnForwardOnly dependency property.
+        /// </summary>
+        public static DependencyProperty EvaluateOnForwardOnlyProperty { get { return evaluateOnForwardOnlyProperty; } }
+        static readonly DependencyProperty evaluateOnForwardOnlyProperty = DependencyProperty.Register("EvaluateOnForwardOnly", typeof(bool), typeof(VmapSchedulerPlugin), new PropertyMetadata(true, (s, e) => ((VmapSchedulerPlugin)s).OnEvaluateOnForwardOnlyChanged((bool)e.OldValue, (bool)e.NewValue)));
+
+        void OnEvaluateOnForwardOnlyChanged(bool oldValue, bool newValue)
+        {
+            if (adScheduler != null)
+            {
+                adScheduler.EvaluateOnForwardOnly = newValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether seeking or scrubbing back in time can trigger ads. Set to false to allow ads to be played when seeking backwards. Default is true.
+        /// </summary>
+        public bool EvaluateOnForwardOnly
+        {
+            get { return (bool)GetValue(EvaluateOnForwardOnlyProperty); }
+            set { SetValue(EvaluateOnForwardOnlyProperty, value); }
+        }
+
+        /// <summary>
+        /// Identifies the SyncToAdPosition dependency property.
+        /// </summary>
+        public static DependencyProperty SeekToAdPositionProperty { get { return seekToAdPositionProperty; } }
+        static readonly DependencyProperty seekToAdPositionProperty = DependencyProperty.Register("SeekToAdPosition", typeof(bool), typeof(VmapSchedulerPlugin), new PropertyMetadata(true, (s, e) => ((VmapSchedulerPlugin)s).OnSeekToAdPositionChanged((bool)e.OldValue, (bool)e.NewValue)));
+
+        void OnSeekToAdPositionChanged(bool oldValue, bool newValue)
+        {
+            if (adScheduler != null)
+            {
+                adScheduler.SeekToAdPosition = newValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the position should be set set to that of the ad when an ad is scrubbed or seeked over. Default is true.
+        /// </summary>
+        public bool SeekToAdPosition
+        {
+            get { return (bool)GetValue(SeekToAdPositionProperty); }
+            set { SetValue(SeekToAdPositionProperty, value); }
+        }
+
+        /// <summary>
+        /// Identifies the InterruptScrub dependency property.
+        /// </summary>
+        public static DependencyProperty InterruptScrubProperty { get { return interruptScrubProperty; } }
+        static readonly DependencyProperty interruptScrubProperty = DependencyProperty.Register("InterruptScrub", typeof(bool), typeof(VmapSchedulerPlugin), new PropertyMetadata(true, (s, e) => ((VmapSchedulerPlugin)s).OnInterruptScrubChanged((bool)e.OldValue, (bool)e.NewValue)));
+
+        void OnInterruptScrubChanged(bool oldValue, bool newValue)
+        {
+            if (adScheduler != null)
+            {
+                adScheduler.InterruptScrub = newValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether or not scrubbing is interrupted if an ad is encountered. Default is true.
+        /// </summary>
+        public bool InterruptScrub
+        {
+            get { return (bool)GetValue(InterruptScrubProperty); }
+            set { SetValue(InterruptScrubProperty, value); }
+        }
+
+        /// <summary>
+        /// Identifies the PreloadTime dependency property.
+        /// </summary>
+        public static DependencyProperty PreloadTimeProperty { get { return preloadTimeProperty; } }
+        static readonly DependencyProperty preloadTimeProperty = DependencyProperty.Register("PreloadTime", typeof(TimeSpan?), typeof(VmapSchedulerPlugin), new PropertyMetadata(AdScheduleController.DefaultPreloadTime, (s, e) => ((VmapSchedulerPlugin)s).OnPreloadTimeChanged(e.OldValue as TimeSpan?, e.NewValue as TimeSpan?)));
+
+        void OnPreloadTimeChanged(TimeSpan? oldValue, TimeSpan? newValue)
+        {
+            if (adScheduler != null)
+            {
+                adScheduler.PreloadTime = newValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the amount of time before an ad will occur that preloading will begin. Set to null to disable preloading. Default is 5 seconds.
+        /// </summary>
+        public TimeSpan? PreloadTime
+        {
+            get { return (TimeSpan?)GetValue(PreloadTimeProperty); }
+            set { SetValue(PreloadTimeProperty, value); }
+        }
+
+        /// <summary>
+        /// Identifies the Advertisements dependency property.
+        /// </summary>
+        public static DependencyProperty AdvertisementsProperty { get { return advertisementsProperty; } }
+        static readonly DependencyProperty advertisementsProperty = DependencyProperty.Register("Advertisements", typeof(IList<IAdvertisement>), typeof(VmapSchedulerPlugin), new PropertyMetadata(null, (s, e) => ((VmapSchedulerPlugin)s).OnAdvertisementsChanged(e.OldValue as IList<IAdvertisement>, e.NewValue as IList<IAdvertisement>)));
+
+        void OnAdvertisementsChanged(IList<IAdvertisement> oldValue, IList<IAdvertisement> newValue)
+        {
+            if (adScheduler != null)
+            {
+                adScheduler.Advertisements = newValue;
+            }
+        }
+
+        /// <summary>
+        /// Provides the list of ads to schedule. You can add or remove ads to/from this collection during playback.
+        /// </summary>
+        public IList<IAdvertisement> Advertisements
+        {
+            get { return GetValue(AdvertisementsProperty) as IList<IAdvertisement>; }
+            set { SetValue(AdvertisementsProperty, value); }
         }
 
         /// <summary>
@@ -41,7 +207,8 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Identifies the Source dependency property.
         /// </summary>
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(Uri), typeof(VmapSchedulerPlugin), null);
+        public static DependencyProperty SourceProperty { get { return sourceProperty; } }
+        static readonly DependencyProperty sourceProperty = DependencyProperty.Register("Source", typeof(Uri), typeof(VmapSchedulerPlugin), null);
 
         /// <summary>
         /// Gets or sets the source Uri of the VMAP file
@@ -52,46 +219,21 @@ namespace Microsoft.PlayerFramework.Advertising
             set { SetValue(SourceProperty, value); }
         }
 
-        /// <inheritdoc /> 
-        protected override void OnUpdate()
-        {
-            adBreaks.Clear();
-            Source = VmapScheduler.GetSource((DependencyObject)CurrentMediaSource);
-            base.OnUpdate();
-        }
-
-        /// <inheritdoc /> 
-        protected override bool OnActivate()
-        {
-            cts = new CancellationTokenSource();
-            WirePlayer();
-            return base.OnActivate();
-        }
-
-        /// <inheritdoc /> 
-        protected override void OnDeactivate()
-        {
-            cts.Cancel();
-            cts = null;
-            UnwirePlayer();
-            base.OnDeactivate();
-        }
-
         private void WirePlayer()
         {
             MediaPlayer.MediaLoading += mediaPlayer_MediaLoading;
-            MediaPlayer.IsLiveChanged += MediaPlayer_IsLiveChanged;
+            MediaPlayer.IsLiveChanged += mediaPlayer_IsLiveChanged;
             if (MediaPlayer.IsLive) InitializeTimer();
         }
 
         private void UnwirePlayer()
         {
             MediaPlayer.MediaLoading -= mediaPlayer_MediaLoading;
-            MediaPlayer.IsLiveChanged -= MediaPlayer_IsLiveChanged;
+            MediaPlayer.IsLiveChanged -= mediaPlayer_IsLiveChanged;
             ShutdownTimer();
         }
 
-        void MediaPlayer_IsLiveChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        void mediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
         {
             if (MediaPlayer.IsLive)
             {
@@ -144,26 +286,50 @@ namespace Microsoft.PlayerFramework.Advertising
             catch { /* ignore */ }
         }
 
-        async void mediaPlayer_MediaLoading(object sender, MediaPlayerDeferrableEventArgs e)
+        async void mediaPlayer_MediaLoading(object sender, MediaLoadingEventArgs e)
         {
-            if (IsEnabled)
+            if (Source != null)
             {
-                if (Source != null)
+                var deferral = e.DeferrableOperation.GetDeferral();
+                adCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token);
+                deferral.Canceled += deferral_Canceled;
+                try
                 {
-                    var deferral = e.DeferrableOperation.GetDeferral();
-                    try
-                    {
-                        await LoadAds(Source, deferral.CancellationToken);
-                    }
-                    catch { /* ignore */ }
-                    finally
-                    {
-                        deferral.Complete();
-                    }
+#if NETFX_CORE
+                    await loadAds(Source, adCts.Token);
+#else
+                        await LoadAds(Source, adCts.Token);
+#endif
+                }
+                catch { /* ignore */ }
+                finally
+                {
+                    deferral.Complete();
+                    deferral.Canceled -= deferral_Canceled;
+                    adCts.Dispose();
+                    adCts = null;
                 }
             }
         }
 
+        void deferral_Canceled(object sender, object e)
+        {
+            adCts.Cancel();
+        }
+
+#if NETFX_CORE
+        /// <summary>
+        /// Loads ads from a source URI. Note, this is called automatically if you set the source before the MediaLoading event fires and normally does not need to be called.
+        /// </summary>
+        /// <param name="source">The VMAP source URI</param>
+        /// <returns>A task to await on.</returns>
+        public IAsyncAction LoadAds(Uri source)
+        {
+            return AsyncInfo.Run(c => loadAds(source, c));
+        }
+
+        async Task loadAds(Uri source, CancellationToken c)
+#else
         /// <summary>
         /// Loads ads from a source URI. Note, this is called automatically if you set the source before the MediaLoading event fires and normally does not need to be called.
         /// </summary>
@@ -171,6 +337,7 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <param name="c">A cancellation token that allows you to cancel a pending operation</param>
         /// <returns>A task to await on.</returns>
         public async Task LoadAds(Uri source, CancellationToken c)
+#endif
         {
             adBreaks.Clear();
             var cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(c, cts.Token).Token;
@@ -187,7 +354,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
         private void CreateAdvertisement(VmapAdBreak adBreak)
         {
-            Advertisement ad = null;
+            IAdvertisement ad = null;
             switch (adBreak.TimeOffset)
             {
                 case "start":
@@ -225,26 +392,30 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        /// <inheritdoc /> 
-        protected override async Task PlayAdAsync(Advertisement ad, CancellationToken cancellationToken)
+        void adScheduler_AdStarting(object sender, AdStartingEventArgs e)
         {
+            var ad = e.Ad;
             if (adBreaks.ContainsKey(ad)) // app could have manually added ads besides those in vmap
             {
                 VmapAdBreak adBreak = adBreaks[ad];
-                try
+                TrackEvent(adBreak.TrackingEvents.Where(te => te.EventType == VmapTrackingEventType.BreakStart));
+            }
+        }
+
+        void adScheduler_AdCompleted(object sender, AdCompletedEventArgs e)
+        {
+            var ad = e.Ad;
+            if (adBreaks.ContainsKey(ad)) // app could have manually added ads besides those in vmap
+            {
+                VmapAdBreak adBreak = adBreaks[ad];
+                if (e.Error == null)
                 {
-                    TrackEvent(adBreak.TrackingEvents.Where(te => te.EventType == VmapTrackingEventType.BreakStart));
-                    await base.PlayAdAsync(ad, cancellationToken);
                     TrackEvent(adBreak.TrackingEvents.Where(te => te.EventType == VmapTrackingEventType.BreakEnd));
                 }
-                catch
+                else
                 {
                     TrackEvent(adBreak.TrackingEvents.Where(te => te.EventType == VmapTrackingEventType.Error));
                 }
-            }
-            else
-            {
-                await base.PlayAdAsync(ad, cancellationToken);
             }
         }
 

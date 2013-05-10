@@ -11,7 +11,7 @@ namespace Microsoft.PlayerFramework.Analytics
     /// <summary>
     /// Represents a helper class responsible for logging unhandled exceptions
     /// </summary>
-    public class ErrorLogger : IDisposable
+    public sealed class ErrorLogger : IDisposable
     {
         /// <summary>
         /// Gets or sets whether unhandled exceptions should be prevented. If true, this will catch the exception and not allow it to bubble up.

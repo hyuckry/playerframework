@@ -17,7 +17,7 @@ namespace Microsoft.PlayerFramework.Analytics
     /// <summary>
     /// A plugin used to retrieve and log analytics data.
     /// </summary>
-    public class AnalyticsPlugin : IPlugin
+    public sealed class AnalyticsPlugin : IPlugin
     {
         /// <summary>
         /// Gets the area key to be applied to all analytic related tracking events.

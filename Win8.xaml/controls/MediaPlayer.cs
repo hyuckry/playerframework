@@ -9,10 +9,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics.CodeAnalysis;
-#if MEF
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-#endif
 #if SILVERLIGHT
 using System.Windows;
 using System.Windows.Controls;
@@ -64,8 +60,8 @@ namespace Microsoft.PlayerFramework
 
             SetValueWithoutCallback(SupportedPlaybackRatesProperty, DefaultSupportedPlaybackRates);
             SetValueWithoutCallback(VisualMarkersProperty, new ObservableCollection<VisualMarker>());
-            SetValueWithoutCallback(AvailableCaptionsProperty, new List<Caption>());
-            SetValueWithoutCallback(AvailableAudioStreamsProperty, new List<AudioStream>());
+            SetValueWithoutCallback(AvailableCaptionsProperty, new List<ICaption>());
+            SetValueWithoutCallback(AvailableAudioStreamsProperty, new List<IAudioStream>());
             SetValueWithoutCallback(TimeFormatConverterProperty, new StringFormatConverter() { StringFormat = DefaultTimeFormat });
             LoadPlugins(new ObservableCollection<IPlugin>());
             UpdateTimer.Interval = UpdateInterval;
@@ -208,11 +204,7 @@ namespace Microsoft.PlayerFramework
 
             if (!pluginsLoaded)
             {
-#if SILVERLIGHT || !MEF
                 InitializePlugins();
-#else
-                await InitializePlugins();
-#endif
                 pluginsLoaded = true;
             }
 
@@ -240,11 +232,7 @@ namespace Microsoft.PlayerFramework
 
         #region Plugins
 
-#if SILVERLIGHT || !MEF
         void InitializePlugins()
-#else
-        async Task InitializePlugins()
-#endif
         {
             // initialize any plugins already in the collection
             foreach (var plugin in Plugins.ToList())
@@ -252,15 +240,11 @@ namespace Microsoft.PlayerFramework
                 plugin.Load();
             }
 
-            // load more plugins via MEF
+            // auto load default plugins
             if (AutoLoadPlugins)
             {
                 var PluginsManager = new PluginsFactory();
-#if SILVERLIGHT || !MEF
                 PluginsManager.ImportPlugins();
-#else
-                await PluginsManager.ImportPlugins();
-#endif
                 if (PluginsManager.Plugins != null)
                 {
                     // we want to load the plugins ourselves instead of in this event. This allows us to add them all before loading the first one.
@@ -286,7 +270,7 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <summary>
-        /// Gets or sets whether plugins should be automatically discovered. MEF (Managed Extensibility Framework) is used to discover plugins.
+        /// Gets or sets whether default plugins should be automatically added.
         /// Set to false to optimize if you are not using any plugins or if you want to manually set which plugins are connected.
         /// You can programmatically connect plugins by adding to the Plugins collection. Default is true.
         /// </summary>
@@ -660,7 +644,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void Seek(TimeSpan position, out bool cancel)
+        void Seek(TimeSpan position, out bool cancel)
         {
             var previousPosition = Position;
             var args = new SeekRoutedEventArgs(previousPosition, position);
@@ -672,7 +656,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void SkipAhead(TimeSpan position)
+        void SkipAhead(TimeSpan position)
         {
             var skippingEventArgs = new SkipRoutedEventArgs(position);
             if (SkippingAhead != null) SkippingAhead(this, skippingEventArgs);
@@ -688,7 +672,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void SkipBack(TimeSpan position)
+        void SkipBack(TimeSpan position)
         {
             var skippingEventArgs = new SkipRoutedEventArgs(position);
             if (SkippingBack != null) SkippingBack(this, skippingEventArgs);
@@ -704,7 +688,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void CompleteScrub(TimeSpan position, bool alreadyCanceled, out bool canceled)
+        void CompleteScrub(TimeSpan position, bool alreadyCanceled, out bool canceled)
         {
             var args = new ScrubProgressRoutedEventArgs(startScrubPosition, position);
             args.Canceled = alreadyCanceled;
@@ -721,7 +705,7 @@ namespace Microsoft.PlayerFramework
             SetValue(IsScrubbingProperty, false);
         }
 
-        internal void StartScrub(TimeSpan position, out bool canceled)
+        void StartScrub(TimeSpan position, out bool canceled)
         {
             startScrubPosition = Position;
             rateAfterScrub = PlaybackRate;
@@ -735,7 +719,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void Scrub(TimeSpan position, out bool canceled)
+        void Scrub(TimeSpan position, out bool canceled)
         {
             var args = new ScrubProgressRoutedEventArgs(startScrubPosition, position);
             OnScrubbing(args);
@@ -799,7 +783,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs just before the source is set and offers the ability to perform blocking async operations.
         /// </summary>
-        public event EventHandler<MediaPlayerDeferrableEventArgs> MediaLoading;
+        public event EventHandler<MediaLoadingEventArgs> MediaLoading;
 
         /// <summary>
         /// Occurs just before the MediaEnded event fires and offers the ability to perform blocking async operations.
@@ -835,7 +819,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the MediaElement is no longer playing audio or video.
         /// </summary>
-        public event MediaPlayerActionEventHandler MediaEnded;
+        public event MediaEndedEventHandler MediaEnded;
 
         /// <summary>
         /// Occurs when there is an error associated with the media Source.
@@ -3164,15 +3148,15 @@ namespace Microsoft.PlayerFramework
         /// Identifies the AvailableCaptions dependency property.
         /// </summary>
         public static DependencyProperty AvailableCaptionsProperty { get { return availableCaptionsProperty; } }
-        static readonly DependencyProperty availableCaptionsProperty = RegisterDependencyProperty<IList<Caption>>("AvailableCaptions");
+        static readonly DependencyProperty availableCaptionsProperty = RegisterDependencyProperty<IList<ICaption>>("AvailableCaptions");
 
         /// <summary>
         /// Gets or sets the list of captions that can be chosen by the user.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "Can be set from xaml")]
-        public IList<Caption> AvailableCaptions
+        public IList<ICaption> AvailableCaptions
         {
-            get { return GetValue(AvailableCaptionsProperty) as IList<Caption>; }
+            get { return GetValue(AvailableCaptionsProperty) as IList<ICaption>; }
         }
         #endregion
 
@@ -3181,9 +3165,9 @@ namespace Microsoft.PlayerFramework
         /// Identifies the SelectedCaption dependency property.
         /// </summary>
         public static DependencyProperty SelectedCaptionProperty { get { return selectedCaptionProperty; } }
-        static readonly DependencyProperty selectedCaptionProperty = RegisterDependencyProperty<Caption>("SelectedCaption", (t, o, n) => t.OnSelectedCaptionChanged(o, n));
+        static readonly DependencyProperty selectedCaptionProperty = RegisterDependencyProperty<ICaption>("SelectedCaption", (t, o, n) => t.OnSelectedCaptionChanged(o, n));
 
-        void OnSelectedCaptionChanged(Caption oldValue, Caption newValue)
+        void OnSelectedCaptionChanged(ICaption oldValue, ICaption newValue)
         {
             OnSelectedCaptionChanged(new SelectedCaptionChangedEventArgs(oldValue, newValue));
         }
@@ -3191,9 +3175,9 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the selected caption stream.
         /// </summary>
-        public Caption SelectedCaption
+        public ICaption SelectedCaption
         {
-            get { return (Caption)GetValue(SelectedCaptionProperty); }
+            get { return GetValue(SelectedCaptionProperty) as ICaption; }
             set { SetValue(SelectedCaptionProperty, value); }
         }
         #endregion
@@ -3203,15 +3187,15 @@ namespace Microsoft.PlayerFramework
         /// Identifies the AvailableAudioStreams dependency property.
         /// </summary>
         public static DependencyProperty AvailableAudioStreamsProperty { get { return availableAudioStreamsProperty; } }
-        static readonly DependencyProperty availableAudioStreamsProperty = RegisterDependencyProperty<IList<AudioStream>>("AvailableAudioStreams");
+        static readonly DependencyProperty availableAudioStreamsProperty = RegisterDependencyProperty<IList<IAudioStream>>("AvailableAudioStreams");
 
         /// <summary>
         /// Gets or sets the list of AudioStreams that can be chosen by the user.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "Can be set from xaml")]
-        public IList<AudioStream> AvailableAudioStreams
+        public IList<IAudioStream> AvailableAudioStreams
         {
-            get { return GetValue(AvailableAudioStreamsProperty) as IList<AudioStream>; }
+            get { return GetValue(AvailableAudioStreamsProperty) as IList<IAudioStream>; }
         }
         #endregion
 
@@ -3220,9 +3204,9 @@ namespace Microsoft.PlayerFramework
         /// Identifies the SelectedAudioStream dependency property.
         /// </summary>
         public static DependencyProperty SelectedAudioStreamProperty { get { return selectedAudioStreamProperty; } }
-        static readonly DependencyProperty selectedAudioStreamProperty = RegisterDependencyProperty<AudioStream>("SelectedAudioStream", (t, o, n) => t.OnSelectedAudioStreamChanged(o, n));
+        static readonly DependencyProperty selectedAudioStreamProperty = RegisterDependencyProperty<IAudioStream>("SelectedAudioStream", (t, o, n) => t.OnSelectedAudioStreamChanged(o, n));
 
-        void OnSelectedAudioStreamChanged(AudioStream oldValue, AudioStream newValue)
+        void OnSelectedAudioStreamChanged(IAudioStream oldValue, IAudioStream newValue)
         {
             var eventArgs = new SelectedAudioStreamChangedEventArgs(oldValue, newValue);
             OnSelectedAudioStreamChanged(eventArgs);
@@ -3235,9 +3219,9 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the selected AudioStream stream.
         /// </summary>
-        public AudioStream SelectedAudioStream
+        public IAudioStream SelectedAudioStream
         {
-            get { return (AudioStream)GetValue(SelectedAudioStreamProperty); }
+            get { return GetValue(SelectedAudioStreamProperty) as IAudioStream; }
             set { SetValue(SelectedAudioStreamProperty, value); }
         }
         #endregion
@@ -4394,7 +4378,7 @@ namespace Microsoft.PlayerFramework
             SetValue(PlayerStateProperty, PlayerState.Failed);
         }
 
-        async void OnMediaEnded(MediaPlayerActionEventArgs e)
+        async void OnMediaEnded(MediaEndedEventArgs e)
         {
             SetValue(PlayerStateProperty, PlayerState.Ending);
             var deferrableOperation = new MediaPlayerDeferrableOperation(cts);

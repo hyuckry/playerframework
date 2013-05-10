@@ -25,14 +25,49 @@ namespace Microsoft.PlayerFramework
     public interface IInteractiveViewModel
     {
         /// <summary>
-        /// Can be called by UI elements to indicate that the user is interacting
+        /// Raised to indicate that the user is requesting to skip back
         /// </summary>
-        void OnInteracting(InteractionType interactionType);
+        event EventHandler<SkippingEventArgs> SkippingBack;
+
+        /// <summary>
+        /// Raised to indicate that the user is requesting to skip ahead
+        /// </summary>
+        event EventHandler<SkippingEventArgs> SkippingAhead;
+
+        /// <summary>
+        /// Raised to indicate that the user is requesting to seek
+        /// </summary>
+        event EventHandler<SeekingEventArgs> Seeking;
+
+        /// <summary>
+        /// Raised to indicate that the user is requesting to start scrubbing
+        /// </summary>
+        event EventHandler<StartingScrubEventArgs> StartingScrub;
+
+        /// <summary>
+        /// Raised to indicate that the user is requesting to scrub
+        /// </summary>
+        event EventHandler<ScrubbingEventArgs> Scrubbing;
+
+        /// <summary>
+        /// Raised to indicate that the user is requesting to finish scrubbing
+        /// </summary>
+        event EventHandler<CompletingScrubEventArgs> CompletingScrub;
+
+        /// <summary>
+        /// Occurs when the value of the CurrentState property changes.
+        /// </summary>
+        event RoutedEventHandler CurrentStateChanged;
 
         /// <summary>
         /// Raised when the user interacts
         /// </summary>
         event EventHandler<InteractionEventArgs> Interacting;
+
+        /// <summary>
+        /// Can be called by UI elements to indicate that the user is interacting
+        /// </summary>
+        void OnInteracting(InteractionType interactionType);
 
         /// <summary>
         /// Gets a collection of markers to display
@@ -103,22 +138,22 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets or sets the selected caption.
         /// </summary>
-        Caption SelectedCaption { get; set; }
+        ICaption SelectedCaption { get; set; }
 
         /// <summary>
         /// Gets the caption stream names to be displayed to the user for selecting from multiple captions.
         /// </summary>
-        IEnumerable<Caption> AvailableCaptions { get; }
+        IEnumerable<ICaption> AvailableCaptions { get; }
 
         /// <summary>
         /// Gets or sets the selected caption.
         /// </summary>
-        AudioStream SelectedAudioStream { get; set; }
+        IAudioStream SelectedAudioStream { get; set; }
 
         /// <summary>
         /// Gets the caption stream names to be displayed to the user for selecting from multiple captions.
         /// </summary>
-        IEnumerable<AudioStream> AvailableAudioStreams { get; }
+        IEnumerable<IAudioStream> AvailableAudioStreams { get; }
         
         /// <summary>
         /// Gets a an IValueConverter that is used to display the time to the user such as the position, duration, and time remaining.
@@ -320,11 +355,6 @@ namespace Microsoft.PlayerFramework
         event RoutedEventHandler IsGoLiveEnabledChanged;
 
         /// <summary>
-        /// Occurs when the value of the CurrentState property changes.
-        /// </summary>
-        event RoutedEventHandler CurrentStateChanged;
-
-        /// <summary>
         /// Invokes the closed captioning feature.
         /// </summary>
         void InvokeCaptionSelection();
@@ -449,5 +479,152 @@ namespace Microsoft.PlayerFramework
         /// The type of interaction that occurred.
         /// </summary>
         public InteractionType InteractionType { get; private set; }
+    }
+
+    /// <summary>
+    /// Provides information about the Seeking event.
+    /// </summary>
+#if SILVERLIGHT
+    public sealed class SeekingEventArgs : EventArgs
+#else
+    public sealed class SeekingEventArgs
+#endif
+    {
+        /// <summary>
+        /// Creates a new instance of the SeekingEventArgs
+        /// </summary>
+        /// <param name="position">The position the user is seeking to.</param>
+        public SeekingEventArgs(TimeSpan position)
+        {
+            Position = position;
+        }
+
+        /// <summary>
+        /// The position the user is seeking to.
+        /// </summary>
+        public TimeSpan Position { get; private set; }
+
+        /// <summary>
+        /// Gets or sets if the operation should be cancelled.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
+    /// <summary>
+    /// Provides information about a SkippingAhead or SkippingBack event.
+    /// </summary>
+#if SILVERLIGHT
+    public sealed class SkippingEventArgs : EventArgs
+#else
+    public sealed class SkippingEventArgs
+#endif
+    {
+        /// <summary>
+        /// Creates a new instance of the SkippingEventArgs
+        /// </summary>
+        /// <param name="position">The position the user is seeking to.</param>
+        public SkippingEventArgs(TimeSpan position)
+        {
+            Position = position;
+        }
+
+        /// <summary>
+        /// The position the user is skipping to.
+        /// </summary>
+        public TimeSpan Position { get; private set; }
+    }
+
+    /// <summary>
+    /// Provides information about a CompletingScrub event.
+    /// </summary>
+#if SILVERLIGHT
+    public sealed class CompletingScrubEventArgs : EventArgs
+#else
+    public sealed class CompletingScrubEventArgs
+#endif
+    {
+        /// <summary>
+        /// Creates a new instance of the SkippingEventArgs
+        /// </summary>
+        /// <param name="position">The position the user is scrubbing to.</param>
+        /// <param name="canceled">Indicates that the operation was already cancelled.</param>
+        public CompletingScrubEventArgs(TimeSpan position, bool canceled)
+        {
+            Position = position;
+            Canceled = canceled;
+        }
+
+        /// <summary>
+        /// The position the user is scrubbing to.
+        /// </summary>
+        public TimeSpan Position { get; private set; }
+
+        /// <summary>
+        /// Gets or sets if the operation was already cancelled.
+        /// </summary>
+        public bool Canceled { get; private set; }
+
+        /// <summary>
+        /// Gets or sets if the operation should be cancelled.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
+    /// <summary>
+    /// Provides information about a Scrubbing event.
+    /// </summary>
+#if SILVERLIGHT
+    public sealed class ScrubbingEventArgs : EventArgs
+#else
+    public sealed class ScrubbingEventArgs
+#endif
+    {
+        /// <summary>
+        /// Creates a new instance of the SkippingEventArgs
+        /// </summary>
+        /// <param name="position">The position the user is scrubbing to.</param>
+        public ScrubbingEventArgs(TimeSpan position)
+        {
+            Position = position;
+        }
+
+        /// <summary>
+        /// The position the user is scrubbing to.
+        /// </summary>
+        public TimeSpan Position { get; private set; }
+
+        /// <summary>
+        /// Gets or sets if the operation should be cancelled.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
+    /// <summary>
+    /// Provides information about a StartingScrub event.
+    /// </summary>
+#if SILVERLIGHT
+    public sealed class StartingScrubEventArgs : EventArgs
+#else
+    public sealed class StartingScrubEventArgs
+#endif
+    {
+        /// <summary>
+        /// Creates a new instance of the SkippingEventArgs
+        /// </summary>
+        /// <param name="position">The position the user is scrubbing to.</param>
+        public StartingScrubEventArgs(TimeSpan position)
+        {
+            Position = position;
+        }
+
+        /// <summary>
+        /// The position the user is scrubbing to.
+        /// </summary>
+        public TimeSpan Position { get; private set; }
+        
+        /// <summary>
+        /// Gets or sets if the operation should be cancelled.
+        /// </summary>
+        public bool Cancel { get; set; }
     }
 }

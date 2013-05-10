@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VideoAdvertising;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
 
 namespace Microsoft.PlayerFramework.Advertising
 {
@@ -16,6 +18,19 @@ namespace Microsoft.PlayerFramework.Advertising
         /// </summary>
         /// <param name="mediaPlayer">The MediaPlayer instance to play the clip in.</param>
         /// <param name="clipSource">The source Uri of the clip.</param>
+        /// <returns>An awaitable task that returns true if the clip was played.</returns>
+#if NETFX_CORE
+        public static IAsyncOperationWithProgress<bool, AdStatus> PlayLinearClip(this MediaPlayer mediaPlayer, Uri clipSource)
+        {
+            var adSource = new AdSource(clipSource, ClipAdPayloadHandler.AdType);
+            return mediaPlayer.PlayAd(adSource);
+        }
+#else
+        /// <summary>
+        /// Plays a simple linear clip
+        /// </summary>
+        /// <param name="mediaPlayer">The MediaPlayer instance to play the clip in.</param>
+        /// <param name="clipSource">The source Uri of the clip.</param>
         /// <param name="progress">An object that allows progress to be reported.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
         /// <returns>An awaitable task that returns true if the clip was played.</returns>
@@ -24,7 +39,32 @@ namespace Microsoft.PlayerFramework.Advertising
             var adSource = new AdSource(clipSource, ClipAdPayloadHandler.AdType);
             return mediaPlayer.PlayAd(adSource, progress, cancellationToken);
         }
+#endif
 
+        /// <summary>
+        /// Plays an ad.
+        /// </summary>
+        /// <param name="mediaPlayer">The MediaPlayer instance to play the ad in.</param>
+        /// <param name="adSource">An object that defines the source of the ad.</param>
+        /// <returns>An awaitable task that returns true if the ad was played.</returns>
+#if NETFX_CORE
+        public static IAsyncOperationWithProgress<bool, AdStatus> PlayAd(this MediaPlayer mediaPlayer, IAdSource adSource)
+        {
+            var adPlugin = mediaPlayer.Plugins.OfType<AdHandlerPlugin>().FirstOrDefault();
+            if (adPlugin != null)
+            {
+                return AsyncInfo.Run<bool, AdStatus>(async (c, p) =>
+                {
+                    await adPlugin.PlayAd(adSource).AsTask(c, p);
+                    return true;
+                });
+            }
+            else
+            {
+                return AsyncInfo.Run<bool, AdStatus>((c, p) => Task.FromResult(false));
+            }
+        }
+#else
         /// <summary>
         /// Plays an ad.
         /// </summary>
@@ -46,7 +86,30 @@ namespace Microsoft.PlayerFramework.Advertising
                 return false;
             }
         }
+#endif
 
+#if NETFX_CORE
+        /// <summary>
+        /// Preloads an ad so it is ready to play instantly when PlayAd is called.
+        /// </summary>
+        /// <param name="mediaPlayer">The MediaPlayer instance to play the ad in.</param>
+        /// <param name="adSource">An object that defines the source of the ad.</param>
+        /// <returns>An awaitable task that returns when the ad is done preloading.</returns>
+        public static IAsyncAction PreloadAd(this MediaPlayer mediaPlayer, IAdSource adSource)
+        {
+            return AsyncInfo.Run(c => preloadAd(mediaPlayer, adSource, c));
+        }
+
+        internal static Task preloadAd(this MediaPlayer mediaPlayer, IAdSource adSource, CancellationToken cancellationToken)
+        {
+            var adPlugin = mediaPlayer.Plugins.OfType<AdHandlerPlugin>().FirstOrDefault();
+            if (adPlugin != null)
+            {
+                return adPlugin.preloadAd(adSource, cancellationToken);
+            }
+            return null;
+        }
+#else
         /// <summary>
         /// Preloads an ad so it is ready to play instantly when PlayAd is called.
         /// </summary>
@@ -63,6 +126,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
             return null;
         }
+#endif
 
         /// <summary>
         /// Shows a companion ad not associated with a linear ad.
@@ -74,8 +138,8 @@ namespace Microsoft.PlayerFramework.Advertising
             var adPlugin = mediaPlayer.Plugins.OfType<AdHandlerPlugin>().FirstOrDefault();
             if (adPlugin != null)
             {
-                Action undoAction;
-                if (!adPlugin.TryLoadCompanion(companionSource, out undoAction))
+                Action undoAction = adPlugin.TryLoadCompanion(companionSource);
+                if (undoAction == null)
                 {
                     throw new Exception("Unable to play companion ad");
                 }
