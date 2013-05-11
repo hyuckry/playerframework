@@ -85,6 +85,7 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             Advertisements = null;
             HandledAds = null;
+            MediaPlayer = null;
         }
 
         /// <summary>

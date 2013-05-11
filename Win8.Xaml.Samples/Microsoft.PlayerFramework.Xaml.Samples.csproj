@@ -351,9 +351,50 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Logo150x150.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Logo30x30.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Logo50x50.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\SplashScreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Page Include="EntertainmentAppPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.Media.AdaptiveStreamingClient, Version=1.0">
+      <Name>Microsoft Smooth Streaming Client SDK for Windows 8</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.Media.PlayReadyClient, Version=2.3.1678.0">
+      <Name>Microsoft PlayReady Client SDK</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, Version=11.0">
+      <Name>Microsoft Visual C++ Runtime Package</Name>
+    </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Win8.AdaptiveStreaming.Analytics\Microsoft.AdaptiveStreaming.Analytics.csproj">
       <Project>{bfd7f8cb-c154-43e8-9647-d1f8005f71ab}</Project>
       <Name>Microsoft.AdaptiveStreaming.Analytics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Win8.AdaptiveStreaming\Microsoft.AdaptiveStreaming.csproj">
+      <Project>{b252fc20-5150-43d0-bb77-802df3231ef1}</Project>
+      <Name>Microsoft.AdaptiveStreaming</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Win8.TimedText\Microsoft.TimedText.csproj">
+      <Project>{d1f1ea17-4a91-4f3b-a243-f2b41d6cbce6}</Project>
+      <Name>Microsoft.TimedText</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Win8.VideoAdvertising\Microsoft.VideoAdvertising.csproj">
+      <Project>{f863edc6-2886-4d39-a578-89f4ff729d82}</Project>
+      <Name>Microsoft.VideoAdvertising</Name>
     </ProjectReference>
     <ProjectReference Include="..\Win8.VideoAnalytics\Microsoft.VideoAnalytics.csproj">
       <Project>{961ce8ee-f4be-403f-ac06-a53ce1c7ce4c}</Project>
@@ -391,47 +432,6 @@
       <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
       <Name>Microsoft.PlayerFramework.Xaml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Win8.AdaptiveStreaming\Microsoft.AdaptiveStreaming.csproj">
-      <Project>{b252fc20-5150-43d0-bb77-802df3231ef1}</Project>
-      <Name>Microsoft.AdaptiveStreaming</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Win8.TimedText\Microsoft.TimedText.csproj">
-      <Project>{d1f1ea17-4a91-4f3b-a243-f2b41d6cbce6}</Project>
-      <Name>Microsoft.TimedText</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Win8.VideoAdvertising\Microsoft.VideoAdvertising.csproj">
-      <Project>{f863edc6-2886-4d39-a578-89f4ff729d82}</Project>
-      <Name>Microsoft.VideoAdvertising</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\Logo150x150.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Logo30x30.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Logo50x50.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\SplashScreen.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Page Include="EntertainmentAppPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="Microsoft.Media.AdaptiveStreamingClient, Version=1.0">
-      <Name>Microsoft Smooth Streaming Client SDK for Windows 8</Name>
-    </SDKReference>
-    <SDKReference Include="Microsoft.Media.PlayReadyClient, Version=2.3.1678.0">
-      <Name>Microsoft PlayReady Client SDK</Name>
-    </SDKReference>
-    <SDKReference Include="Microsoft.VCLibs, Version=11.0">
-      <Name>Microsoft Visual C++ Runtime Package</Name>
-    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

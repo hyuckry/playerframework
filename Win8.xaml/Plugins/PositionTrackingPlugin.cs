@@ -355,7 +355,9 @@ namespace Microsoft.PlayerFramework
         /// <param name="trackingEvent">The event that was tracked</param>
         public PositionEventTrackedEventArgs(PositionTrackingEvent trackingEvent)
             : this()
-        { }
+        {
+            TrackingEvent = trackingEvent;
+        }
 
         /// <summary>
         /// Creates a new instance of EventTrackedEventArgs

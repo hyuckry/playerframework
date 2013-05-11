@@ -163,7 +163,7 @@
     <Compile Include="Primitives\PlayerStateEnum.cs" />
     <Compile Include="Controls\ControlPanel\Timeline.cs" />
     <Compile Include="Plugins\PlayTimeTrackingPlugin.cs" />
-    <Compile Include="Plugins\TrackingPluginBase.cs" />
+    <Compile Include="Primitives\EventTracking.cs" />
     <Compile Include="Plugins\PlaylistPlugin.Commands.cs" />
     <Compile Include="Primitives\PlaylistItem.Metadata.cs" />
     <Compile Include="Primitives\PositionRoutedEventArgs.cs" />

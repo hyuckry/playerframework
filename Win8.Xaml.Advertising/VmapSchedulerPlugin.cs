@@ -52,6 +52,7 @@ namespace Microsoft.PlayerFramework.Advertising
         public void Load()
         {
             adScheduler = new AdScheduleController();
+            adScheduler.MediaPlayer = MediaPlayer;
             adScheduler.EvaluateOnForwardOnly = EvaluateOnForwardOnly;
             adScheduler.SeekToAdPosition = SeekToAdPosition;
             adScheduler.InterruptScrub = InterruptScrub;

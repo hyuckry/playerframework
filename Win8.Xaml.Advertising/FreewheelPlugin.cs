@@ -51,7 +51,9 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <inheritdoc /> 
         public void Load()
         {
+            WirePlayer();
             adScheduler = new AdScheduleController();
+            adScheduler.MediaPlayer = MediaPlayer;
             adScheduler.EvaluateOnForwardOnly = EvaluateOnForwardOnly;
             adScheduler.SeekToAdPosition = SeekToAdPosition;
             adScheduler.InterruptScrub = InterruptScrub;
@@ -81,6 +83,7 @@ namespace Microsoft.PlayerFramework.Advertising
             adScheduler.Uninitialize();
             adScheduler.AdStarting -= adScheduler_AdStarting;
             adScheduler.Dispose();
+            UnwirePlayer();
             isLoaded = false;
         }
         

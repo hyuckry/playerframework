@@ -36,7 +36,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MediaPlayerTextButtonStyle" TargetType="ButtonBase">
+    <Style x:Key="MediaPlayerTextButtonStyle" TargetType="Button">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{StaticResource ButtonForegroundThemeBrush}"/>
@@ -45,7 +45,7 @@
         <Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ButtonBase">
+                <ControlTemplate TargetType="Button">
                     <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}" Background="#00000000">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">

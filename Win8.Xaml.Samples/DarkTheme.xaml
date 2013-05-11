@@ -327,7 +327,7 @@
     <SolidColorBrush Color="#66000000" x:Key="Dark_PanelBackgroundThemeBrush"/>
     <SolidColorBrush Color="#AA000000" x:Key="Dark_ControlPanelBackgroundThemeBrush"/>
 
-    <Style x:Key="Dark_MediaPlayerControlStyle" TargetType="mmppf:MediaPlayerControl">
+    <Style x:Key="Dark_MediaPlayerControlStyle" TargetType="ContentControl">
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Foreground" Value="{StaticResource Dark_ButtonForegroundThemeBrush}" />
@@ -336,7 +336,7 @@
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Control" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="mmppf:MediaPlayerControl">
+                <ControlTemplate TargetType="ContentControl">
                     <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}">
                         <ContentControl x:Name="ContentPresenter" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" />
                     </Grid>
@@ -399,8 +399,8 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="Dark_MediaPlayerButtonStyle" TargetType="mmppf:MediaPlayerButton">
-        <Setter Property="Size" Value="26" />
+    <Style x:Key="Dark_MediaPlayerButtonStyle" TargetType="Button">
+        <Setter Property="mmppf:MediaPlayerControl.Size" Value="26" />
         <Setter Property="FontFamily" Value="{StaticResource Dark_SymbolThemeFontFamily}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
@@ -409,14 +409,14 @@
         <Setter Property="Background" Value="{StaticResource Dark_ButtonBackgroundThemeBrush}" />
         <Setter Property="Foreground" Value="{StaticResource Dark_ButtonForegroundThemeBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource Dark_ButtonBorderThemeBrush}" />
-        <Setter Property="StrokeThickness" Value="{StaticResource Dark_ButtonBorderThemeThickness}" />
+        <Setter Property="mmppf:MediaPlayerControl.StrokeThickness" Value="{StaticResource Dark_ButtonBorderThemeThickness}" />
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Button" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="mmppf:MediaPlayerButton">
-                    <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}" Width="{TemplateBinding Size}" Height="{TemplateBinding Size}">
-                        <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding StrokeThickness}" Fill="{TemplateBinding Background}" />
-                        <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding ContentTransform}" />
+                <ControlTemplate TargetType="Button">
+                    <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}" Width="{TemplateBinding mmppf:MediaPlayerControl.Size}" Height="{TemplateBinding mmppf:MediaPlayerControl.Size}">
+                        <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding mmppf:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}" />
+                        <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding mmppf:MediaPlayerControl.ContentTransform}" />
                         <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Stroke="{StaticResource Dark_FocusVisualWhiteStrokeThemeBrush}" StrokeEndLineCap="Square" StrokeDashArray="1,1" Opacity="0" StrokeDashOffset="1.5" />
                         <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Stroke="{StaticResource Dark_FocusVisualBlackStrokeThemeBrush}" StrokeEndLineCap="Square" StrokeDashArray="1,1" Opacity="0" StrokeDashOffset="0.5" />
                         <VisualStateManager.VisualStateGroups>
@@ -472,8 +472,8 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="Dark_MediaPlayerToggleButtonStyle" TargetType="mmppf:MediaPlayerToggleButton">
-        <Setter Property="Size" Value="26" />
+    <Style x:Key="Dark_MediaPlayerToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="mmppf:MediaPlayerControl.Size" Value="26" />
         <Setter Property="FontFamily" Value="{StaticResource Dark_SymbolThemeFontFamily}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
@@ -482,14 +482,15 @@
         <Setter Property="Background" Value="{StaticResource Dark_ButtonBackgroundThemeBrush}" />
         <Setter Property="Foreground" Value="{StaticResource Dark_ButtonForegroundThemeBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource Dark_ButtonBorderThemeBrush}" />
+        <Setter Property="mmppf:MediaPlayerControl.StrokeThickness" Value="{StaticResource Dark_ButtonBorderThemeThickness}" />
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Button" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="mmppf:MediaPlayerToggleButton">
-                    <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}" Width="{TemplateBinding Size}" Height="{TemplateBinding Size}">
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}" Width="{TemplateBinding mmppf:MediaPlayerControl.Size}" Height="{TemplateBinding mmppf:MediaPlayerControl.Size}">
                         <Grid>
-                            <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding StrokeThickness}" Fill="{TemplateBinding Background}" />
-                            <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}" ContentTransitions="{TemplateBinding ContentTransitions}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding ContentTransform}" />
+                            <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding mmppf:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}" />
+                            <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}" ContentTransitions="{TemplateBinding ContentTransitions}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding mmppf:MediaPlayerControl.ContentTransform}" />
                         </Grid>
                         <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Stroke="{StaticResource Dark_FocusVisualWhiteStrokeThemeBrush}" StrokeEndLineCap="Square" StrokeDashArray="1,1" Opacity="0" StrokeDashOffset="1.5" />
                         <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Stroke="{StaticResource Dark_FocusVisualBlackStrokeThemeBrush}" StrokeEndLineCap="Square" StrokeDashArray="1,1" Opacity="0" StrokeDashOffset="0.5" />
@@ -596,30 +597,28 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="mmppf:MediaPlayerButton" BasedOn="{StaticResource Dark_MediaPlayerButtonStyle}" x:Key="Dark_MediaPlayerButton" />
-    <Style TargetType="mmppf:MediaPlayerToggleButton" BasedOn="{StaticResource Dark_MediaPlayerToggleButtonStyle}" x:Key="Dark_MediaPlayerToggleButton" />
     <Style TargetType="mmppf:PlayPauseButton" BasedOn="{StaticResource Dark_MediaPlayerButtonStyle}" x:Key="Dark_PlayPauseButton">
         <Setter Property="FontFamily" Value="{StaticResource Dark_SymbolThemeFontFamily}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="SelectedContent" Value="" />
-        <Setter Property="UnselectedContent" Value="" />
+        <Setter Property="PausedContent" Value="" />
+        <Setter Property="PlayingContent" Value="" />
         <Setter Property="AutomationProperties.AutomationId" Value="PlayPauseButton" />
     </Style>
     <Style TargetType="mmppf:FullScreenButton" BasedOn="{StaticResource Dark_MediaPlayerButtonStyle}" x:Key="Dark_FullScreenButton">
         <Setter Property="FontFamily" Value="{StaticResource Dark_SymbolThemeFontFamily}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="SelectedContent" Value="" />
-        <Setter Property="UnselectedContent" Value="" />
+        <Setter Property="FullScreenContent" Value="" />
+        <Setter Property="NotFullScreenContent" Value="" />
         <Setter Property="AutomationProperties.AutomationId" Value="FullScreenButton" />
     </Style>
     <Style TargetType="mmppf:MuteButton" BasedOn="{StaticResource Dark_MediaPlayerButtonStyle}" x:Key="Dark_MuteButton">
         <Setter Property="FontFamily" Value="{StaticResource Dark_SymbolThemeFontFamily}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="SelectedContent" Value="" />
-        <Setter Property="UnselectedContent" Value="" />
+        <Setter Property="MutedContent" Value="" />
+        <Setter Property="UnmutedContent" Value="" />
         <Setter Property="AutomationProperties.AutomationId" Value="MuteButton" />
     </Style>
     <Style TargetType="mmppf:SlowMotionButton" BasedOn="{StaticResource Dark_MediaPlayerToggleButtonStyle}" x:Key="Dark_SlowMotionButton">
@@ -627,7 +626,7 @@
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="Padding" Value="3.5,0.5,0,0" />
-        <Setter Property="ContentTransform">
+        <Setter Property="mmppf:MediaPlayerControl.ContentTransform">
             <Setter.Value>
                 <RotateTransform Angle="90" />
             </Setter.Value>
@@ -698,7 +697,7 @@
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Content" Value="" />
-        <Setter Property="ContentTransform">
+        <Setter Property="mmppf:MediaPlayerControl.ContentTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="-1" />
             </Setter.Value>
@@ -831,10 +830,10 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <mmppf:MuteButton x:Name="MuteButton" ViewModel="{TemplateBinding ViewModel}" Style="{TemplateBinding MuteButtonStyle}" />
+                        <mmppf:MuteButton x:Name="MuteButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Style="{TemplateBinding MuteButtonStyle}" />
                         <Grid x:Name="VolumeSliderContainer" VerticalAlignment="Top">
                             <Border Margin="{TemplateBinding PanelPosition}" Background="{TemplateBinding PanelBackground}">
-                                <mmppf:VolumeSlider x:Name="VolumeSlider" ViewModel="{TemplateBinding ViewModel}" Width="{StaticResource Dark_SliderTrackThemeHeight}" Orientation="Vertical" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Style="{StaticResource Dark_VolumeSlider}" />
+                                <mmppf:VolumeSlider x:Name="VolumeSlider" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Width="{StaticResource Dark_SliderTrackThemeHeight}" Orientation="Vertical" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Style="{StaticResource Dark_VolumeSlider}" />
                             </Border>
                         </Grid>
                     </Grid>
@@ -1297,12 +1296,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="mmppf:Timeline">
                     <Grid ToolTipService.ToolTip="{TemplateBinding AutomationProperties.Name}">
-                        <mmppf:SeekableSlider x:Name="ProgressSlider" SmallChange="10" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" VerticalAlignment="Stretch" Orientation="Horizontal" Height="{TemplateBinding Height}" DataContext="{TemplateBinding ViewModel}">
+                        <mmppf:SeekableSlider x:Name="ProgressSlider" SmallChange="10" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" VerticalAlignment="Stretch" Orientation="Horizontal" Height="{TemplateBinding Height}" DataContext="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}">
                             <mmppf:SeekableSlider.HorizontalForegroundContent>
                                 <mmppf:PositionedItemsControl x:Name="PositionedItemsControl" ItemsSource="{Binding VisualMarkers}" Minimum="{Binding StartTime.TotalSeconds}" Maximum="{Binding EndTime.TotalSeconds}">
                                     <mmppf:PositionedItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Button IsEnabled="{Binding IsSeekable}" mmppf:PositionedItemsPanel.Position="{Binding Time.TotalSeconds}" Content="{Binding Text}">
+                                            <Button IsEnabled="{Binding IsSeekable}" mmppf:PositionedItemsControl.Position="{Binding Time.TotalSeconds}" Content="{Binding Text}">
                                                 <Button.Style>
                                                     <Binding Path="Style" ConverterParameter="{StaticResource Dark_VisualMarkerStyle}">
                                                         <Binding.Converter>
@@ -1361,7 +1360,7 @@
                                 <VisualState x:Name="Normal" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Border x:Name="Border" DataContext="{TemplateBinding ViewModel}" Background="{TemplateBinding Background}">
+                        <Border x:Name="Border" DataContext="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Background="{TemplateBinding Background}">
                             <Border.Resources>
                                 <mmppf:BoolToVisibilityConverter x:Key="Dark_VisibleIfConverter" />
                             </Border.Resources>
@@ -1374,35 +1373,35 @@
                                 <StackPanel x:Name="LeftItemsPanel" Orientation="Horizontal">
                                     <Grid x:Name="LeftMargin" Width="8" />
                                     <StackPanel Orientation="Horizontal" x:Name="NonEssentialsFarLeft">
-                                        <mmppf:ReplayButton x:Name="ReplayButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsReplayButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_ReplayButton}" />
-                                        <mmppf:SkipPreviousButton x:Name="SkipPreviousButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipPreviousButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipPreviousButton}" />
-                                        <mmppf:RewindButton x:Name="RewindButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsRewindButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_RewindButton}" />
-                                        <mmppf:SkipBackButton x:Name="SkipBackButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipBackButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipBackButton}" />
+                                        <mmppf:ReplayButton x:Name="ReplayButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsReplayButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_ReplayButton}" />
+                                        <mmppf:SkipPreviousButton x:Name="SkipPreviousButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipPreviousButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipPreviousButton}" />
+                                        <mmppf:RewindButton x:Name="RewindButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsRewindButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_RewindButton}" />
+                                        <mmppf:SkipBackButton x:Name="SkipBackButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipBackButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipBackButton}" />
                                     </StackPanel>
-                                    <mmppf:PlayPauseButton x:Name="PlayPauseButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsPlayPauseButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_PlayPauseButton}" />
+                                    <mmppf:PlayPauseButton x:Name="PlayPauseButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsPlayPauseButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_PlayPauseButton}" />
                                     <StackPanel Orientation="Horizontal" x:Name="NonEssentialsNearLeft">
-                                        <mmppf:StopButton x:Name="StopButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsStopButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_StopButton}" />
-                                        <mmppf:SkipAheadButton x:Name="SkipAheadButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipAheadButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipAheadButton}" />
-                                        <mmppf:FastForwardButton x:Name="FastForwardButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsFastForwardButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_FastForwardButton}" />
-                                        <mmppf:SlowMotionButton x:Name="SlowMotionButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSlowMotionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SlowMotionButton}" />
-                                        <mmppf:SkipNextButton x:Name="SkipNextButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipNextButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipNextButton}" />
+                                        <mmppf:StopButton x:Name="StopButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsStopButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_StopButton}" />
+                                        <mmppf:SkipAheadButton x:Name="SkipAheadButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipAheadButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipAheadButton}" />
+                                        <mmppf:FastForwardButton x:Name="FastForwardButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsFastForwardButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_FastForwardButton}" />
+                                        <mmppf:SlowMotionButton x:Name="SlowMotionButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSlowMotionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SlowMotionButton}" />
+                                        <mmppf:SkipNextButton x:Name="SkipNextButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipNextButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_SkipNextButton}" />
                                     </StackPanel>
-                                    <mmppf:TimeElapsedButton x:Name="TimeElapsedButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsTimeElapsedButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_TimeElapsedButton}" />
+                                    <mmppf:TimeElapsedButton x:Name="TimeElapsedButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsTimeElapsedButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_TimeElapsedButton}" />
                                 </StackPanel>
-                                <mmppf:Timeline x:Name="Timeline" Grid.Column="1" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsTimelineVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_Timeline}" />
+                                <mmppf:Timeline x:Name="Timeline" Grid.Column="1" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsTimelineVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_Timeline}" />
                                 <StackPanel x:Name="RightItemsPanel" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <mmppf:TimeRemainingButton x:Name="TimeRemainingButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsTimeRemainingButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_TimeRemainingButton}" />
-                                    <mmppf:DurationButton x:Name="DurationButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsDurationButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_DurationButton}" />
+                                    <mmppf:TimeRemainingButton x:Name="TimeRemainingButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsTimeRemainingButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_TimeRemainingButton}" />
+                                    <mmppf:DurationButton x:Name="DurationButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsDurationButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_DurationButton}" />
                                     <StackPanel Orientation="Horizontal" x:Name="NonEssentialsNearRight">
-                                        <mmppf:CaptionSelectionButton x:Name="CaptionSelectionButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsCaptionSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_CaptionSelectionButton}" />
-                                        <mmppf:AudioSelectionButton x:Name="AudioSelectionButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsAudioSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_AudioSelectionButton}" />
+                                        <mmppf:CaptionSelectionButton x:Name="CaptionSelectionButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsCaptionSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_CaptionSelectionButton}" />
+                                        <mmppf:AudioSelectionButton x:Name="AudioSelectionButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsAudioSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_AudioSelectionButton}" />
                                     </StackPanel>
-                                    <mmppf:VolumeButton x:Name="VolumeButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsVolumeButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" PanelBackground="{TemplateBinding Background}" Style="{StaticResource Dark_VolumeButton}" />
-                                    <mmppf:MuteButton x:Name="MuteButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsMuteButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_MuteButton}" />
-                                    <mmppf:VolumeSlider x:Name="VolumeSlider" ViewModel="{TemplateBinding ViewModel}" Orientation="Horizontal" VerticalAlignment="Center" Width="83" Visibility="{Binding IsVolumeSliderVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_VolumeSlider}" />
-                                    <mmppf:FullScreenButton x:Name="FullScreenButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsFullScreenButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_FullScreenButton}" />
+                                    <mmppf:VolumeButton x:Name="VolumeButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsVolumeButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" PanelBackground="{TemplateBinding Background}" Style="{StaticResource Dark_VolumeButton}" />
+                                    <mmppf:MuteButton x:Name="MuteButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsMuteButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_MuteButton}" />
+                                    <mmppf:VolumeSlider x:Name="VolumeSlider" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Orientation="Horizontal" VerticalAlignment="Center" Width="83" Visibility="{Binding IsVolumeSliderVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_VolumeSlider}" />
+                                    <mmppf:FullScreenButton x:Name="FullScreenButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsFullScreenButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_FullScreenButton}" />
                                     <StackPanel Orientation="Horizontal" x:Name="NonEssentialsFarRight">
-                                        <mmppf:GoLiveButton x:Name="GoLiveButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsGoLiveButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_GoLiveButton}" />
+                                        <mmppf:GoLiveButton x:Name="GoLiveButton" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding mmppf:MediaPlayerControl.ViewModel}" Visibility="{Binding IsGoLiveButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Margin="8,0,8,0" Style="{StaticResource Dark_GoLiveButton}" />
                                         <mmppf:SignalStrength x:Name="SignalStrength" Value="{Binding SignalStrength}" Margin="4,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsSignalStrengthVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Style="{StaticResource Dark_SignalStrength}" />
                                         <mmppf:ResolutionIndicator x:Name="ResolutionIndicator" MediaQuality="{Binding MediaQuality}" VerticalAlignment="Center" Margin="4,0,4,0" Visibility="{Binding IsResolutionIndicatorVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Dark_VisibleIfConverter}}" Style="{StaticResource Dark_ResolutionIndicator}" />
                                     </StackPanel>
@@ -1602,7 +1601,7 @@
                         </Grid>
                         <Grid x:Name="ErrorsContainer" Visibility="Collapsed" />
                         <Grid x:Name="InteractivityContainer" Visibility="Collapsed">
-                            <mmppf:ControlPanel x:Name="ControlPanel" ViewModel="{TemplateBinding InteractiveViewModel}" IsGoLiveButtonVisible="{TemplateBinding IsGoLiveVisible}" IsAudioSelectionButtonVisible="{TemplateBinding IsAudioSelectionVisible}" IsCaptionSelectionButtonVisible="{TemplateBinding IsCaptionSelectionVisible}" IsTimeElapsedButtonVisible="{TemplateBinding IsTimeElapsedVisible}" IsDurationButtonVisible="{TemplateBinding IsDurationVisible}" IsTimeRemainingButtonVisible="{TemplateBinding IsTimeRemainingVisible}" IsFastForwardButtonVisible="{TemplateBinding IsFastForwardVisible}" IsStopButtonVisible="{TemplateBinding IsStopVisible}" IsRewindButtonVisible="{TemplateBinding IsRewindVisible}" IsSkipPreviousButtonVisible="{TemplateBinding IsSkipPreviousVisible}" IsSkipNextButtonVisible="{TemplateBinding IsSkipNextVisible}" IsSkipBackButtonVisible="{TemplateBinding IsSkipBackVisible}" IsSkipAheadButtonVisible="{TemplateBinding IsSkipAheadVisible}" IsReplayButtonVisible="{TemplateBinding IsReplayVisible}" IsResolutionIndicatorVisible="{TemplateBinding IsResolutionIndicatorVisible}" IsSignalStrengthVisible="{TemplateBinding IsSignalStrengthVisible}" IsFullScreenButtonVisible="{TemplateBinding IsFullScreenVisible}" IsSlowMotionButtonVisible="{TemplateBinding IsSlowMotionVisible}" IsPlayPauseButtonVisible="{TemplateBinding IsPlayPauseVisible}" IsVolumeButtonVisible="{TemplateBinding IsVolumeVisible}" IsTimelineVisible="{TemplateBinding IsTimelineVisible}" Style="{StaticResource Dark_ControlPanel}" />
+                            <mmppf:ControlPanel x:Name="ControlPanel" mmppf:MediaPlayerControl.ViewModel="{TemplateBinding Interactivemmppf:MediaPlayerControl.ViewModel}" IsGoLiveButtonVisible="{TemplateBinding IsGoLiveVisible}" IsAudioSelectionButtonVisible="{TemplateBinding IsAudioSelectionVisible}" IsCaptionSelectionButtonVisible="{TemplateBinding IsCaptionSelectionVisible}" IsTimeElapsedButtonVisible="{TemplateBinding IsTimeElapsedVisible}" IsDurationButtonVisible="{TemplateBinding IsDurationVisible}" IsTimeRemainingButtonVisible="{TemplateBinding IsTimeRemainingVisible}" IsFastForwardButtonVisible="{TemplateBinding IsFastForwardVisible}" IsStopButtonVisible="{TemplateBinding IsStopVisible}" IsRewindButtonVisible="{TemplateBinding IsRewindVisible}" IsSkipPreviousButtonVisible="{TemplateBinding IsSkipPreviousVisible}" IsSkipNextButtonVisible="{TemplateBinding IsSkipNextVisible}" IsSkipBackButtonVisible="{TemplateBinding IsSkipBackVisible}" IsSkipAheadButtonVisible="{TemplateBinding IsSkipAheadVisible}" IsReplayButtonVisible="{TemplateBinding IsReplayVisible}" IsResolutionIndicatorVisible="{TemplateBinding IsResolutionIndicatorVisible}" IsSignalStrengthVisible="{TemplateBinding IsSignalStrengthVisible}" IsFullScreenButtonVisible="{TemplateBinding IsFullScreenVisible}" IsSlowMotionButtonVisible="{TemplateBinding IsSlowMotionVisible}" IsPlayPauseButtonVisible="{TemplateBinding IsPlayPauseVisible}" IsVolumeButtonVisible="{TemplateBinding IsVolumeVisible}" IsTimelineVisible="{TemplateBinding IsTimelineVisible}" Style="{StaticResource Dark_ControlPanel}" />
                         </Grid>
                         <Grid x:Name="LoaderViewContainer" Visibility="Collapsed" />
                         <Grid x:Name="BufferingContainer" Visibility="Collapsed" />
@@ -1618,7 +1617,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="mmppf:LoaderView">
                     <Grid Background="{TemplateBinding Background}">
-                        <mmppf:MediaPlayerButton x:Name="LoadButton" FontSize="75" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content="" Style="{StaticResource Dark_MediaPlayerButton}" />
+                        <mmppf:PlayButton IsEnabled="True" x:Name="LoadButton" FontSize="75" mmppf:MediaPlayerControl.Size="140" mmppf:MediaPlayerControl.StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content="" Style="{StaticResource Dark_MediaPlayerButton}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -1632,7 +1631,7 @@
                     <Grid Background="{TemplateBinding Background}">
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{TemplateBinding ErrorText}" Margin="0,0,0,12" FontSize="24" HorizontalAlignment="Center" />
-                            <mmppf:MediaPlayerButton x:Name="RetryButton" FontSize="75" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content="" Style="{StaticResource Dark_MediaPlayerButton}" />
+                            <mmppf:PlayButton IsEnabled="True"  x:Name="RetryButton" FontSize="75" mmppf:MediaPlayerControl.Size="140" mmppf:MediaPlayerControl.StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content="" Style="{StaticResource Dark_MediaPlayerButton}" />
                             <TextBlock x:Name="RetryInstructions" Margin="0,12,0,12" FontSize="24" HorizontalAlignment="Center" />
                         </StackPanel>
                     </Grid>

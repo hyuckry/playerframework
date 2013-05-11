@@ -52,16 +52,16 @@ namespace Microsoft.PlayerFramework.Samples
             captionSelectorPlugin.CaptionSelectorViewStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(0, 0, 0, 90)));
         }
 
-        void player_InteractiveViewModelChanged(object sender, RoutedPropertyChangedEventArgs<IInteractiveViewModel> e)
+        void player_InteractiveViewModelChanged(object sender, InteractiveViewModelChangedEventArgs e)
         {
             UpdateViewModel(e.NewValue);
         }
 
         private void UpdateViewModel(IInteractiveViewModel vm)
         {
-            ReplayButton.ViewModel = vm;
-            CaptionSelectionButton.ViewModel = vm;
-            AudioSelectionButton.ViewModel = vm;
+            MediaPlayerControl.SetViewModel(ReplayButton, vm);
+            MediaPlayerControl.SetViewModel(CaptionSelectionButton, vm);
+            MediaPlayerControl.SetViewModel(AudioSelectionButton, vm);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

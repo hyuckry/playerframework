@@ -44,7 +44,7 @@ namespace Microsoft.PlayerFramework.Samples.Advertising
                 var progress = new Progress<AdStatus>();
                 try
                 {
-                    await player.PlayAd(adSource, progress, CancellationToken.None);
+                    await player.PlayAd(adSource);
                 }
                 catch { /* ignore */ }
             }

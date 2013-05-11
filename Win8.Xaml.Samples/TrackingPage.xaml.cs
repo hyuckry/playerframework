@@ -54,12 +54,12 @@ namespace Microsoft.PlayerFramework.Samples
 
             PlayTimeEventList.ItemsSource = playTimeTrackingPlugin.TrackingEvents;
             PositionEventList.ItemsSource = positionTrackingPlugin.TrackingEvents;
-            ResultsEventList.ItemsSource = new ObservableCollection<EventTrackedEventArgs>();
+            ResultsEventList.ItemsSource = new ObservableCollection<IEventTrackedEventArgs>();
         }
 
-        void trackingPlugin_EventTracked(object sender, EventTrackedEventArgs e)
+        void trackingPlugin_EventTracked(object sender, IEventTrackedEventArgs e)
         {
-            var trackedEventList = ResultsEventList.ItemsSource as ObservableCollection<EventTrackedEventArgs>;
+            var trackedEventList = ResultsEventList.ItemsSource as ObservableCollection<IEventTrackedEventArgs>;
             trackedEventList.Add(e);
             Debug.WriteLine(string.Format("{1} - tracked: {0}", e.TrackingEvent.Data, e.Timestamp));
         }
