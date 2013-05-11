@@ -55,7 +55,7 @@ namespace TimedText.Timing
     /// <summary>
     /// Timed text timebase to use
     /// </summary>
-    public enum TimeBase
+    internal enum TimeBase
     {
         Media,
         Smpte,
@@ -65,7 +65,7 @@ namespace TimedText.Timing
     /// <summary>
     /// Timed text clock mode to use
     /// </summary>
-    public enum ClockMode
+    internal enum ClockMode
     {
         Local,
         Gps,
@@ -75,7 +75,7 @@ namespace TimedText.Timing
     /// <summary>
     /// Which flavour of Smpte timecode to use
     /// </summary>
-    public enum SmpteMode
+    internal enum SmpteMode
     {
         DropNtsc,
         DropPal,
@@ -98,7 +98,7 @@ namespace TimedText.Timing
     /// <summary>
     /// Represents a timed text time expression
     /// </summary>
-    public sealed class TimeExpression
+    internal class TimeExpression
     {
 
         #region Variables and Properties

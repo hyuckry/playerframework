@@ -36,7 +36,7 @@ namespace TimedText
     /// Base class for all timed text elements. 
     /// Handles parsing and validity
     /// </summary>
-    public abstract class TimedTextElementBase
+    internal abstract class TimedTextElementBase
         : Timing.TimeTree<TimedTextElementBase, TimedTextAttributeBase>.TreeType
     {
         #region Properties

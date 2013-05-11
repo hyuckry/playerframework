@@ -11,7 +11,7 @@ using System.Net.Http;
 
 namespace Microsoft.TimedText
 {
-    public class CaptionMarkerFactory
+    internal class CaptionMarkerFactory
     {
         public CaptionMarkerFactory()
         {

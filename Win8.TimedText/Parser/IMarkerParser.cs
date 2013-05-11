@@ -7,7 +7,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Defines the functionality a class must implement to be a MarkerParser.
     /// </summary>
-    public interface IMarkerParser
+    internal interface IMarkerParser
     {
         /// <summary>
         /// Accepts an XML representation of markers and returns an IEnumerable collection of MediaMarkers.

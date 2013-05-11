@@ -4,7 +4,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Represents a closed caption
     /// </summary>
-    public class CaptionElement : TimedTextElement
+    internal class CaptionElement : TimedTextElement
     {
         public CaptionElement()
         {

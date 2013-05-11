@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace TimedText.Informatics
 {
-    public class MetadataInformation
+    internal class MetadataInformation
     {
         public string Role
         {

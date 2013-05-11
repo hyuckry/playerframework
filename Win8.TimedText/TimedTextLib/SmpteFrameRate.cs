@@ -6,7 +6,7 @@ namespace TimedText.Timing
     /// <remarks> 
     /// Use this enumeration with the Timecode struct to set the framerate for the Timecode.
     /// </remarks>
-    public enum SmpteFrameRate
+    internal enum SmpteFrameRate
     {
         /// <summary>
         /// unknown setting.

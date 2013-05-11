@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Microsoft.TimedText
 {
-    public class MediaMarkerCollection<TMediaMarker> : OrderedObservableCollection<TMediaMarker> where TMediaMarker : MediaMarker
+    internal class MediaMarkerCollection<TMediaMarker> : OrderedObservableCollection<TMediaMarker> where TMediaMarker : MediaMarker
     {
         public event Action<TMediaMarker> MarkerPositionChanged;
 

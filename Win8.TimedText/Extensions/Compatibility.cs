@@ -1,14 +1,14 @@
 ﻿
 namespace Windows.UI.Text
 {
-    public static class FontStyles
+    internal static class FontStyles
     {
         public const FontStyle Normal = FontStyle.Normal;
         public const FontStyle Oblique = FontStyle.Oblique;
         public const FontStyle Italic = FontStyle.Italic;
     }
 
-    public static class FontStretches
+    internal static class FontStretches
     {
         public const FontStretch Undefined = FontStretch.Undefined;
         public const FontStretch UltraCondensed = FontStretch.UltraCondensed;
@@ -25,7 +25,7 @@ namespace Windows.UI.Text
 }
 namespace System.Net
 {
-    public static class HttpUtility
+    internal static class HttpUtility
     {
         public static string HtmlDecode(string html)
         {

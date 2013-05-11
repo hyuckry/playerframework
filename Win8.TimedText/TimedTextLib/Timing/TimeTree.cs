@@ -24,7 +24,7 @@ namespace TimedText.Timing
     /// <summary>
     /// Denotes whether time containment is parallel or sequential
     /// </summary>
-    public enum TimeContainer
+    internal enum TimeContainer
     {
         Par,
         Seq
@@ -37,10 +37,10 @@ namespace TimedText.Timing
     /// </summary>
     /// <typeparam name="TChildren">Type of children elements</typeparam>
     /// <typeparam name="TAttribute">Type of attribute annotations</typeparam>
-    public class TimeTree<TChildren, TAttribute>
+    internal class TimeTree<TChildren, TAttribute>
     {
 
-        public class TreeType : TimeTree<TChildren, TAttribute>
+        internal class TreeType : TimeTree<TChildren, TAttribute>
         {
         }
 

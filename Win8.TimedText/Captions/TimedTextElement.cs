@@ -6,7 +6,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// The base class for captioning elements.
     /// </summary>
-    public class TimedTextElement : MediaMarker
+    internal class TimedTextElement : MediaMarker
     {
         private TimedTextStyle _currentStyle;
         private TimedTextStyle _style;

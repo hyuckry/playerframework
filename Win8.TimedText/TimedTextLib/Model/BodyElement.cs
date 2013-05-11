@@ -25,7 +25,7 @@ namespace TimedText
     /// Metadata.class element group, followed by zero or more elements in the Animation.
     /// class element group, followed by zero or more div elements.
     /// </summary>
-    public class BodyElement : TimedTextElementBase
+    internal class BodyElement : TimedTextElementBase
     {
         #region Constructor
         /// <summary>

@@ -2,7 +2,7 @@
 
 namespace Microsoft.TimedText
 {
-    public interface IMarkerManager<TMediaMarker> where TMediaMarker : MediaMarker
+    internal interface IMarkerManager<TMediaMarker> where TMediaMarker : MediaMarker
     {
         MediaMarkerCollection<TMediaMarker> Markers { get; set; }
 

@@ -35,7 +35,7 @@ namespace TimedText.Timing
 #if !SILVERLIGHT && !NETFX_CORE
     [Serializable]
 #endif
-    public partial struct TimeCode : IComparable, IComparable<TimeCode>, IEquatable<TimeCode>
+    internal struct TimeCode : IComparable, IComparable<TimeCode>, IEquatable<TimeCode>
     {
         /// <summary>
         /// Regular expression string used for parsing out the timecode.

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Microsoft.TimedText
 {
-    public class OrderedObservableCollection<TItem> : ObservableCollection<TItem>
+    internal class OrderedObservableCollection<TItem> : ObservableCollection<TItem>
     {
         /// <summary>
         /// add item

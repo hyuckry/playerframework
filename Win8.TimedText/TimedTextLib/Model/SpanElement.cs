@@ -30,7 +30,7 @@ namespace TimedText
     /// When presented on a visual medium, a span element is intended to generate a 
     /// sequence of inline areas, each containing one or more glyph areas.
     /// </summary>
-    public class SpanElement : TimedTextElementBase
+    internal class SpanElement : TimedTextElementBase
     {
 
         #region Constructor

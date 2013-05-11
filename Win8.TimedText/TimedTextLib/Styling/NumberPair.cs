@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace TimedText.Styling
 {
-    public class NumberPair
+    internal class NumberPair
     {
         // A few TT types are pairs of lengths, this base class models the general concept.
         private const string s_pairExpression = @"^((?<v1>(\+|\-)?\d+(\.\d+)?)(?<u1>(px|em|c|\%)))( +((?<v2>(\+|\-)?\d+(\.\d+)?)(?<u2>(px|em|c|\%))))?$";

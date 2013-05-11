@@ -8,7 +8,7 @@ using Windows.UI;
 
 namespace TimedText.Styling
 {
-    public sealed class ColorExpression
+    internal class ColorExpression
     {
         private ColorExpression() { }
 

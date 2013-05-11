@@ -3,7 +3,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Indicates the direction of display alignment
     /// </summary>
-    public enum DisplayAlign
+    internal enum DisplayAlign
     {
         Before = 0,
         Center,

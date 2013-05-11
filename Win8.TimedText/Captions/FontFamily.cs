@@ -3,7 +3,7 @@ namespace Microsoft.TimedText
 {
     // Summary:
     //     Represents a family of related fonts.
-    public class FontFamily
+    internal class FontFamily
     {
         // Summary:
         //     Initializes a new instance of the FontFamily class from the specified font

@@ -5,7 +5,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Used to store a position that can either be an offset (units from edge) or an alignment
     /// </summary>
-    public class PositionLength
+    internal class PositionLength
     {
         public PositionLength(PositionLengthUnit unit)
         {
@@ -73,7 +73,7 @@ namespace Microsoft.TimedText
         }
     }
 
-    public enum PositionLengthUnit
+    internal enum PositionLengthUnit
     {
         Percentage,
         Absolute,

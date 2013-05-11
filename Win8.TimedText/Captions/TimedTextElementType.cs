@@ -3,7 +3,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// The type of caption element.
     /// </summary>
-    public enum TimedTextElementType
+    internal enum TimedTextElementType
     {
         None,
         Container,

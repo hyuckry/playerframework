@@ -25,7 +25,7 @@ namespace Microsoft.TimedText
     /// Note that members have a <c>[ScriptableMember]</c> attribute allowing them to be accessed from your JavaScript code.
     /// </para>
     /// </remarks>
-    public class TimedTextStyle
+    internal class TimedTextStyle
     {
         private const DisplayAlign DefaultDisplayAlign = DisplayAlign.Before;
         private const double DefaultOpacity = 1;

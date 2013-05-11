@@ -10,7 +10,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Represents the padding value to be applied to a caption property.
     /// </summary>
-    public class Padding : ObservableObject
+    internal class Padding : ObservableObject
     {
         private static Padding _empty;
         private Length _bottom;

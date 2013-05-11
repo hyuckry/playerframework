@@ -27,7 +27,7 @@ namespace TimedText
     /// zero or more elements in the Animation.class element group, followed by zero or 
     /// more span element, br element, or text nodes interpreted as anonymous spans.
     /// </summary>
-    public class PElement : TimedTextElementBase
+    internal class PElement : TimedTextElementBase
     {
 
         #region Constructor

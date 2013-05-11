@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents an animation that will be applied to a caption
     /// </summary>
-    public class TimedTextAnimation : TimedTextElement
+    internal class TimedTextAnimation : TimedTextElement
     {
         /// <summary>
         /// The property that will be animated.

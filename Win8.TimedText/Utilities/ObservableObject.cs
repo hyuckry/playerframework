@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Microsoft.TimedText
 {
-    public abstract class ObservableObject : INotifyPropertyChanged
+    internal abstract class ObservableObject : INotifyPropertyChanged
     {
         #region Events
 

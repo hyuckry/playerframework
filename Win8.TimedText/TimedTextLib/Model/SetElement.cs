@@ -23,7 +23,7 @@ namespace TimedText
     /// time interval.The set element accepts as its children zero or more elements in 
     /// the Metadata.class element group.
     /// </summary>
-    public class SetElement : TimedTextElementBase
+    internal class SetElement : TimedTextElementBase
     {
         #region Formatting
         /// <summary>

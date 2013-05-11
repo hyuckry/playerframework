@@ -7,7 +7,7 @@ using Windows.UI.Text;
 
 namespace Microsoft.TimedText
 {
-    public static class FontWeightConverter
+    internal static class FontWeightConverter
     {
         public static FontWeight Convert(Weight weight)
         {
@@ -20,7 +20,7 @@ namespace Microsoft.TimedText
         }
     }
 
-    public enum Weight
+    internal enum Weight
     {
         Bold,
         Normal

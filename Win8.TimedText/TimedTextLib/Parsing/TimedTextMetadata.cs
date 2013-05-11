@@ -15,7 +15,7 @@
 using System.Xml;
 namespace TimedText.Metadata
 {
-    public abstract class MetadataElement : TimedText.TimedTextElementBase
+    internal abstract class MetadataElement : TimedText.TimedTextElementBase
     {
         public override void WriteElement(XmlWriter writer)
         {
@@ -31,7 +31,7 @@ namespace TimedText.Metadata
  
     }
 
-    public class ActorElement : MetadataElement
+    internal class ActorElement : MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()
@@ -45,7 +45,7 @@ namespace TimedText.Metadata
         }
     }
 
-    public class NameElement : MetadataElement
+    internal class NameElement : MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()
@@ -59,7 +59,7 @@ namespace TimedText.Metadata
         }
     }
 
-    public class AgentElement : MetadataElement
+    internal class AgentElement : MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()
@@ -73,7 +73,7 @@ namespace TimedText.Metadata
         }
     }
 
-    public class CopyrightElement : MetadataElement
+    internal class CopyrightElement : MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()
@@ -87,7 +87,7 @@ namespace TimedText.Metadata
         }
     }
 
-    public class DescElement : MetadataElement
+    internal class DescElement : MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()
@@ -101,7 +101,7 @@ namespace TimedText.Metadata
         }
     }
 
-    public class TitleElement : MetadataElement
+    internal class TitleElement : MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()

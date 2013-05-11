@@ -23,7 +23,7 @@ namespace TimedText
     /// instance. The tt element accepts as its children zero or one head 
     /// element followed by zero or one body element.
     /// </summary>
-    public class TtElement : TimedTextElementBase
+    internal class TtElement : TimedTextElementBase
     {
         #region Private variables
         HeadElement m_head;

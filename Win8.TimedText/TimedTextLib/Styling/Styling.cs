@@ -57,7 +57,7 @@ namespace TimedText.Styling
 
 8.2.26 tts:zIndex
     */
-    public enum WritingMode
+    internal enum WritingMode
     {
         LeftRightTopBottom,
         RightLeftTopBottom,
@@ -65,7 +65,7 @@ namespace TimedText.Styling
         TopBottomLeftRight
     }
 
-    public enum Unit
+    internal enum Unit
     {
         Pixel,
         Em,
@@ -78,7 +78,7 @@ namespace TimedText.Styling
     /// <summary>
     /// Basic rectangle type for reference areas.
     /// </summary>
-    public struct Rectangle
+    internal struct Rectangle
     {
         public double X { get; set; }
         public double Y { get; set; }
@@ -89,7 +89,7 @@ namespace TimedText.Styling
     /// <summary>
     /// Lineheight is modeled on NumberPair, but only takes a single value.
     /// </summary>
-    public class LineHeight : NumberPair
+    internal class LineHeight : NumberPair
     {
         /// <summary>
         /// Size in the vertical direction
@@ -138,7 +138,7 @@ namespace TimedText.Styling
     /// A nnormal lineheight is returned when the specified value is "normal"; 
     /// this determines line height based on its children.
     /// </summary>
-    public class NormalHeight : LineHeight
+    internal class NormalHeight : LineHeight
     {
         public NormalHeight()
             : base(-1)
@@ -146,7 +146,7 @@ namespace TimedText.Styling
         }
     }
 
-    public class FontSize : NumberPair
+    internal class FontSize : NumberPair
     {
         /// <summary>
         /// Size in the horizontal direction
@@ -213,7 +213,7 @@ namespace TimedText.Styling
     /// <summary>
     /// Class to model a position in 2D space.
     /// </summary>
-    public class Origin : NumberPair
+    internal class Origin : NumberPair
     {
         /// <summary>
         /// Horizontal position
@@ -275,7 +275,7 @@ namespace TimedText.Styling
     /// An auto extent is returned when the specified value is "auto"; this needs to be converted
     /// into a real extent.
     /// </summary>
-    public class AutoOrigin : Origin
+    internal class AutoOrigin : Origin
     {
         public AutoOrigin()
             : base(-1, -1)
@@ -284,7 +284,7 @@ namespace TimedText.Styling
     }
 
 
-    public class TextOutline
+    internal class TextOutline
     {
         NumberPair p;
 
@@ -410,7 +410,7 @@ namespace TimedText.Styling
     /// <summary>
     /// Padding is a fourway, modeled by two pairs
     /// </summary>
-    public class PaddingThickness
+    internal class PaddingThickness
     {
         //Exposing these as public to gain access to the unit information
         //after the width specifications (i.e. %, px, em, etc)

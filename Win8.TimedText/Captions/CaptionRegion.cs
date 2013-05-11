@@ -11,7 +11,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Represents an on-screen region where captions will be displayed.
     /// </summary>
-    public class CaptionRegion : TimedTextElement
+    internal class CaptionRegion : TimedTextElement
     {
         public CaptionRegion()
         {

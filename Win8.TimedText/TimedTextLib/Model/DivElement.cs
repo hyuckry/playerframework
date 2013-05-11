@@ -25,7 +25,7 @@ namespace TimedText
     /// element group, followed by zero or more elements in the Animation.class element
     /// group, followed by zero or more p elements.
     /// </summary>
-    public class DivElement : TimedTextElementBase
+    internal class DivElement : TimedTextElementBase
     {
 
         #region Constructor

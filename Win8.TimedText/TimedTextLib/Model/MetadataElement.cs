@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace TimedText
 {
-    public class MetadataElement : TimedTextElementBase
+    internal class MetadataElement : TimedTextElementBase
     {
         #region Validity
         /*

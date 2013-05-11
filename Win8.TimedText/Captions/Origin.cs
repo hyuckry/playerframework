@@ -10,7 +10,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Represents a point of origination to be applied to a caption 
     /// </summary>
-    public class Origin : ObservableObject
+    internal class Origin : ObservableObject
     {
         private static Origin _empty;
         private Length _left;

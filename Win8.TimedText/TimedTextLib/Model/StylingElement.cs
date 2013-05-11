@@ -22,7 +22,7 @@ namespace TimedText
     /// as its children zero or more elements in the Metadata.class element group, 
     /// followed by zero or more style elements.
     /// </summary>
-    public class StylingElement : TimedTextElementBase
+    internal class StylingElement : TimedTextElementBase
     {
         #region validity
         /*

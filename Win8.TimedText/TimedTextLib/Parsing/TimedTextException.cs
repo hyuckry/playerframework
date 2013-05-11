@@ -16,7 +16,7 @@ using System;
 
 namespace TimedText
 {
-    public class TimedTextException : Exception
+    internal class TimedTextException : Exception
     {
         public TimedTextException(string what) : base(what) { }
         public TimedTextException(string what, Exception except) : base(what, except) { }

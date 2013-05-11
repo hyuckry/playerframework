@@ -21,7 +21,7 @@ namespace TimedText.Formatting
     /// and applies it to the element
     /// </summary>
     /// <param name="renderObject"></param>
-    public delegate void Formatter(Rendering.IRenderObject renderObject);
+    internal delegate void Formatter(Rendering.IRenderObject renderObject);
 
  
     #region Formatting Object base class
@@ -29,7 +29,7 @@ namespace TimedText.Formatting
     /// This is the base class for formatting object. We re-use the TimeTree base class, but
     /// its timing is not relevant here
     /// </summary>
-    public class FormattingObject : Timing.TimeTree<FormattingObject, TimedTextAttributeBase>.TreeType
+    internal class FormattingObject : Timing.TimeTree<FormattingObject, TimedTextAttributeBase>.TreeType
     {
         Collection<Animation> m_animations = new Collection<Animation>();
 
@@ -642,7 +642,7 @@ namespace TimedText.Formatting
      /// <summary>
     /// block elements that contain block container
     /// </summary>
-    public class Root : FormattingObject
+    internal class Root : FormattingObject
     {
         /// <summary>
         /// </summary>
@@ -681,7 +681,7 @@ namespace TimedText.Formatting
     /// <summary>
     /// Flow element
     /// </summary>
-    public class Flow : FormattingObject
+    internal class Flow : FormattingObject
     {
         public Flow(TimedTextElementBase element)
         {
@@ -718,7 +718,7 @@ namespace TimedText.Formatting
 
     #region BlockContainer formatting object
 
-    public class ZOrdering : IComparer<BlockContainer>
+    internal class ZOrdering : IComparer<BlockContainer>
     {
         public int Compare(BlockContainer x, BlockContainer y)
         {
@@ -731,7 +731,7 @@ namespace TimedText.Formatting
     /// <summary>
     ///  block elements that contain block content and produce reference area
     /// </summary>
-    public class BlockContainer : FormattingObject
+    internal class BlockContainer : FormattingObject
     {
         public double ZIndex
         {
@@ -911,7 +911,7 @@ namespace TimedText.Formatting
     /// <summary>
     ///  block elements that contain block content
     /// </summary>
-    public class Block : FormattingObject
+    internal class Block : FormattingObject
     {
         public Block(TimedTextElementBase element)
         {
@@ -1029,7 +1029,7 @@ namespace TimedText.Formatting
     /// <summary>
     ///  block elements that contain inline content
     /// </summary>
-    public class Paragraph : FormattingObject
+    internal class Paragraph : FormattingObject
     {
         /// <summary>
         /// Temporary roll up of all the text in the paragraph
@@ -1566,7 +1566,7 @@ namespace TimedText.Formatting
     /// inline elements that contain inline content. These are temporary
     /// artifacts caused by <span> elements and get squeezed out
     /// </summary>
-    public class Inline : FormattingObject
+    internal class Inline : FormattingObject
     {
         public Inline(TimedTextElementBase element)
         {
@@ -1590,7 +1590,7 @@ namespace TimedText.Formatting
     /// Animation elements wrap the set object; they are attached elements
     /// Their formatter is never actually called.
     /// </summary>
-    public class Animation : FormattingObject
+    internal class Animation : FormattingObject
     {
         public Animation(TimedTextElementBase element)
         {
@@ -1621,7 +1621,7 @@ namespace TimedText.Formatting
     /// <summary>
     /// inline elements that contain inline content
     /// </summary>
-    public class InlineContent : FormattingObject
+    internal class InlineContent : FormattingObject
     {
         private string m_original_text;
 

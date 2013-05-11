@@ -14,7 +14,7 @@ namespace TimedText.Styling
     /// For attribute values that are explicit inherit, insert this value. 
     /// It contains an object which can be used to cache the inherited value.
     /// </summary>
-    public class Inherit
+    internal class Inherit
     {
         public object Cached
         {
@@ -23,7 +23,7 @@ namespace TimedText.Styling
         }
     }
 
-    public enum TextDecorationAttributeValue
+    internal enum TextDecorationAttributeValue
     {
         None,
         Underline,
@@ -31,7 +31,7 @@ namespace TimedText.Styling
         Throughline,
     };
 
-    public enum FontStyleAttributeValue
+    internal enum FontStyleAttributeValue
     {
         Regular,
         Oblique,
@@ -39,14 +39,14 @@ namespace TimedText.Styling
         Italic,
     };
 
-    public enum FontWeightAttributeValue
+    internal enum FontWeightAttributeValue
     {
         Regular,
         Bold,
     };
 
 
-    public class Font
+    internal class Font
     {
 
         #region private variables

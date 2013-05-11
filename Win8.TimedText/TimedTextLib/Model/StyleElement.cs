@@ -20,7 +20,7 @@ namespace TimedText
     /// of style specifications.The style element accepts as its children zero or 
     /// more metadata elements.
     /// </summary>
-    public class StyleElement : TimedTextElementBase
+    internal class StyleElement : TimedTextElementBase
     {
         #region Validity
         /*

@@ -113,6 +113,10 @@
       <Project>{b252fc20-5150-43d0-bb77-802df3231ef1}</Project>
       <Name>Microsoft.AdaptiveStreaming</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Win8.TimedText\Microsoft.TimedText.csproj">
+      <Project>{d1f1ea17-4a91-4f3b-a243-f2b41d6cbce6}</Project>
+      <Name>Microsoft.TimedText</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Win8.VideoAdvertising\Microsoft.VideoAdvertising.csproj">
       <Project>{f863edc6-2886-4d39-a578-89f4ff729d82}</Project>
       <Name>Microsoft.VideoAdvertising</Name>
@@ -140,6 +144,10 @@
     <ProjectReference Include="..\..\Win8.Xaml.CaptionMarkers\Microsoft.PlayerFramework.Xaml.CaptionMarkers.csproj">
       <Project>{46262466-50e8-4acb-bb8d-6973ae6d00dd}</Project>
       <Name>Microsoft.PlayerFramework.Xaml.CaptionMarkers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Win8.Xaml.TimedText\Microsoft.PlayerFramework.Xaml.TimedText.csproj">
+      <Project>{54fb8bf9-02df-490f-9837-0195afd3f1aa}</Project>
+      <Name>Microsoft.PlayerFramework.Xaml.TimedText</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Win8.Xaml.WebVTT\Microsoft.PlayerFramework.Xaml.WebVTT.csproj">
       <Project>{2ba82c57-a6fe-4b07-a2d9-fcec84e8650d}</Project>

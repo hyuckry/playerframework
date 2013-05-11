@@ -9,7 +9,7 @@ namespace TimedText
     /// as their validity is different than pure spans. 
     /// But generally they behave like spans.
     /// </summary>
-    public class AnonymousSpanElement : SpanElement
+    internal class AnonymousSpanElement : SpanElement
     {
         #region Text property
         private string m_text = "";

@@ -23,7 +23,7 @@ namespace TimedText
     /// Metadata.class element group, followed by zero or one styling element, 
     /// followed by zero or one layout element.
     /// </summary>
-    public class HeadElement : TimedTextElementBase
+    internal class HeadElement : TimedTextElementBase
     {
 
         #region validity

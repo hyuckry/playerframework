@@ -21,7 +21,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Microsoft.TimedText
 {
-    public sealed class CaptionBlockRegion : Control
+    internal class CaptionBlockRegion : Control
     {
         private TimeSpan _mediaPosition;
         private IMarkerManager<TimedTextElement> _captionManager;

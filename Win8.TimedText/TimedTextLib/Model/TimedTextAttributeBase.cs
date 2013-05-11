@@ -20,7 +20,7 @@ namespace TimedText
     /// <summary>
     /// Representation of Timed Text attribute data.
     /// </summary>
-    public class TimedTextAttributeBase
+    internal class TimedTextAttributeBase
     {
         #region Private Variables
         private TimedTextElementBase m_parent;

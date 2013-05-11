@@ -9,7 +9,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Represents the extent property of a caption.
     /// </summary>
-    public class Extent : ObservableObject
+    internal class Extent : ObservableObject
     {
         private static Extent _empty;
         private static Extent _auto;

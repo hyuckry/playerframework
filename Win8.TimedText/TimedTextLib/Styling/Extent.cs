@@ -4,7 +4,7 @@ namespace TimedText.Styling
     /// <summary>
     /// Class to record a two dimensional size
     /// </summary>
-    public class Extent : NumberPair
+    internal class Extent : NumberPair
     {
         /// <summary>
         /// Size in the horizontal direction
@@ -66,7 +66,7 @@ namespace TimedText.Styling
     /// An auto extent is returned when the specified value is "auto"; this needs to be converted
     /// into a real extent.
     /// </summary>
-    public class AutoExtent : Extent
+    internal class AutoExtent : Extent
     {
         public AutoExtent()
             : base(1, 1)

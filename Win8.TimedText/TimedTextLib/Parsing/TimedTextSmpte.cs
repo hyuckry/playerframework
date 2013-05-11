@@ -16,7 +16,7 @@ using System.Xml;
 using System.Globalization;
 namespace TimedText.Smpte
 {
-    public class ImageElement : Metadata.MetadataElement
+    internal class ImageElement : Metadata.MetadataElement
     {
         public string ImageType { get; set; }
         public string Encoding { get; set; }
@@ -74,7 +74,7 @@ namespace TimedText.Smpte
         }
     }
 
-    public class InformationElement : Metadata.MetadataElement
+    internal class InformationElement : Metadata.MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()
@@ -88,7 +88,7 @@ namespace TimedText.Smpte
         }
     }
 
-    public class DataElement : Metadata.MetadataElement
+    internal class DataElement : Metadata.MetadataElement
     {
         public string Text { get; set; }
         protected override void ValidAttributes()

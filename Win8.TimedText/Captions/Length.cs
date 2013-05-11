@@ -3,7 +3,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Represents a length to be applied to a caption property..
     /// </summary>
-    public class Length
+    internal class Length
     {
         /// <summary>
         /// The numeric value of this length.

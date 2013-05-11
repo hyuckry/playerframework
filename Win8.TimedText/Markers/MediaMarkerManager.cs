@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Microsoft.TimedText
 {
-    public class MediaMarkerManager<TMediaMarker> : IMarkerManager<TMediaMarker> where TMediaMarker : MediaMarker
+    internal class MediaMarkerManager<TMediaMarker> : IMarkerManager<TMediaMarker> where TMediaMarker : MediaMarker
     {
         private readonly object _syncObject = new object();
 

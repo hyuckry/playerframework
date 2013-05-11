@@ -22,7 +22,7 @@ namespace TimedText
     /// The br element denotes an explicit line break. This is a specialised
     /// form of span containing a Unicode break character
     /// </summary>
-    public class BrElement : AnonymousSpanElement
+    internal class BrElement : AnonymousSpanElement
     {
         #region Constructor
         /// <summary>

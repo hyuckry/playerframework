@@ -3,7 +3,7 @@ namespace Microsoft.TimedText
     /// <summary>
     /// Indicates the overflow value to be applied to a caption property.
     /// </summary>
-    public enum Overflow
+    internal enum Overflow
     {
         Hidden = 0,
         Dynamic,

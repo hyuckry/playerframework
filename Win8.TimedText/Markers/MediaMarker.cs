@@ -22,7 +22,7 @@ namespace Microsoft.TimedText
     /// </list>
     /// </para>
     /// </remarks>
-    public partial class MediaMarker : INotifyPropertyChanged
+    internal class MediaMarker : INotifyPropertyChanged
     {
         private TimeSpan _begin;
         private object _content;

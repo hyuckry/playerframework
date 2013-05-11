@@ -12,16 +12,16 @@ using Windows.UI.Xaml.Controls;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices.WindowsRuntime;
 #endif
 
 namespace Microsoft.TimedText
 {
-    public class TimedTextCaptions : Control
+    public sealed class TimedTextCaptions : Control
     {
-        protected Panel CaptionsPresenterElement { get; private set; }
-
         const long DefaultMaximumCaptionSeekSearchWindowMillis = 60000; //1 minutes
         readonly Dictionary<CaptionRegion, CaptionBlockRegion> regions = new Dictionary<CaptionRegion, CaptionBlockRegion>();
+        Panel captionsPresenterElement;
         Size lastSize;
         TimeSpan? lastPosition;
         bool isTemplateApplied;
@@ -29,25 +29,31 @@ namespace Microsoft.TimedText
         /// <summary>
         /// Occurs when a caption region is reached.
         /// </summary>
-        public event EventHandler<CaptionParsedEventArgs> CaptionParsed;
+        internal event EventHandler<CaptionParsedEventArgs> CaptionParsed;
 
         /// <summary>
         /// Occurs when a caption region is reached.
         /// </summary>
-        public event EventHandler<CaptionRegionEventArgs> CaptionReached;
+        internal event EventHandler<CaptionRegionEventArgs> CaptionReached;
 
         /// <summary>
         /// Occurs when a caption region is left.
         /// </summary>
-        public event EventHandler<CaptionRegionEventArgs> CaptionLeft;
+        internal event EventHandler<CaptionRegionEventArgs> CaptionLeft;
 
         readonly CaptionMarkerFactory factory = new CaptionMarkerFactory();
         readonly Func<MediaMarkerCollection<TimedTextElement>, IMarkerManager<TimedTextElement>> regionManagerFactory;
         readonly IMarkerManager<CaptionRegion> captionManager;
 
-        public TimedTextCaptions(IMarkerManager<CaptionRegion> CaptionManager = null, Func<MediaMarkerCollection<TimedTextElement>, IMarkerManager<TimedTextElement>> RegionManagerFactory = null)
+        public TimedTextCaptions()
+            : this(null, null)
+        { }
+
+        internal TimedTextCaptions(IMarkerManager<CaptionRegion> CaptionManager, Func<MediaMarkerCollection<TimedTextElement>, IMarkerManager<TimedTextElement>> RegionManagerFactory)
         {
             DefaultStyleKey = typeof(TimedTextCaptions);
+
+            VisibleCaptions = new MediaMarkerCollection<CaptionRegion>();
 
             factory.NewMarkers += NewMarkers;
             factory.MarkersRemoved += MarkersRemoved;
@@ -62,7 +68,7 @@ namespace Microsoft.TimedText
             captionManager.MarkerLeft += captionManager_MarkerLeft;
             captionManager.MarkerReached += captionManager_MarkerReached;
         }
-        
+
 #if SILVERLIGHT
         public override void OnApplyTemplate()
 #else
@@ -70,7 +76,7 @@ namespace Microsoft.TimedText
 #endif
         {
             base.OnApplyTemplate();
-            CaptionsPresenterElement = this.GetTemplateChild("CaptionsPresenterElement") as Panel;
+            captionsPresenterElement = this.GetTemplateChild("CaptionsPresenterElement") as Panel;
             isTemplateApplied = true;
             if (lastPosition.HasValue)
             {
@@ -78,7 +84,16 @@ namespace Microsoft.TimedText
             }
         }
 
+#if NETFX_CORE
+        public IAsyncAction AugmentTtml(string ttml, TimeSpan startTime, TimeSpan endTime)
+        { 
+            return AsyncInfo.Run(c => augmentTtml(ttml, startTime, endTime));
+        }
+
+        private async Task augmentTtml(string ttml, TimeSpan startTime, TimeSpan endTime)
+#else
         public async Task AugmentTtml(string ttml, TimeSpan startTime, TimeSpan endTime)
+#endif
         {
             // parse on a background thread
 #if SILVERLIGHT && !WINDOWS_PHONE || WINDOWS_PHONE7
@@ -96,8 +111,17 @@ namespace Microsoft.TimedText
 
             factory.MergeMarkers(markers);
         }
+        
+#if NETFX_CORE
+        public IAsyncAction ParseTtml(string ttml, bool forceRefresh)
+        {
+            return AsyncInfo.Run(c => parseTtml(ttml, forceRefresh));
+        }
 
+        private async Task parseTtml(string ttml, bool forceRefresh)
+#else
         public async Task ParseTtml(string ttml, bool forceRefresh)
+#endif
         {
             // parse on a background thread
 #if SILVERLIGHT && !WINDOWS_PHONE || WINDOWS_PHONE7
@@ -112,7 +136,7 @@ namespace Microsoft.TimedText
                     CaptionParsed(this, new CaptionParsedEventArgs(marker));
                 }
             }
-            
+
             factory.UpdateMarkers(markers, forceRefresh);
         }
 
@@ -132,7 +156,7 @@ namespace Microsoft.TimedText
                     CaptionManager = regionManagerFactory(children),
                 };
                 regions.Add(region, regionBlock);
-                CaptionsPresenterElement.Children.Add(regionBlock);
+                captionsPresenterElement.Children.Add(regionBlock);
                 regionBlock.ApplyTemplate();
                 VisibleCaptions.Add(region);
             }
@@ -143,29 +167,31 @@ namespace Microsoft.TimedText
             if (regions.ContainsKey(region))
             {
                 var presenter = regions[region];
-                CaptionsPresenterElement.Children.Remove(presenter);
+                captionsPresenterElement.Children.Remove(presenter);
                 VisibleCaptions.Remove(region);
                 regions.Remove(region);
             }
             OnCaptionRegionLeft(region);
         }
 
-        #region VisibleCaptions
-        /// <summary>
-        /// VisibleCaptions DependencyProperty definition.
-        /// </summary>
-        public static readonly DependencyProperty VisibleCaptionsProperty = DependencyProperty.Register("VisibleCaptions", typeof(MediaMarkerCollection<CaptionRegion>), typeof(TimedTextCaptions), new PropertyMetadata(new MediaMarkerCollection<CaptionRegion>()));
+        internal MediaMarkerCollection<CaptionRegion> VisibleCaptions { get; private set; }
 
-        /// <summary>
-        /// Gets the current caption markers.
-        /// </summary>
-        public MediaMarkerCollection<CaptionRegion> VisibleCaptions
-        {
-            get { return (MediaMarkerCollection<CaptionRegion>)GetValue(VisibleCaptionsProperty); }
-            private set { SetValue(VisibleCaptionsProperty, value); }
-        }
+        //#region VisibleCaptions
+        ///// <summary>
+        ///// VisibleCaptions DependencyProperty definition.
+        ///// </summary>
+        //public static readonly DependencyProperty VisibleCaptionsProperty = DependencyProperty.Register("VisibleCaptions", typeof(MediaMarkerCollection<CaptionRegion>), typeof(TimedTextCaptions), new PropertyMetadata(new MediaMarkerCollection<CaptionRegion>()));
 
-        #endregion
+        ///// <summary>
+        ///// Gets the current caption markers.
+        ///// </summary>
+        //public MediaMarkerCollection<CaptionRegion> VisibleCaptions
+        //{
+        //    get { return (MediaMarkerCollection<CaptionRegion>)GetValue(VisibleCaptionsProperty); }
+        //    private set { SetValue(VisibleCaptionsProperty, value); }
+        //}
+
+        //#endregion
 
         public void UpdateCaptions(TimeSpan position)
         {
@@ -185,29 +211,49 @@ namespace Microsoft.TimedText
         }
 
         #region Captions
-        /// <summary>
-        /// Captions DependencyProperty definition.
-        /// </summary>
-        public static readonly DependencyProperty CaptionsProperty = DependencyProperty.Register("Captions", typeof(MediaMarkerCollection<CaptionRegion>), typeof(TimedTextCaptions), new PropertyMetadata(null, OnCaptionsPropertyChanged));
+        ///// <summary>
+        ///// Captions DependencyProperty definition.
+        ///// </summary>
+        //public static readonly DependencyProperty CaptionsProperty = DependencyProperty.Register("Captions", typeof(MediaMarkerCollection<CaptionRegion>), typeof(TimedTextCaptions), new PropertyMetadata(null, OnCaptionsPropertyChanged));
 
-        /// <summary>
-        /// Gets the current caption markers.
-        /// </summary>
-        public MediaMarkerCollection<CaptionRegion> Captions
+        ///// <summary>
+        ///// Gets the current caption markers.
+        ///// </summary>
+        //public MediaMarkerCollection<CaptionRegion> Captions
+        //{
+        //    get { return (MediaMarkerCollection<CaptionRegion>)GetValue(CaptionsProperty); }
+        //    set { SetValue(CaptionsProperty, value); }
+        //}
+
+        //private static void OnCaptionsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+        //{
+        //    var captionHost = d as TimedTextCaptions;
+        //    var oldValue = args.OldValue as MediaMarkerCollection<CaptionRegion>;
+        //    var newValue = args.NewValue as MediaMarkerCollection<CaptionRegion>;
+
+        //    captionHost.OnCaptionsChanged(newValue);
+        //}
+
+        //private void OnCaptionsChanged(MediaMarkerCollection<CaptionRegion> newValue)
+        //{
+        //    if (captionManager != null)
+        //    {
+        //        captionManager.Markers = newValue;
+        //    }
+        //}
+
+
+        MediaMarkerCollection<CaptionRegion> captions;
+        internal MediaMarkerCollection<CaptionRegion> Captions
         {
-            get { return (MediaMarkerCollection<CaptionRegion>)GetValue(CaptionsProperty); }
-            set { SetValue(CaptionsProperty, value); }
-        }
-
-        private static void OnCaptionsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
-        {
-            var captionHost = d as TimedTextCaptions;
-            var oldValue = args.OldValue as MediaMarkerCollection<CaptionRegion>;
-            var newValue = args.NewValue as MediaMarkerCollection<CaptionRegion>;
-
-            if (captionHost.captionManager != null)
+            get { return captions; }
+            set
             {
-                captionHost.captionManager.Markers = newValue;
+                captions = value;
+                if (captionManager != null)
+                {
+                    captionManager.Markers = captions;
+                }
             }
         }
 
@@ -216,7 +262,7 @@ namespace Microsoft.TimedText
         /// <summary>
         /// Raises the CaptionLeft event.
         /// </summary>
-        protected virtual void OnCaptionRegionLeft(CaptionRegion region)
+        void OnCaptionRegionLeft(CaptionRegion region)
         {
             CaptionLeft.IfNotNull(i => i(this, new CaptionRegionEventArgs(region)));
         }
@@ -224,7 +270,7 @@ namespace Microsoft.TimedText
         /// <summary>
         /// Raises the CaptionReached event.
         /// </summary>
-        protected virtual void OnCaptionRegionReached(CaptionRegion region)
+        void OnCaptionRegionReached(CaptionRegion region)
         {
             CaptionReached.IfNotNull(i => i(this, new CaptionRegionEventArgs(region)));
         }
@@ -250,9 +296,9 @@ namespace Microsoft.TimedText
             factory.Clear();
             Captions.Clear();
             captionManager.Clear();
-            if (CaptionsPresenterElement != null)
+            if (captionsPresenterElement != null)
             {
-                CaptionsPresenterElement.Children.Clear();
+                captionsPresenterElement.Children.Clear();
             }
         }
 
@@ -272,10 +318,10 @@ namespace Microsoft.TimedText
             }
         }
 
-        protected virtual void ConfigureCaptionPresenterSize(Size newSize)
+        void ConfigureCaptionPresenterSize(Size newSize)
         {
             lastSize = newSize;
-            if (CaptionsPresenterElement != null)
+            if (captionsPresenterElement != null)
             {
                 var aspectRatio = NaturalVideoSize.Width / NaturalVideoSize.Height;
                 var aspectPresentationWidth = newSize.Height * aspectRatio;
@@ -283,25 +329,25 @@ namespace Microsoft.TimedText
                 if (aspectPresentationWidth > newSize.Width)
                 {
                     //Video will have black bars on top and bottom
-                    CaptionsPresenterElement.Width = newSize.Width;
-                    CaptionsPresenterElement.Height = newSize.Width / aspectRatio;
+                    captionsPresenterElement.Width = newSize.Width;
+                    captionsPresenterElement.Height = newSize.Width / aspectRatio;
                 }
                 else if (aspectPresentationWidth < newSize.Width)
                 {
                     //Video will have black bars on the sides
-                    CaptionsPresenterElement.Height = newSize.Height;
-                    CaptionsPresenterElement.Width = newSize.Height * aspectRatio;
+                    captionsPresenterElement.Height = newSize.Height;
+                    captionsPresenterElement.Width = newSize.Height * aspectRatio;
                 }
                 else
                 {
-                    CaptionsPresenterElement.Width = newSize.Width;
-                    CaptionsPresenterElement.Height = newSize.Height;
+                    captionsPresenterElement.Width = newSize.Width;
+                    captionsPresenterElement.Height = newSize.Height;
                 }
             }
         }
     }
 
-    public sealed class CaptionRegionEventArgs : EventArgs
+    internal sealed class CaptionRegionEventArgs : EventArgs
     {
         public CaptionRegionEventArgs(CaptionRegion captionRegion)
         {
@@ -311,7 +357,7 @@ namespace Microsoft.TimedText
         public CaptionRegion CaptionRegion { get; private set; }
     }
 
-    public sealed class CaptionParsedEventArgs : EventArgs
+    internal sealed class CaptionParsedEventArgs : EventArgs
     {
         public CaptionParsedEventArgs(MediaMarker captionMarker)
         {

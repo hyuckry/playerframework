@@ -216,7 +216,7 @@ namespace Microsoft.PlayerFramework.TimedText
                 }
                 if (result != null)
                 {
-                    allTasks = EnqueueTask(() => captionsPanel.AugmentTtml(result, startTime, endTime), allTasks);
+                    allTasks = EnqueueTask(() => captionsPanel.AugmentTtml(result, startTime, endTime).AsTask(), allTasks);
                     await allTasks;
                 }
             }
@@ -256,7 +256,7 @@ namespace Microsoft.PlayerFramework.TimedText
 
                 if (result != null)
                 {
-                    allTasks = EnqueueTask(() => captionsPanel.ParseTtml(result, forceRefresh), allTasks);
+                    allTasks = EnqueueTask(() => captionsPanel.ParseTtml(result, forceRefresh).AsTask(), allTasks);
                     await allTasks;
                     IsSourceLoaded = true;
 

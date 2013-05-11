@@ -16,7 +16,7 @@ namespace TimedText.Rendering
     /// represents an abstract interface to a renderObject. Specific output engines
     /// implement this in order to draw the formatting object tree.
     /// </summary>
-    public interface IRenderObject
+    internal interface IRenderObject
     {
         #region utilities
         void Open();
@@ -89,7 +89,7 @@ namespace TimedText.Rendering
     }
 
 #if WantSimpleRendering   
-    public class SimpleRendering :  IRenderObject
+    internal class SimpleRendering :  IRenderObject
     {
         #region IRenderer Members
         StringBuilder sb;

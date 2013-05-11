@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Microsoft.TimedText
 {
-    public static class Extensions
+    internal static class Extensions
     {
         public static bool ContainsKeyIgnoreCase<TValue>(this IDictionary<string, TValue> dictionary, string key)
         {

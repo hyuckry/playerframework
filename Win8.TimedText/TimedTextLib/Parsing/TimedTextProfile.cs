@@ -26,7 +26,7 @@ using System.Collections.ObjectModel;
 namespace TimedText.Parameter
 {
 
-    public struct FeatureValue
+    internal struct FeatureValue
     {
         public string Label { get; set; }
         public bool Required { get; set; }
@@ -59,7 +59,7 @@ namespace TimedText.Parameter
         }
     };
 
-   public abstract class ParameterElement : TimedText.TimedTextElementBase
+   internal abstract class ParameterElement : TimedText.TimedTextElementBase
     {
  
         static Dictionary<string, bool> m_transformProfile = new Dictionary<string, bool>();
@@ -204,7 +204,7 @@ namespace TimedText.Parameter
     }
 
 
-    public class ProfileElement : ParameterElement
+    internal class ProfileElement : ParameterElement
     {
         protected override void ValidAttributes()
         {
@@ -297,7 +297,7 @@ namespace TimedText.Parameter
         }
     }
 
-    public class FeaturesElement : ParameterElement
+    internal class FeaturesElement : ParameterElement
     {
         protected override void ValidAttributes()
         {
@@ -352,7 +352,7 @@ namespace TimedText.Parameter
         }
     }
 
-    public class FeatureElement : ParameterElement
+    internal class FeatureElement : ParameterElement
     {
         public string Text { get; set; }
 
@@ -402,7 +402,7 @@ namespace TimedText.Parameter
         }
     }
 
-    public class ExtensionsElement : ParameterElement
+    internal class ExtensionsElement : ParameterElement
     {
         string m_base = "http://www.w3.org/2006/10/ttaf1/feature";
 
@@ -465,7 +465,7 @@ namespace TimedText.Parameter
         }
     }
 
-    public class ExtensionElement : ParameterElement
+    internal class ExtensionElement : ParameterElement
     {
         public string Text { get; set; }
 

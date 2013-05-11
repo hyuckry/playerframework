@@ -25,7 +25,7 @@ namespace TimedText
     /// by zero or more elements in the Animation.class element group, followed by zero 
     /// or more style elements.
     /// </summary>
-    public class RegionElement : TimedTextElementBase
+    internal class RegionElement : TimedTextElementBase
     {
         #region Constants
         /// <summary>
