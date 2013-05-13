@@ -140,12 +140,13 @@
     <Compile Include="VmapSchedulerPlugin.cs" />
     <Compile Include="Vpaid\VpaidHtmlAdPlayer.cs" />
     <Compile Include="Vpaid\VpaidIFrameAdPlayer.cs" />
-    <Compile Include="Vpaid\VpaidLinearAdViewModel.Base.cs" />
+    <Compile Include="Vpaid\VpaidLinearAdViewModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Vpaid\VpaidNonLinearAdViewModel.Base.cs" />
     <Compile Include="Vpaid\VpaidImageAdPlayer.cs" />
     <Compile Include="Vpaid\VpaidNonLinearAdViewModel.cs" />
     <Compile Include="Vpaid\VpaidVideoAdPlayer.cs" />
-    <Compile Include="Vpaid\VpaidLinearAdViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteAdSource.cs" />
   </ItemGroup>

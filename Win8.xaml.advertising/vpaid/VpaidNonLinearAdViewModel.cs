@@ -30,17 +30,19 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        void OnPause()
+        public void Pause()
         {
+            OnInteracting(InteractionType.Hard);
+            MediaPlayer.Pause();
             Vpaid.PauseAd();
-            _OnPause();
         }
 
         /// <inheritdoc /> 
-        void OnPlayResume()
+        public void PlayResume()
         {
+            OnInteracting(InteractionType.Hard);
+            MediaPlayer.PlayResume();
             Vpaid.ResumeAd();
-            _OnPlayResume();
         }
     }
 }

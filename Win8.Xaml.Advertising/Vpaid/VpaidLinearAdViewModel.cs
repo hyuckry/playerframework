@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
+using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 using Microsoft.VideoAdvertising;
 #if SILVERLIGHT
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 #else
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media;
 #endif
 
 namespace Microsoft.PlayerFramework.Advertising
@@ -20,31 +21,8 @@ namespace Microsoft.PlayerFramework.Advertising
     /// Binds a vpaid ad player to the UI. This does 2 things: 1) reacts to changes in the vpaid player 2) pushes commands at the vpaid player to pause, resume, stop and skip.
     /// Supports both VPAID 1.1 and VPAID 2.0 players
     /// </summary>
-    public sealed partial class VpaidLinearAdViewModel
+    public sealed class VpaidLinearAdViewModel : IInteractiveViewModel, INotifyPropertyChanged
     {
-        /// <summary>
-        /// HACK: Allows an instance to be created from Xaml. Without this, xamltypeinfo is not generated and binding will not work.
-        /// </summary>
-        public VpaidLinearAdViewModel()
-        {
-            SkipPreviousThreshold = TimeSpan.FromSeconds(2);
-        }
-
-        /// <summary>
-        /// Gets the VPAID 1.1 player associated with the view model.
-        /// </summary>
-        public IVpaid Vpaid { get; private set; }
-
-        /// <summary>
-        /// Gets the VPAID 2.0 player associated with the view mode. This is the same object as Vpaid and is null if the player only supports v1.1
-        /// </summary>
-        public IVpaid2 Vpaid2 { get; private set; }
-
-        /// <summary>
-        /// Gets the MediaPlayer instance the ViewModel is associated with.
-        /// </summary>
-        public MediaPlayer MediaPlayer { get; private set; }
-
         private vPaidState state;
         private TimeSpan estimatedDuration;
 
@@ -56,6 +34,14 @@ namespace Microsoft.PlayerFramework.Advertising
             Paused,
             Completed,
             Failure
+        }
+
+        /// <summary>
+        /// HACK: Allows an instance to be created from Xaml. Without this, xamltypeinfo is not generated and binding will not work.
+        /// </summary>
+        public VpaidLinearAdViewModel()
+        {
+            SkipPreviousThreshold = TimeSpan.FromSeconds(2);
         }
 
         internal VpaidLinearAdViewModel(IVpaid vpaid, MediaPlayer mediaPlayer)
@@ -72,6 +58,27 @@ namespace Microsoft.PlayerFramework.Advertising
             WireVpaid();
             WireMediaPlayer();
         }
+
+        /// <summary>
+        /// Gets or sets how far away from the previous marker you should be for it to be recognized when skipping previous.
+        /// Default is 2 seconds.
+        /// </summary>
+        public TimeSpan SkipPreviousThreshold { get; set; }
+
+        /// <summary>
+        /// Gets the MediaPlayer instance the ViewModel is associated with.
+        /// </summary>
+        public MediaPlayer MediaPlayer { get; private set; }
+
+        /// <summary>
+        /// Gets the VPAID 1.1 player associated with the view model.
+        /// </summary>
+        public IVpaid Vpaid { get; private set; }
+
+        /// <summary>
+        /// Gets the VPAID 2.0 player associated with the view mode. This is the same object as Vpaid and is null if the player only supports v1.1
+        /// </summary>
+        public IVpaid2 Vpaid2 { get; private set; }
 
         private void WireMediaPlayer()
         {
@@ -101,7 +108,6 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnPropertyChanged(() => IsFullScreen);
         }
-
         private void WireVpaid()
         {
             Vpaid.AdRemainingTimeChange += vpaid_AdRemainingTimeChange;
@@ -161,7 +167,7 @@ namespace Microsoft.PlayerFramework.Advertising
             state = vPaidState.Paused;
             NotifyIsPlayResumeEnabledChanged();
             NotifyIsPauseEnabledChanged();
-            OnCurrentStateChanged(new RoutedEventArgs());
+            NotifyCurrentStateChanged(new RoutedEventArgs());
         }
 
         void vpaid_AdPlaying(object sender, object e)
@@ -169,7 +175,7 @@ namespace Microsoft.PlayerFramework.Advertising
             state = vPaidState.Playing;
             NotifyIsPlayResumeEnabledChanged();
             NotifyIsPauseEnabledChanged();
-            OnCurrentStateChanged(new RoutedEventArgs());
+            NotifyCurrentStateChanged(new RoutedEventArgs());
         }
 
         void vpaid_AdStopped(object sender, object e)
@@ -177,7 +183,7 @@ namespace Microsoft.PlayerFramework.Advertising
             state = vPaidState.Completed;
             NotifyIsPlayResumeEnabledChanged();
             NotifyIsPauseEnabledChanged();
-            OnCurrentStateChanged(new RoutedEventArgs());
+            NotifyCurrentStateChanged(new RoutedEventArgs());
 
             UnwireVpaid();
             UnwireMediaPlayer();
@@ -188,7 +194,7 @@ namespace Microsoft.PlayerFramework.Advertising
             state = vPaidState.Playing;
             NotifyIsPlayResumeEnabledChanged();
             NotifyIsPauseEnabledChanged();
-            OnCurrentStateChanged(new RoutedEventArgs());
+            NotifyCurrentStateChanged(new RoutedEventArgs());
         }
 
         void vpaid_AdLoaded(object sender, object e)
@@ -198,7 +204,7 @@ namespace Microsoft.PlayerFramework.Advertising
             OnPropertyChanged(() => TimeRemaining);
             OnPropertyChanged(() => SignalStrength);
             OnPropertyChanged(() => MediaQuality);
-            OnCurrentStateChanged(new RoutedEventArgs());
+            NotifyCurrentStateChanged(new RoutedEventArgs());
             estimatedDuration = Vpaid.AdRemainingTime;  // used to estimate the duration of the ad for vpaid 1.1
         }
 
@@ -207,7 +213,7 @@ namespace Microsoft.PlayerFramework.Advertising
             state = vPaidState.Failure;
             NotifyIsPlayResumeEnabledChanged();
             NotifyIsPauseEnabledChanged();
-            OnCurrentStateChanged(new RoutedEventArgs());
+            NotifyCurrentStateChanged(new RoutedEventArgs());
         }
 
         void vpaid_AdRemainingTimeChange(object sender, object e)
@@ -218,110 +224,116 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        void OnStop()
+        public void OnInteracting(InteractionType interactionType)
+        {
+            if (Interacting != null) Interacting(this, new InteractionEventArgs(interactionType));
+        }
+
+        /// <inheritdoc /> 
+        public void Stop()
         {
             Vpaid.StopAd();
         }
 
         /// <inheritdoc /> 
-        void OnPause()
+        public void Pause()
         {
             Vpaid.PauseAd();
         }
 
         /// <inheritdoc /> 
-        void OnInvokeCaptionSelection()
+        public void InvokeCaptionSelection()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnInvokeAudioSelection()
+        public void InvokeAudioSelection()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnSkipPrevious(VisualMarker marker)
+        public void SkipPrevious()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnSkipNext(VisualMarker marker)
+        public void SkipNext()
         {
             if (Vpaid2 != null) Vpaid2.SkipAd();
         }
 
         /// <inheritdoc /> 
-        void OnSkipBack(TimeSpan position)
+        public void SkipBack()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnSkipAhead(TimeSpan position)
+        public void SkipAhead()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnSeek(TimeSpan position, out bool canceled)
+        public void Seek(TimeSpan position, out bool canceled)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnCompleteScrub(TimeSpan position, bool canceled, out bool cancel)
+        public void CompleteScrub(TimeSpan position, bool canceled, out bool cancel)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnStartScrub(TimeSpan position, out bool canceled)
+        public void StartScrub(TimeSpan position, out bool canceled)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnScrub(TimeSpan position, out bool canceled)
+        public void Scrub(TimeSpan position, out bool canceled)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnGoLive()
+        public void GoLive()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnPlayResume()
+        public void PlayResume()
         {
             Vpaid.ResumeAd();
         }
 
         /// <inheritdoc /> 
-        void OnReplay()
+        public void Replay()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnDecreasePlaybackRate()
+        public void DecreasePlaybackRate()
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc /> 
-        void OnIncreasePlaybackRate()
+        public void IncreasePlaybackRate()
         {
             throw new NotImplementedException();
         }
 
 #if SILVERLIGHT
         /// <inheritdoc /> 
-        void OnCycleDisplayMode()
+        public void CycleDisplayMode()
         {
             throw new NotImplementedException();
         }
@@ -439,28 +451,28 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        bool _IsMuted
+        public bool IsMuted
         {
             get { return MediaPlayer.IsMuted; }
             set { MediaPlayer.IsMuted = value; }
         }
 
         /// <inheritdoc /> 
-        bool _IsFullScreen
+        public bool IsFullScreen
         {
             get { return MediaPlayer.IsFullScreen; }
             set { MediaPlayer.IsFullScreen = value; }
         }
 
         /// <inheritdoc /> 
-        bool _IsSlowMotion
+        public bool IsSlowMotion
         {
             get { return false; }
             set { throw new NotImplementedException(); }
         }
 
         /// <inheritdoc /> 
-        double _Volume
+        public double Volume
         {
             get { return MediaPlayer.Volume; }
             set
@@ -601,5 +613,293 @@ namespace Microsoft.PlayerFramework.Advertising
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #region Events
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler CurrentStateChanged;
+
+        /// <summary>
+        /// Invokes the CurrentStateChanged event.
+        /// </summary>
+        /// <param name="e">The event args to pass</param>
+        void NotifyCurrentStateChanged(RoutedEventArgs e)
+        {
+            if (CurrentStateChanged != null) CurrentStateChanged(this, e);
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsGoLiveEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the go live enabled state may have changed.
+        /// </summary>
+        void NotifyIsGoLiveEnabledChanged()
+        {
+            OnPropertyChanged(() => IsGoLiveEnabled);
+            if (IsGoLiveEnabledChanged != null) IsGoLiveEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsPlayResumeEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the play resume enabled state may have changed.
+        /// </summary>
+        void NotifyIsPlayResumeEnabledChanged()
+        {
+            OnPropertyChanged(() => IsPlayResumeEnabled);
+            if (IsPlayResumeEnabledChanged != null) IsPlayResumeEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsPauseEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the pause enabled state may have changed.
+        /// </summary>
+        void NotifyIsPauseEnabledChanged()
+        {
+            OnPropertyChanged(() => IsPauseEnabled);
+            if (IsPauseEnabledChanged != null) IsPauseEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsStopEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the stop enabled state may have changed.
+        /// </summary>
+        void NotifyIsStopEnabledChanged()
+        {
+            OnPropertyChanged(() => IsStopEnabled);
+            if (IsStopEnabledChanged != null) IsStopEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsReplayEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the replay enabled state may have changed.
+        /// </summary>
+        void NotifyIsReplayEnabledChanged()
+        {
+            OnPropertyChanged(() => IsReplayEnabled);
+            if (IsReplayEnabledChanged != null) IsReplayEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsAudioSelectionEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the audio stream selection enabled state may have changed.
+        /// </summary>
+        void NotifyIsAudioSelectionEnabledChanged()
+        {
+            OnPropertyChanged(() => IsAudioSelectionEnabled);
+            if (IsAudioSelectionEnabledChanged != null) IsAudioSelectionEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsCaptionSelectionEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the audio stream selection enabled state may have changed.
+        /// </summary>
+        void NotifyIsCaptionSelectionEnabledChanged()
+        {
+            OnPropertyChanged(() => IsCaptionSelectionEnabled);
+            if (IsCaptionSelectionEnabledChanged != null) IsCaptionSelectionEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsRewindEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the rewind enabled state may have changed.
+        /// </summary>
+        void NotifyIsRewindEnabledChanged()
+        {
+            OnPropertyChanged(() => IsRewindEnabled);
+            if (IsRewindEnabledChanged != null) IsRewindEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsFastForwardEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the fast forward enabled state may have changed.
+        /// </summary>
+        void NotifyIsFastForwardEnabledChanged()
+        {
+            OnPropertyChanged(() => IsFastForwardEnabled);
+            if (IsFastForwardEnabledChanged != null) IsFastForwardEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsSlowMotionEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the slow motion enabled state may have changed.
+        /// </summary>
+        void NotifyIsSlowMotionEnabledChanged()
+        {
+            OnPropertyChanged(() => IsSlowMotionEnabled);
+            if (IsSlowMotionEnabledChanged != null) IsSlowMotionEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsSeekEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the seek enabled state may have changed.
+        /// </summary>
+        void NotifyIsSeekEnabledChanged()
+        {
+            OnPropertyChanged(() => IsSeekEnabled);
+            if (IsSeekEnabledChanged != null) IsSeekEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsSkipPreviousEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the skip Previous enabled state may have changed.
+        /// </summary>
+        void NotifyIsSkipPreviousEnabledChanged()
+        {
+            OnPropertyChanged(() => IsSkipPreviousEnabled);
+            if (IsSkipPreviousEnabledChanged != null) IsSkipPreviousEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsSkipNextEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the skip next enabled state may have changed.
+        /// </summary>
+        void NotifyIsSkipNextEnabledChanged()
+        {
+            OnPropertyChanged(() => IsSkipNextEnabled);
+            if (IsSkipNextEnabledChanged != null) IsSkipNextEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsSkipBackEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the skip back enabled state may have changed.
+        /// </summary>
+        void NotifyIsSkipBackEnabledChanged()
+        {
+            OnPropertyChanged(() => IsSkipBackEnabled);
+            if (IsSkipBackEnabledChanged != null) IsSkipBackEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsSkipAheadEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the skip Ahead enabled state may have changed.
+        /// </summary>
+        void NotifyIsSkipAheadEnabledChanged()
+        {
+            OnPropertyChanged(() => IsSkipAheadEnabled);
+            if (IsSkipAheadEnabledChanged != null) IsSkipAheadEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event RoutedEventHandler IsScrubbingEnabledChanged;
+
+        /// <summary>
+        /// Indicates that the scrubbing enabled state may have changed.
+        /// </summary>
+        void NotifyIsScrubbingEnabledChanged()
+        {
+            OnPropertyChanged(() => IsScrubbingEnabled);
+            if (IsScrubbingEnabledChanged != null) IsScrubbingEnabledChanged(this, new RoutedEventArgs());
+        }
+
+        /// <inheritdoc /> 
+        public event EventHandler<SkippingEventArgs> SkippingBack;
+
+        /// <inheritdoc /> 
+        public event EventHandler<SkippingEventArgs> SkippingAhead;
+
+        /// <inheritdoc /> 
+        public event EventHandler<SeekingEventArgs> Seeking;
+
+        /// <inheritdoc /> 
+        public event EventHandler<StartingScrubEventArgs> StartingScrub;
+
+        /// <inheritdoc /> 
+        public event EventHandler<ScrubbingEventArgs> Scrubbing;
+
+        /// <inheritdoc /> 
+        public event EventHandler<CompletingScrubEventArgs> CompletingScrub;
+
+        /// <inheritdoc /> 
+        public event EventHandler<InteractionEventArgs> Interacting;
+
+        #endregion
+
+        #region PropertyChanged
+
+        /// <inheritdoc /> 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Invokes the property changed event.
+        /// </summary>
+        /// <param name="PropertyName">The name of the property that changed.</param>
+        void OnPropertyChanged(string PropertyName)
+        {
+            try
+            {
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
+            }
+            catch (NullReferenceException)
+            {
+                // HACK: This will throw an exception on Win8 CPU2 sometimes.
+            }
+        }
+
+        /// <summary>
+        /// Invokes the property changed event.
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="property">A lambda expression returning the property</param>
+        void OnPropertyChanged<T>(Expression<Func<T>> property)
+        {
+            OnPropertyChanged(GetPropertyName(property));
+        }
+
+        static string GetPropertyName<T>(Expression<Func<T>> property)
+        {
+            return (property.Body as MemberExpression).Member.Name;
+        }
+
+        #endregion
+
     }
 }

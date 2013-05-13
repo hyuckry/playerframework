@@ -24,6 +24,12 @@ namespace Microsoft.PlayerFramework.Advertising
         private MediaPlayer mediaPlayer;
 
         /// <summary>
+        /// Gets or sets how far away from the previous marker you should be for it to be recognized when skipping previous.
+        /// Default is 2 seconds.
+        /// </summary>
+        public TimeSpan SkipPreviousThreshold { get; set; }
+
+        /// <summary>
         /// The MediaPlayer instance the ViewModel is wrapping
         /// </summary>
         public MediaPlayer MediaPlayer
@@ -106,114 +112,13 @@ namespace Microsoft.PlayerFramework.Advertising
             MediaPlayer.MediaQualityChanged += (s, e) => OnPropertyChanged(() => MediaQuality);
         }
 
-        #region Methods
-
-        /// <inheritdoc /> 
-        void OnStop()
+        /// <summary>
+        /// Invokes the CurrentStateChanged event.
+        /// </summary>
+        /// <param name="e">The event args to pass</param>
+        void OnCurrentStateChanged(RoutedEventArgs e)
         {
-            MediaPlayer.Stop();
-        }
-
-        void _OnPause()
-        {
-            MediaPlayer.Pause();
-        }
-
-        /// <inheritdoc /> 
-        void OnInvokeCaptionSelection()
-        {
-            MediaPlayer.InvokeCaptionSelection();
-        }
-
-        /// <inheritdoc /> 
-        void OnInvokeAudioSelection()
-        {
-            MediaPlayer.InvokeAudioSelection();
-        }
-
-        /// <inheritdoc /> 
-        void OnSkipPrevious(VisualMarker marker)
-        {
-            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.StartTime));
-        }
-
-        /// <inheritdoc /> 
-        void OnSkipNext(VisualMarker marker)
-        {
-            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)));
-        }
-
-        /// <inheritdoc /> 
-        void OnSkipBack(TimeSpan position)
-        {
-            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
-        }
-
-        /// <inheritdoc /> 
-        void OnSkipAhead(TimeSpan position)
-        {
-            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
-        }
-
-        /// <inheritdoc /> 
-        void OnSeek(TimeSpan position, out bool canceled)
-        {
-            var args = new SeekingEventArgs(GetMediaPlayerPosition(position));
-            if (Seeking != null) Seeking(this, args);
-            canceled = args.Cancel;
-        }
-
-        /// <inheritdoc /> 
-        void OnCompleteScrub(TimeSpan position, bool canceled, out bool cancel)
-        {
-            var args = new CompletingScrubEventArgs(GetMediaPlayerPosition(position), canceled);
-            if (CompletingScrub != null) CompletingScrub(this, args);
-            cancel = canceled || args.Cancel;
-        }
-
-        /// <inheritdoc /> 
-        void OnStartScrub(TimeSpan position, out bool canceled)
-        {
-            var args = new StartingScrubEventArgs(GetMediaPlayerPosition(position));
-            if (StartingScrub != null) StartingScrub(this, args);
-            canceled = args.Cancel;
-        }
-
-        /// <inheritdoc /> 
-        void OnScrub(TimeSpan position, out bool canceled)
-        {
-            var args = new ScrubbingEventArgs(GetMediaPlayerPosition(position));
-            if (Scrubbing != null) Scrubbing(this, args);
-            canceled = args.Cancel;
-        }
-
-        /// <inheritdoc /> 
-        void OnGoLive()
-        {
-            MediaPlayer.SeekToLive();
-        }
-
-        void _OnPlayResume()
-        {
-            MediaPlayer.PlayResume();
-        }
-
-        /// <inheritdoc /> 
-        void OnReplay()
-        {
-            MediaPlayer.Replay();
-        }
-
-        /// <inheritdoc /> 
-        void OnDecreasePlaybackRate()
-        {
-            MediaPlayer.DecreasePlaybackRate();
-        }
-
-        /// <inheritdoc /> 
-        void OnIncreasePlaybackRate()
-        {
-            MediaPlayer.IncreasePlaybackRate();
+            if (CurrentStateChanged != null) CurrentStateChanged(this, e);
         }
 
         /// <summary>
@@ -241,76 +146,51 @@ namespace Microsoft.PlayerFramework.Advertising
             return mediaPlayerPosition.HasValue ? GetViewModelPosition(mediaPlayerPosition.Value) : mediaPlayerPosition;
         }
 
-#if SILVERLIGHT
-        /// <inheritdoc /> 
-        void OnCycleDisplayMode()
-        {
-            MediaPlayer.CycleDisplayMode();
-        }
-#endif
-        #endregion
+        #region Properties
 
-        #region AvailableCaptions
         /// <inheritdoc /> 
         public IEnumerable<ICaption> AvailableCaptions
         {
             get { return MediaPlayer.AvailableCaptions; }
         }
-        #endregion
 
-        #region SelectedCaption
         /// <inheritdoc /> 
         public ICaption SelectedCaption
         {
             get { return MediaPlayer.SelectedCaption; }
             set { MediaPlayer.SelectedCaption = value; }
         }
-        #endregion
 
-        #region AvailableAudioStreams
         /// <inheritdoc /> 
         public IEnumerable<IAudioStream> AvailableAudioStreams
         {
             get { return MediaPlayer.AvailableAudioStreams; }
         }
-        #endregion
 
-        #region SelectedAudioStream
         /// <inheritdoc /> 
         public IAudioStream SelectedAudioStream
         {
             get { return MediaPlayer.SelectedAudioStream; }
             set { MediaPlayer.SelectedAudioStream = value; }
         }
-        #endregion
 
-        #region VisualMarkers
         /// <inheritdoc /> 
         public IEnumerable<VisualMarker> VisualMarkers
         {
             get { return MediaPlayer.VisualMarkers; }
         }
-        #endregion
-
-        #region IsGoLiveEnabled
 
         /// <inheritdoc /> 
         public bool IsGoLiveEnabled
         {
             get { return MediaPlayer.IsGoLiveEnabled && MediaPlayer.IsGoLiveAllowed; }
         }
-        #endregion
-
-        #region IsPlayResumeEnabled
 
         /// <inheritdoc /> 
         public bool IsPlayResumeEnabled
         {
             get { return MediaPlayer.IsPlayResumeEnabled && MediaPlayer.IsPlayResumeAllowed; }
         }
-        #endregion
-
-        #region IsPauseEnabled
 
         /// <inheritdoc /> 
         public bool IsPauseEnabled
@@ -318,19 +198,11 @@ namespace Microsoft.PlayerFramework.Advertising
             get { return MediaPlayer.IsPauseEnabled && MediaPlayer.IsPauseAllowed; }
         }
 
-        #endregion
-
-        #region IsStopEnabled
-
         /// <inheritdoc /> 
         public bool IsStopEnabled
         {
             get { return MediaPlayer.IsStopEnabled && MediaPlayer.IsStopAllowed; }
         }
-
-        #endregion
-
-        #region IsReplayEnabled
 
         /// <inheritdoc /> 
         public bool IsReplayEnabled
@@ -338,19 +210,11 @@ namespace Microsoft.PlayerFramework.Advertising
             get { return MediaPlayer.IsReplayEnabled && MediaPlayer.IsReplayAllowed; }
         }
 
-        #endregion
-
-        #region IsAudioSelectionEnabled
-
         /// <inheritdoc /> 
         public bool IsAudioSelectionEnabled
         {
             get { return MediaPlayer.IsAudioSelectionEnabled && MediaPlayer.IsAudioSelectionAllowed; }
         }
-
-        #endregion
-
-        #region IsCaptionSelectionEnabled
 
         /// <inheritdoc /> 
         public bool IsCaptionSelectionEnabled
@@ -358,19 +222,11 @@ namespace Microsoft.PlayerFramework.Advertising
             get { return MediaPlayer.IsCaptionSelectionEnabled && MediaPlayer.IsCaptionSelectionAllowed; }
         }
 
-        #endregion
-
-        #region IsRewindEnabled
-
         /// <inheritdoc /> 
         public bool IsRewindEnabled
         {
             get { return MediaPlayer.IsRewindEnabled && MediaPlayer.IsRewindAllowed; }
         }
-
-        #endregion
-
-        #region IsFastForwardEnabled
 
         /// <inheritdoc /> 
         public bool IsFastForwardEnabled
@@ -378,19 +234,11 @@ namespace Microsoft.PlayerFramework.Advertising
             get { return MediaPlayer.IsFastForwardEnabled && MediaPlayer.IsFastForwardAllowed; }
         }
 
-        #endregion
-
-        #region IsSlowMotionEnabled
-
         /// <inheritdoc /> 
         public bool IsSlowMotionEnabled
         {
             get { return MediaPlayer.IsSlowMotionEnabled && MediaPlayer.IsSlowMotionAllowed; }
         }
-
-        #endregion
-
-        #region IsSeekEnabled
 
         /// <inheritdoc /> 
         public bool IsSeekEnabled
@@ -398,32 +246,17 @@ namespace Microsoft.PlayerFramework.Advertising
             get { return MediaPlayer.IsSeekEnabled && MediaPlayer.IsSeekAllowed; }
         }
 
-        #endregion
-
-        #region IsSkipPreviousEnabled
-
         /// <inheritdoc /> 
         public bool IsSkipPreviousEnabled
         {
             get { return MediaPlayer.IsSkipPreviousEnabled && MediaPlayer.IsSkipPreviousAllowed; }
         }
 
-        #endregion
-
-        #region IsSkipNextEnabled
-
         /// <inheritdoc /> 
         public bool IsSkipNextEnabled
         {
-            get
-            {
-                return MediaPlayer.IsSkipNextEnabled && MediaPlayer.IsSkipNextAllowed;
-            }
+            get { return MediaPlayer.IsSkipNextEnabled && MediaPlayer.IsSkipNextAllowed; }
         }
-
-        #endregion
-
-        #region IsSkipBackEnabled
 
         /// <inheritdoc /> 
         public bool IsSkipBackEnabled
@@ -431,132 +264,161 @@ namespace Microsoft.PlayerFramework.Advertising
             get { return MediaPlayer.IsSkipBackEnabled && MediaPlayer.IsSkipBackAllowed; }
         }
 
-        #endregion
-
-        #region IsSkipAheadEnabled
-
         /// <inheritdoc /> 
         public bool IsSkipAheadEnabled
         {
-            get
-            {
-                return MediaPlayer.IsSkipAheadEnabled && MediaPlayer.IsSkipAheadAllowed;
-            }
+            get { return MediaPlayer.IsSkipAheadEnabled && MediaPlayer.IsSkipAheadAllowed; }
         }
-
-        #endregion
-
-        #region IsScrubbingEnabled
 
         /// <inheritdoc /> 
         public bool IsScrubbingEnabled
         {
+            get { return MediaPlayer.IsScrubbingEnabled && MediaPlayer.IsScrubbingAllowed; }
+        }
+
+        /// <inheritdoc /> 
+        public double BufferingProgress
+        {
+            get { return MediaPlayer.BufferingProgress; }
+        }
+
+        /// <inheritdoc /> 
+        public double DownloadProgress
+        {
+            get { return MediaPlayer.DownloadProgress; }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan StartTime
+        {
+            get { return GetViewModelPosition(MediaPlayer.StartTime); }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan EndTime
+        {
+            get { return GetViewModelPosition(MediaPlayer.EndTime); }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan Duration
+        {
+            get { return MediaPlayer.Duration; }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan TimeRemaining
+        {
+            get { return MediaPlayer.TimeRemaining; }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan Position
+        {
+            get { return GetViewModelPosition(MediaPlayer.Position); }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan MaxPosition
+        {
+            get { return GetViewModelPosition(MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)); }
+        }
+
+        /// <inheritdoc /> 
+        public MediaElementState CurrentState
+        {
+            get { return MediaPlayer.CurrentState; }
+        }
+
+        /// <inheritdoc /> 
+        public IValueConverter TimeFormatConverter
+        {
+            get { return MediaPlayer.TimeFormatConverter; }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan? SkipBackInterval
+        {
+            get { return MediaPlayer.SkipBackInterval; }
+        }
+
+        /// <inheritdoc /> 
+        public TimeSpan? SkipAheadInterval
+        {
+            get { return MediaPlayer.SkipAheadInterval; }
+        }
+
+        /// <inheritdoc /> 
+        public double SignalStrength
+        {
+            get { return MediaPlayer.SignalStrength; }
+        }
+
+        /// <inheritdoc /> 
+        public MediaQuality MediaQuality
+        {
+            get { return MediaPlayer.MediaQuality; }
+        }
+
+        /// <inheritdoc /> 
+        public bool IsMuted
+        {
             get
             {
-                return MediaPlayer.IsScrubbingEnabled && MediaPlayer.IsScrubbingAllowed;
+                return MediaPlayer.IsMuted;
+            }
+            set
+            {
+                OnInteracting(InteractionType.Hard);
+                MediaPlayer.IsMuted = value;
+            }
+        }
+
+        /// <inheritdoc /> 
+        public bool IsFullScreen
+        {
+            get
+            {
+                return MediaPlayer.IsFullScreen;
+            }
+            set
+            {
+                OnInteracting(InteractionType.Hard);
+                MediaPlayer.IsFullScreen = value;
+            }
+        }
+
+        /// <inheritdoc /> 
+        public bool IsSlowMotion
+        {
+            get
+            {
+                return MediaPlayer.IsSlowMotion;
+            }
+            set
+            {
+                OnInteracting(InteractionType.Hard);
+                MediaPlayer.IsSlowMotion = value;
+            }
+        }
+
+        /// <inheritdoc /> 
+        public double Volume
+        {
+            get
+            {
+                return MediaPlayer.Volume;
+            }
+            set
+            {
+                OnInteracting(InteractionType.Hard);
+                MediaPlayer.Volume = value;
             }
         }
 
         #endregion
 
-        /// <inheritdoc /> 
-        bool _IsMuted
-        {
-            get { return MediaPlayer.IsMuted; }
-            set { mediaPlayer.IsMuted = value; }
-        }
-        /// <inheritdoc /> 
-        bool _IsFullScreen
-        {
-            get { return MediaPlayer.IsFullScreen; }
-            set { mediaPlayer.IsFullScreen = value; }
-        }
-        /// <inheritdoc /> 
-        bool _IsSlowMotion
-        {
-            get { return MediaPlayer.IsSlowMotion; }
-            set { mediaPlayer.IsSlowMotion = value; }
-        }
-        /// <inheritdoc /> 
-        double _Volume
-        {
-            get { return MediaPlayer.Volume; }
-            set { mediaPlayer.Volume = value; }
-        }
-        /// <inheritdoc /> 
-        public double BufferingProgress { get { return MediaPlayer.BufferingProgress; } }
-        /// <inheritdoc /> 
-        public double DownloadProgress { get { return MediaPlayer.DownloadProgress; } }
-        /// <inheritdoc /> 
-        public TimeSpan StartTime { get { return GetViewModelPosition(MediaPlayer.StartTime); } }
-        /// <inheritdoc /> 
-        public TimeSpan EndTime { get { return GetViewModelPosition(MediaPlayer.EndTime); } }
-        /// <inheritdoc /> 
-        public TimeSpan Duration { get { return MediaPlayer.Duration; } }
-        /// <inheritdoc /> 
-        public TimeSpan TimeRemaining { get { return MediaPlayer.TimeRemaining; } }
-        /// <inheritdoc /> 
-        public TimeSpan Position { get { return GetViewModelPosition(MediaPlayer.Position); } }
-        /// <inheritdoc /> 
-        public TimeSpan MaxPosition { get { return GetViewModelPosition(MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)); } }
-        /// <inheritdoc /> 
-        public MediaElementState CurrentState { get { return MediaPlayer.CurrentState; } }
-        /// <inheritdoc /> 
-        public IValueConverter TimeFormatConverter { get { return MediaPlayer.TimeFormatConverter; } }
-        /// <inheritdoc /> 
-        public TimeSpan? SkipBackInterval { get { return MediaPlayer.SkipBackInterval; } }
-        /// <inheritdoc /> 
-        public TimeSpan? SkipAheadInterval { get { return MediaPlayer.SkipAheadInterval; } }
-        /// <inheritdoc /> 
-        public double SignalStrength { get { return MediaPlayer.SignalStrength; } }
-        /// <inheritdoc /> 
-        public MediaQuality MediaQuality { get { return MediaPlayer.MediaQuality; } }
-
-
-        #region PropertyChanged
-
-        /// <inheritdoc /> 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Invokes the property changed event.
-        /// </summary>
-        /// <param name="PropertyName">The name of the property that changed.</param>
-        void OnPropertyChanged(string PropertyName)
-        {
-            try
-            {
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
-            }
-            catch (NullReferenceException)
-            {
-                // HACK: This will throw an exception on Win8 CPU2 sometimes.
-            }
-        }
-
-        /// <summary>
-        /// Invokes the property changed event.
-        /// </summary>
-        /// <typeparam name="T">The type</typeparam>
-        /// <param name="property">A lambda expression returning the property</param>
-        void OnPropertyChanged<T>(Expression<Func<T>> property)
-        {
-            OnPropertyChanged(GetPropertyName(property));
-        }
-
-        static string GetPropertyName<T>(Expression<Func<T>> property)
-        {
-            return (property.Body as MemberExpression).Member.Name;
-        }
-
-        #endregion
-
-
-        /// <summary>
-        /// Gets or sets how far away from the previous marker you should be for it to be recognized when skipping previous.
-        /// Default is 2 seconds.
-        /// </summary>
-        public TimeSpan SkipPreviousThreshold { get; set; }
+        #region Methods
 
         /// <inheritdoc /> 
         public void OnInteracting(InteractionType interactionType)
@@ -564,46 +426,32 @@ namespace Microsoft.PlayerFramework.Advertising
             if (Interacting != null) Interacting(this, new InteractionEventArgs(interactionType));
         }
 
-        /// <summary>
-        /// Invokes the CurrentStateChanged event.
-        /// </summary>
-        /// <param name="e">The event args to pass</param>
-        void OnCurrentStateChanged(RoutedEventArgs e)
-        {
-            if (CurrentStateChanged != null) CurrentStateChanged(this, e);
-        }
-
-        /// <inheritdoc /> 
-        public event EventHandler<InteractionEventArgs> Interacting;
-
-        #region Methods
-
         /// <inheritdoc /> 
         public void Stop()
         {
             OnInteracting(InteractionType.Hard);
-            OnStop();
+            MediaPlayer.Stop();
         }
 
-        /// <inheritdoc /> 
-        public void Pause()
-        {
-            OnInteracting(InteractionType.Hard);
-            OnPause();
-        }
+        ///// <inheritdoc /> 
+        //public void Pause()
+        //{
+        //    OnInteracting(InteractionType.Hard);
+        //    MediaPlayer.Pause();
+        //}
 
         /// <inheritdoc /> 
         public void InvokeCaptionSelection()
         {
             OnInteracting(InteractionType.Hard);
-            OnInvokeCaptionSelection();
+            MediaPlayer.InvokeCaptionSelection();
         }
 
         /// <inheritdoc /> 
         public void InvokeAudioSelection()
         {
             OnInteracting(InteractionType.Hard);
-            OnInvokeAudioSelection();
+            MediaPlayer.InvokeAudioSelection();
         }
 
         /// <inheritdoc /> 
@@ -615,7 +463,7 @@ namespace Microsoft.PlayerFramework.Advertising
                 .Where(m => m.IsSeekable && m.Time.Add(SkipPreviousThreshold) < Position && m.Time < MaxPosition)
                 .OrderByDescending(m => m.Time).FirstOrDefault();
 
-            OnSkipPrevious(marker);
+            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.StartTime));
         }
 
         /// <inheritdoc /> 
@@ -627,7 +475,7 @@ namespace Microsoft.PlayerFramework.Advertising
                 .Where(m => m.IsSeekable && m.Time > Position && m.Time < MaxPosition)
                 .OrderBy(m => m.Time).FirstOrDefault();
 
-            OnSkipNext(marker);
+            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)));
         }
 
         /// <inheritdoc /> 
@@ -635,7 +483,8 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnInteracting(InteractionType.Hard);
             TimeSpan position = SkipBackInterval.HasValue ? TimeSpanExtensions.Max(Position.Subtract(SkipBackInterval.Value), StartTime) : StartTime;
-            OnSkipBack(position);
+
+            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
         }
 
         /// <inheritdoc /> 
@@ -643,70 +492,83 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnInteracting(InteractionType.Hard);
             TimeSpan position = SkipAheadInterval.HasValue ? TimeSpanExtensions.Min(Position.Add(SkipAheadInterval.Value), MaxPosition) : MaxPosition;
-            OnSkipAhead(position);
+
+            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
         }
 
         /// <inheritdoc /> 
         public void Seek(TimeSpan position, out bool canceled)
         {
             OnInteracting(InteractionType.Hard);
-            OnSeek(position, out canceled);
+
+            var args = new SeekingEventArgs(GetMediaPlayerPosition(position));
+            if (Seeking != null) Seeking(this, args);
+            canceled = args.Cancel;
         }
 
         /// <inheritdoc /> 
         public void CompleteScrub(TimeSpan position, bool canceled, out bool cancel)
         {
             OnInteracting(InteractionType.Hard);
-            OnCompleteScrub(position, canceled, out cancel);
+
+            var args = new CompletingScrubEventArgs(GetMediaPlayerPosition(position), canceled);
+            if (CompletingScrub != null) CompletingScrub(this, args);
+            cancel = canceled || args.Cancel;
         }
 
         /// <inheritdoc /> 
         public void StartScrub(TimeSpan position, out bool canceled)
         {
             OnInteracting(InteractionType.Hard);
-            OnStartScrub(position, out canceled);
+
+            var args = new StartingScrubEventArgs(GetMediaPlayerPosition(position));
+            if (StartingScrub != null) StartingScrub(this, args);
+            canceled = args.Cancel;
         }
 
         /// <inheritdoc /> 
         public void Scrub(TimeSpan position, out bool canceled)
         {
             OnInteracting(InteractionType.Hard);
-            OnScrub(position, out canceled);
+
+            var args = new ScrubbingEventArgs(GetMediaPlayerPosition(position));
+            if (Scrubbing != null) Scrubbing(this, args);
+            canceled = args.Cancel;
         }
 
         /// <inheritdoc /> 
         public void GoLive()
         {
             OnInteracting(InteractionType.Hard);
-            OnGoLive();
+            MediaPlayer.SeekToLive();
         }
 
-        /// <inheritdoc /> 
-        public void PlayResume()
-        {
-            OnInteracting(InteractionType.Hard);
-            OnPlayResume();
-        }
+        ///// <inheritdoc /> 
+        //public void PlayResume()
+        //{
+        //    OnInteracting(InteractionType.Hard);
+        //    MediaPlayer.PlayResume();
+        //}
 
         /// <inheritdoc /> 
         public void Replay()
         {
             OnInteracting(InteractionType.Hard);
-            OnReplay();
+            MediaPlayer.Replay();
         }
 
         /// <inheritdoc /> 
         public void DecreasePlaybackRate()
         {
             OnInteracting(InteractionType.Hard);
-            OnDecreasePlaybackRate();
+            MediaPlayer.DecreasePlaybackRate();
         }
 
         /// <inheritdoc /> 
         public void IncreasePlaybackRate()
         {
             OnInteracting(InteractionType.Hard);
-            OnIncreasePlaybackRate();
+            MediaPlayer.IncreasePlaybackRate();
         }
 
 #if SILVERLIGHT
@@ -714,71 +576,12 @@ namespace Microsoft.PlayerFramework.Advertising
         public void CycleDisplayMode()
         {
             OnInteracting(InteractionType.Hard);
-            OnCycleDisplayMode();
+            MediaPlayer.CycleDisplayMode();
         }
-
-        /// <summary>
-        /// Notifies the subclass that the user has chosen the cycle display mode feature to change the stretch state of the player.
-        /// </summary>
-        abstract void OnCycleDisplayMode();
 #endif
         #endregion
 
-        /// <inheritdoc /> 
-        public bool IsMuted
-        {
-            get
-            {
-                return this._IsMuted;
-            }
-            set
-            {
-                OnInteracting(InteractionType.Hard);
-                this._IsMuted = value;
-            }
-        }
-
-        /// <inheritdoc /> 
-        public bool IsFullScreen
-        {
-            get
-            {
-                return this._IsFullScreen;
-            }
-            set
-            {
-                OnInteracting(InteractionType.Hard);
-                this._IsFullScreen = value;
-            }
-        }
-
-        /// <inheritdoc /> 
-        public bool IsSlowMotion
-        {
-            get
-            {
-                return this._IsSlowMotion;
-            }
-            set
-            {
-                OnInteracting(InteractionType.Hard);
-                this._IsSlowMotion = value;
-            }
-        }
-
-        /// <inheritdoc /> 
-        public double Volume
-        {
-            get
-            {
-                return this._Volume;
-            }
-            set
-            {
-                OnInteracting(InteractionType.Hard);
-                this._Volume = value;
-            }
-        }
+        #region Events
 
         /// <inheritdoc /> 
         public event RoutedEventHandler IsGoLiveEnabledChanged;
@@ -992,5 +795,48 @@ namespace Microsoft.PlayerFramework.Advertising
 
         /// <inheritdoc /> 
         public event EventHandler<CompletingScrubEventArgs> CompletingScrub;
+
+        /// <inheritdoc /> 
+        public event EventHandler<InteractionEventArgs> Interacting;
+
+        #endregion
+
+        #region PropertyChanged
+
+        /// <inheritdoc /> 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Invokes the property changed event.
+        /// </summary>
+        /// <param name="PropertyName">The name of the property that changed.</param>
+        void OnPropertyChanged(string PropertyName)
+        {
+            try
+            {
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
+            }
+            catch (NullReferenceException)
+            {
+                // HACK: This will throw an exception on Win8 CPU2 sometimes.
+            }
+        }
+
+        /// <summary>
+        /// Invokes the property changed event.
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="property">A lambda expression returning the property</param>
+        void OnPropertyChanged<T>(Expression<Func<T>> property)
+        {
+            OnPropertyChanged(GetPropertyName(property));
+        }
+
+        static string GetPropertyName<T>(Expression<Func<T>> property)
+        {
+            return (property.Body as MemberExpression).Member.Name;
+        }
+
+        #endregion
     }
 }
