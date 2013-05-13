@@ -25,6 +25,7 @@ namespace Microsoft.PlayerFramework.Advertising
         readonly MarkerHelper markerHelper = new MarkerHelper();
         Size? initialDimensions;
         HyperlinkButton clickThroughButton;
+        TaskCompletionSource<object> templateAppliedTask;
 
 #if WINDOWS_PHONE
         Microsoft.Phone.Controls.WebBrowser WebView;
@@ -62,14 +63,6 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             this.DefaultStyleKey = typeof(VpaidIFrameAdPlayer);
             IsHitTestVisible = false;
-#if WINDOWS_PHONE
-            WebView = new Phone.Controls.WebBrowser();
-#elif SILVERLIGHT
-            WebView = new WebBrowser();
-#else
-            WebView = new WebView();
-#endif
-            WebView.Visibility = Visibility.Collapsed;
             Background = new SolidColorBrush(Colors.Transparent);
             State = AdState.None;
             AdLinear = false;
@@ -92,7 +85,7 @@ namespace Microsoft.PlayerFramework.Advertising
             ClickThru = clickThru;
             this.NavigateUri = ClickThru;
         }
-        
+
         /// <summary>
         /// Raised after nativation occurs.
         /// </summary>
@@ -111,6 +104,14 @@ namespace Microsoft.PlayerFramework.Advertising
 #endif
         {
             base.OnApplyTemplate();
+
+#if WINDOWS_PHONE
+            WebView = base.GetTemplateChild("WebView") as Phone.Controls.WebBrowser;
+#elif SILVERLIGHT
+            WebView = base.GetTemplateChild("WebView") as WebBrowser;
+#else
+            WebView = base.GetTemplateChild("WebView") as WebView;
+#endif
 
             clickThroughButton = base.GetTemplateChild("ClickThroughButton") as HyperlinkButton;
             if (clickThroughButton != null)
@@ -135,6 +136,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
             IsTemplateLoaded = true;
             AdLinear = adLinear;
+            templateAppliedTask.TrySetResult(null);
         }
 
         void ClickThroughButton_Click(object sender, RoutedEventArgs e)
@@ -198,9 +200,12 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc />
-        public void InitAd(double width, double height, string viewMode, int desiredBitrate, string creativeData, string environmentVariables)
+        public async void InitAd(double width, double height, string viewMode, int desiredBitrate, string creativeData, string environmentVariables)
         {
-            this.Content = WebView;
+            State = AdState.Loading;
+            adSkippableState = false;
+
+            await templateAppliedTask.Task;
 #if WINDOWS_PHONE
             WebView.Navigated += WebView_Navigated;
             WebView.NavigationFailed += WebView_NavigationFailed;
@@ -211,9 +216,6 @@ namespace Microsoft.PlayerFramework.Advertising
             WebView.LoadCompleted += WebView_LoadCompleted;
             WebView.NavigationFailed += WebView_NavigationFailed;
 #endif
-            State = AdState.Loading;
-            adSkippableState = false;
-    
             WebView.Navigate(new Uri(creativeData));
         }
 
@@ -381,17 +383,20 @@ namespace Microsoft.PlayerFramework.Advertising
             this.SizeChanged -= AdPlayer_SizeChanged;
             timer.Tick -= timer_Tick;
             if (timer.IsEnabled) timer.Stop();
+
+            if (WebView != null)
+            {
 #if WINDOWS_PHONE
-            WebView.Navigated -= WebView_Navigated;
-            WebView.NavigationFailed -= WebView_NavigationFailed;
+                WebView.Navigated -= WebView_Navigated;
+                WebView.NavigationFailed -= WebView_NavigationFailed;
 #elif SILVERLIGHT
-            WebView.LoadCompleted -= WebView_LoadCompleted;
-            // TODO: WebView.NavigationFailed -= WebView_NavigationFailed;
+                WebView.LoadCompleted -= WebView_LoadCompleted;
+                // TODO: WebView.NavigationFailed -= WebView_NavigationFailed;
 #else
-            WebView.LoadCompleted -= WebView_LoadCompleted;
-            WebView.NavigationFailed -= WebView_NavigationFailed;
+                WebView.LoadCompleted -= WebView_LoadCompleted;
+                WebView.NavigationFailed -= WebView_NavigationFailed;
 #endif
-            this.Content = null;
+            }
             markerHelper.Stop();
             Opacity = 0;
         }

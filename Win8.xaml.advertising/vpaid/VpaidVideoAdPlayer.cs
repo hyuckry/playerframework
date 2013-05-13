@@ -20,21 +20,46 @@ namespace Microsoft.PlayerFramework.Advertising
     /// <summary>
     /// A VPAID implementation for a linear video ad.
     /// </summary>
-    public sealed class VpaidVideoAdPlayer : ContentControl, IVpaid2
+    public sealed class VpaidVideoAdPlayer : Control, IVpaid2
     {
-        DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(250) };
-        HyperlinkButton clickThroughButton;
-        MediaElement mediaElement;
-#if WINDOWS_PHONE
-        private static bool IsActive;
-        private Uri pendingMediaUri;
-#endif
-
         const string Marker_SkippableOffset = "SkippableOffset";
         const string Marker_FirstQuartile = "FirstQuartile";
         const string Marker_Midpoint = "Midpoint";
         const string Marker_ThirdQuartile = "ThirdQuartile";
         const string Marker_DurationReached = "DurationReached";
+
+        DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(250) };
+        HyperlinkButton clickThroughButton;
+        MediaElement mediaElement;
+        bool IsTemplateLoaded;
+        TaskCompletionSource<object> templateAppliedTask;
+        Uri navigateUri;
+        private bool adLinear;
+#if WINDOWS_PHONE
+        private static bool IsActive;
+        private Uri pendingMediaUri;
+#endif
+        
+        /// <summary>
+        /// Creates a new instance of VpaidVideoAdPlayer.
+        /// </summary>
+        /// <param name="skippableOffset">The position in the ad at which the ad can be skipped. If null, the ad cannot be skipped.</param>
+        /// <param name="maxDuration">The max duration of the ad. If not specified, the length of the video is assumed.</param>
+        /// <param name="clickThru">The Uri to navigate to when the ad is clicked or tapped. Can be null of no action should take place.</param>
+        public VpaidVideoAdPlayer(FlexibleOffset skippableOffset, TimeSpan? maxDuration, Uri clickThru)
+        {
+            this.DefaultStyleKey = typeof(VpaidVideoAdPlayer);
+            templateAppliedTask = new TaskCompletionSource<object>();
+            IsHitTestVisible = false;
+            Background = new SolidColorBrush(Colors.Black);
+            Opacity = 0;
+            State = AdState.None;
+            AdLinear = true;
+
+            SkippableOffset = skippableOffset;
+            MaxDuration = maxDuration;
+            this.NavigateUri = clickThru;
+        }
 
         /// <summary>
         /// Gets the position in the ad at which the ad can be skipped. If null, the ad cannot be skipped.
@@ -47,35 +72,9 @@ namespace Microsoft.PlayerFramework.Advertising
         public TimeSpan? MaxDuration { get; private set; }
 
         /// <summary>
-        /// Creates a new instance of VpaidVideoAdPlayer.
-        /// </summary>
-        /// <param name="skippableOffset">The position in the ad at which the ad can be skipped. If null, the ad cannot be skipped.</param>
-        /// <param name="maxDuration">The max duration of the ad. If not specified, the length of the video is assumed.</param>
-        /// <param name="clickThru">The Uri to navigate to when the ad is clicked or tapped. Can be null of no action should take place.</param>
-        public VpaidVideoAdPlayer(FlexibleOffset skippableOffset, TimeSpan? maxDuration, Uri clickThru)
-        {
-            this.DefaultStyleKey = typeof(VpaidVideoAdPlayer);
-            IsHitTestVisible = false;
-            mediaElement = new MediaElement();
-            Background = new SolidColorBrush(Colors.Black);
-            Opacity = 0;
-            State = AdState.None;
-            AdLinear = true;
-
-            SkippableOffset = skippableOffset;
-            MaxDuration = maxDuration;
-            this.NavigateUri = clickThru;
-        }
-
-        /// <summary>
         /// Raised after nativation occurs.
         /// </summary>
         public event RoutedEventHandler Navigated;
-
-        /// <summary>
-        /// Indicates that the template has been loaded.
-        /// </summary>
-        bool IsTemplateLoaded;
 
         /// <inheritdoc /> 
 #if SILVERLIGHT
@@ -85,6 +84,8 @@ namespace Microsoft.PlayerFramework.Advertising
 #endif
         {
             base.OnApplyTemplate();
+
+            mediaElement = base.GetTemplateChild("MediaElement") as MediaElement;
 
             clickThroughButton = base.GetTemplateChild("ClickThroughButton") as HyperlinkButton;
             if (clickThroughButton != null)
@@ -102,6 +103,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
             IsTemplateLoaded = true;
             AdLinear = adLinear;
+            templateAppliedTask.TrySetResult(null);
         }
 
         void ClickThroughButton_Click(object sender, RoutedEventArgs e)
@@ -109,7 +111,6 @@ namespace Microsoft.PlayerFramework.Advertising
             if (Navigated != null) Navigated(this, e);
         }
 
-        Uri navigateUri;
         /// <summary>
         /// Gets or sets the Uri to navigate to when the hyperlink button is clicked.
         /// </summary>
@@ -127,7 +128,6 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        private bool adLinear;
         /// <summary>
         /// Gets or sets if the ad is linear or nonlinear
         /// </summary>
@@ -155,11 +155,7 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Gets or sets the AudioCategory on the underlying MediaElement
         /// </summary>
-        public AudioCategory AudioCategory
-        {
-            get { return mediaElement.AudioCategory; }
-            set { mediaElement.AudioCategory = value; }
-        }
+        public AudioCategory AudioCategory { get; set; }
 #endif
 
         /// <summary>
@@ -184,18 +180,14 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc />
-        public void InitAd(double width, double height, string viewMode, int desiredBitrate, string creativeData, string environmentVariables)
+        public async void InitAd(double width, double height, string viewMode, int desiredBitrate, string creativeData, string environmentVariables)
         {
-            this.Content = mediaElement;
-            mediaElement.MediaOpened += MediaElement_MediaOpened;
-            mediaElement.MediaFailed += MediaElement_MediaFailed;
             State = AdState.Loading;
             adSkippableState = false;
-            OnInitAd(creativeData);
-        }
 
-        void OnInitAd(string creativeData)
-        {
+            await templateAppliedTask.Task;
+            mediaElement.MediaOpened += MediaElement_MediaOpened;
+            mediaElement.MediaFailed += MediaElement_MediaFailed;
 #if WINDOWS_PHONE
             if (!IsActive)
             {
@@ -210,6 +202,9 @@ namespace Microsoft.PlayerFramework.Advertising
                 OnLoaded();
             }
 #else
+#if NETFX_CORE
+            mediaElement.AudioCategory = AudioCategory;
+#endif
             mediaElement.AutoPlay = false;
             mediaElement.Source = new Uri(creativeData);
 #endif
@@ -435,14 +430,15 @@ namespace Microsoft.PlayerFramework.Advertising
             timer.Tick -= timer_Tick;
             if (timer.IsEnabled) timer.Stop();
             timer = null;
-            mediaElement.MediaOpened -= MediaElement_MediaOpened;
-            mediaElement.MediaFailed -= MediaElement_MediaFailed;
-            mediaElement.MediaEnded -= MediaElement_MediaEnded;
-            mediaElement.CurrentStateChanged -= MediaElement_CurrentStateChanged;
-            mediaElement.MarkerReached -= MediaElement_MarkerReached;
+            if (mediaElement != null)
+            {
+                mediaElement.MediaOpened -= MediaElement_MediaOpened;
+                mediaElement.MediaFailed -= MediaElement_MediaFailed;
+                mediaElement.MediaEnded -= MediaElement_MediaEnded;
+                mediaElement.CurrentStateChanged -= MediaElement_CurrentStateChanged;
+                mediaElement.MarkerReached -= MediaElement_MarkerReached;
+            }
             OnTeardown();
-            this.Content = null;
-            mediaElement = null;
             Opacity = 0;
         }
 

@@ -22,12 +22,14 @@ namespace Microsoft.PlayerFramework.Advertising
     /// <summary>
     /// A VPAID implementation for a nonlinear image ad.
     /// </summary>
-    public sealed class VpaidImageAdPlayer : ContentControl, IVpaid2
+    public sealed class VpaidImageAdPlayer : Control, IVpaid2
     {
-        readonly Image image;
         readonly DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(250) };
         readonly MarkerHelper markerHelper = new MarkerHelper();
         HyperlinkButton clickThroughButton;
+        Image image;
+        bool IsTemplateLoaded;
+        TaskCompletionSource<object> templateAppliedTask;
 
         /// <summary>
         /// Gets the position in the ad at which the ad can be skipped. If null, the ad cannot be skipped.
@@ -59,10 +61,9 @@ namespace Microsoft.PlayerFramework.Advertising
         public VpaidImageAdPlayer(FlexibleOffset skippableOffset, TimeSpan? suggestedDuration, Uri clickThru)
         {
             this.DefaultStyleKey = typeof(VpaidImageAdPlayer);
+            templateAppliedTask = new TaskCompletionSource<object>();
             IsHitTestVisible = false;
-            image = new Image();
             Background = new SolidColorBrush(Colors.Transparent);
-            image.Stretch = Stretch.None;
             Opacity = 0;
             State = AdState.None;
             AdLinear = false;
@@ -78,11 +79,6 @@ namespace Microsoft.PlayerFramework.Advertising
         /// </summary>
         public event RoutedEventHandler Navigated;
 
-        /// <summary>
-        /// Indicates that the template has been loaded.
-        /// </summary>
-        bool IsTemplateLoaded;
-
         /// <inheritdoc /> 
 #if SILVERLIGHT
         public override void OnApplyTemplate()
@@ -91,6 +87,8 @@ namespace Microsoft.PlayerFramework.Advertising
 #endif
         {
             base.OnApplyTemplate();
+
+            image = base.GetTemplateChild("Image") as Image;
 
             clickThroughButton = base.GetTemplateChild("ClickThroughButton") as HyperlinkButton;
             if (clickThroughButton != null)
@@ -108,6 +106,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
             IsTemplateLoaded = true;
             AdLinear = adLinear;
+            templateAppliedTask.TrySetResult(null);
         }
 
         void ClickThroughButton_Click(object sender, RoutedEventArgs e)
@@ -171,13 +170,14 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc />
-        public void InitAd(double width, double height, string viewMode, int desiredBitrate, string creativeData, string environmentVariables)
+        public async void InitAd(double width, double height, string viewMode, int desiredBitrate, string creativeData, string environmentVariables)
         {
-            this.Content = image;
-            image.ImageOpened += Image_ImageOpened;
-            image.ImageFailed += Image_ImageFailed;
             State = AdState.Loading;
             adSkippableState = false;
+
+            await templateAppliedTask.Task;
+            image.ImageOpened += Image_ImageOpened;
+            image.ImageFailed += Image_ImageFailed;
             image.Source = new BitmapImage(new Uri(creativeData));
         }
 
@@ -330,10 +330,12 @@ namespace Microsoft.PlayerFramework.Advertising
             this.SizeChanged -= AdPlayer_SizeChanged;
             timer.Tick -= timer_Tick;
             if (timer.IsEnabled) timer.Stop();
-            image.ImageOpened -= Image_ImageOpened;
-            image.ImageFailed -= Image_ImageFailed;
-            image.Source = null;
-            this.Content = null;
+            if (image != null)
+            {
+                image.ImageOpened -= Image_ImageOpened;
+                image.ImageFailed -= Image_ImageFailed;
+                image.Source = null;
+            }
             markerHelper.Stop();
             Opacity = 0;
         }

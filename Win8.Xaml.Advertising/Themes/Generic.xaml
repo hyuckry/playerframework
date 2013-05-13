@@ -7,13 +7,11 @@
     <local:VpaidLinearAdViewModel x:Key="xamltypeinfo_VpaidLinearAdViewModel"/>
     <local:VpaidNonLinearAdViewModel x:Key="xamltypeinfo_VpaidNonLinearAdViewModel"/>
 
-    <Style TargetType="local:VpaidImageAdPlayer">
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    <Style TargetType="local:VpaidVideoAdPlayer">
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ContentControl">
+                <ControlTemplate TargetType="local:VpaidVideoAdPlayer">
                     <Grid x:Name="LayoutRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="AdvertisingStates">
@@ -38,7 +36,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter IsHitTestVisible="False" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <MediaElement x:Name="MediaElement" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
                         <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
@@ -47,13 +45,11 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:VpaidVideoAdPlayer">
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    <Style TargetType="local:VpaidImageAdPlayer">
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ContentControl">
+                <ControlTemplate TargetType="local:VpaidImageAdPlayer">
                     <Grid x:Name="LayoutRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="AdvertisingStates">
@@ -78,7 +74,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter IsHitTestVisible="False" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <Image x:Name="Image" IsHitTestVisible="False" Stretch="None" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
                         <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
@@ -88,12 +84,10 @@
     </Style>
 
     <Style TargetType="local:VpaidIFrameAdPlayer">
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ContentControl">
+                <ControlTemplate TargetType="local:VpaidIFrameAdPlayer">
                     <Grid x:Name="LayoutRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="AdvertisingStates">
@@ -118,7 +112,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter IsHitTestVisible="False" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <WebView x:Name="WebView" Visibility="Collapsed" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
                         <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
@@ -128,12 +122,10 @@
     </Style>
     
     <Style TargetType="local:VpaidHtmlAdPlayer">
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ContentControl">
+                <ControlTemplate TargetType="local:VpaidHtmlAdPlayer">
                     <Grid x:Name="LayoutRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="AdvertisingStates">
@@ -158,7 +150,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter IsHitTestVisible="False" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <WebView x:Name="WebView" Visibility="Collapsed" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
                         <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
