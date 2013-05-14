@@ -78,7 +78,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Grid Height="{TemplateBinding local:MediaPlayerControl.Size}" Width="{TemplateBinding local:MediaPlayerControl.Size}">
-                        <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" local:MediaPlayerControl.StrokeThickness="{TemplateBinding local:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}"/>
+                        <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding local:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}"/>
                         <ContentControl x:Name="ContentPresenter" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding local:MediaPlayerControl.ContentTransform}"/>
 
                         <VisualStateManager.VisualStateGroups>
@@ -119,7 +119,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}" />
-        <Setter Property="local:MediaPlayerControl.StrokeThickness" Value="4"/>
+        <Setter Property="local:MediaPlayerControl.StrokeThickness" Value="3"/>
         <Setter Property="local:MediaPlayerControl.Size" Value="70"/>
         <Setter Property="FontSize" Value="40"/>
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Button"/>
@@ -128,7 +128,7 @@
                 <ControlTemplate TargetType="ToggleButton">
                     <Grid Height="{TemplateBinding local:MediaPlayerControl.Size}" Width="{TemplateBinding local:MediaPlayerControl.Size}">
                         <Grid>
-                            <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" local:MediaPlayerControl.StrokeThickness="{TemplateBinding local:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}"/>
+                            <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding local:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}"/>
                             <ContentControl x:Name="Content" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding local:MediaPlayerControl.ContentTransform}"/>
                         </Grid>
                         <VisualStateManager.VisualStateGroups>
@@ -1045,7 +1045,7 @@
                         </Grid>
                         <Grid x:Name="ErrorsContainer" Visibility="Collapsed"/>
                         <Grid x:Name="InteractivityContainer" Visibility="Collapsed">
-                            <local:ControlPanel x:Name="ControlPanel" local:MediaPlayerControl.ViewModel="{TemplateBinding Interactivelocal:MediaPlayerControl.ViewModel}"
+                            <local:ControlPanel x:Name="ControlPanel" local:MediaPlayerControl.ViewModel="{TemplateBinding InteractiveViewModel}"
                                 IsGoLiveButtonVisible="{TemplateBinding IsGoLiveVisible}"
                                 IsAudioSelectionButtonVisible="{TemplateBinding IsAudioSelectionVisible}"
                                 IsCaptionSelectionButtonVisible="{TemplateBinding IsCaptionSelectionVisible}"
