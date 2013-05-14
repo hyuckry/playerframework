@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2BA82C57-A6FE-4B07-A2D9-FCEC84E8650D}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.PlayerFramework.WebVTT</RootNamespace>
     <AssemblyName>Microsoft.PlayerFramework.WebVTT</AssemblyName>
