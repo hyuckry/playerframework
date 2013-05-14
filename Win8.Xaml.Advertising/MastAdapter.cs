@@ -322,7 +322,7 @@ namespace Microsoft.PlayerFramework.Advertising
             if (OnVolumeChange != null) OnVolumeChange(this, EventArgs.Empty);
         }
 
-        void player_IsMutedChanged(object sender, RoutedEventArgs e)
+        void player_IsMutedChanged(object sender, object e)
         {
             //System.Diagnostics.Debug.WriteLine("OnMute");
             if (player.IsMuted)

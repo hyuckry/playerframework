@@ -54,7 +54,7 @@ namespace Microsoft.PlayerFramework
             get { return MediaPlayerControl.GetViewModel(this); }
         }
         
-        void ViewModel_CurrentStateChanged(object sender, RoutedEventArgs e)
+        void ViewModel_CurrentStateChanged(object sender, object e)
         {
             UpdateVisualStates();
         }

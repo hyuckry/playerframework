@@ -2,15 +2,15 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Microsoft.PlayerFramework.Advertising"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     >
 
-    <Style TargetType="local:AdHost">
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    <Style TargetType="local:VpaidVideoAdPlayer">
+        <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="ContentControl">
-                    <Grid x:Name="LayoutRoot" Background="{TemplateBinding Background}">
+                <ControlTemplate TargetType="local:VpaidVideoAdPlayer">
+                    <Grid x:Name="LayoutRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="AdvertisingStates">
                                 <VisualState x:Name="Linear"/>
@@ -34,7 +34,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <MediaElement x:Name="MediaElement" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
                         <!--<HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>-->
                         <HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="48" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>
                     </Grid>
@@ -42,4 +42,116 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="local:VpaidImageAdPlayer">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:VpaidImageAdPlayer">
+                    <Grid x:Name="LayoutRoot">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="AdvertisingStates">
+                                <VisualState x:Name="Linear"/>
+                                <VisualState x:Name="Nonlinear">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="VerticalAlignment" Storyboard.TargetName="LayoutRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <VerticalAlignment>Bottom</VerticalAlignment>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="HorizontalAlignment" Storyboard.TargetName="LayoutRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <HorizontalAlignment>Center</HorizontalAlignment>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Image x:Name="Image" IsHitTestVisible="False" Stretch="None" Margin="{TemplateBinding Padding}" />
+                        <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="local:VpaidIFrameAdPlayer">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:VpaidIFrameAdPlayer">
+                    <Grid x:Name="LayoutRoot">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="AdvertisingStates">
+                                <VisualState x:Name="Linear"/>
+                                <VisualState x:Name="Nonlinear">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="VerticalAlignment" Storyboard.TargetName="LayoutRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <VerticalAlignment>Bottom</VerticalAlignment>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="HorizontalAlignment" Storyboard.TargetName="LayoutRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <HorizontalAlignment>Center</HorizontalAlignment>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <controls:WebBrowser x:Name="WebView" Visibility="Collapsed" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
+                        <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="local:VpaidHtmlAdPlayer">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:VpaidHtmlAdPlayer">
+                    <Grid x:Name="LayoutRoot">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="AdvertisingStates">
+                                <VisualState x:Name="Linear"/>
+                                <VisualState x:Name="Nonlinear">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="VerticalAlignment" Storyboard.TargetName="LayoutRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <VerticalAlignment>Bottom</VerticalAlignment>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="HorizontalAlignment" Storyboard.TargetName="LayoutRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <HorizontalAlignment>Center</HorizontalAlignment>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <controls:WebBrowser x:Name="WebView" Visibility="Collapsed" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
+                        <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -76,7 +76,6 @@
                         </VisualStateManager.VisualStateGroups>
                         <Image x:Name="Image" IsHitTestVisible="False" Stretch="None" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
-                        <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -114,7 +113,6 @@
                         </VisualStateManager.VisualStateGroups>
                         <WebView x:Name="WebView" Visibility="Collapsed" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
-                        <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -152,7 +150,6 @@
                         </VisualStateManager.VisualStateGroups>
                         <WebView x:Name="WebView" Visibility="Collapsed" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" />
                         <HyperlinkButton x:Name="ClickThroughButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
-                        <!--<HyperlinkButton x:Name="ClickThroughButton" Foreground="White" FontSize="60" Margin="30" Content="more info..." HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed"/>-->
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

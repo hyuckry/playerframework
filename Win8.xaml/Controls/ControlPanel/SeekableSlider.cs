@@ -287,7 +287,7 @@ namespace Microsoft.PlayerFramework
 
                 // calculate the new newValue based on mouse position
 #if SILVERLIGHT
-                Point mousePosition = e.GetPosition(Panel);
+                Point mousePosition = e.GetPosition(panel);
 #else
                 Point mousePosition = e.GetCurrentPoint(panel).Position;
 #endif
@@ -321,7 +321,7 @@ namespace Microsoft.PlayerFramework
 
                 // calculate the new newValue based on mouse position
 #if SILVERLIGHT
-                Point mousePosition = e.GetPosition(Panel);
+                Point mousePosition = e.GetPosition(panel);
 #else
                 Point mousePosition = e.GetCurrentPoint(panel).Position;
 #endif

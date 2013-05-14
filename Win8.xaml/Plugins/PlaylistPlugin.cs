@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Collections.Generic;
 #if SILVERLIGHT
 using System.Windows.Input;
 using System.Windows;
@@ -13,7 +14,6 @@ using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Data;
-using System.Collections.Generic;
 #endif
 
 namespace Microsoft.PlayerFramework
@@ -242,7 +242,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void MediaPlayer_Initialized(object sender, RoutedEventArgs e)
+        void MediaPlayer_Initialized(object sender, object e)
         {
             if (StartupPlaylistItemIndex.HasValue && Playlist != null && Playlist.Any() && StartupPlaylistItemIndex.Value < Playlist.Count)
             {
@@ -255,7 +255,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void MediaPlayer_SkippingBack(object sender, SkipRoutedEventArgs e)
+        void MediaPlayer_SkippingBack(object sender, SkippingEventArgs e)
         {
             if (e.Position == MediaPlayer.StartTime && (!SkipBackThreshold.HasValue || MediaPlayer.Position.Subtract(MediaPlayer.StartTime) < SkipBackThreshold.Value) && CurrentPlaylistItemIndex > 0)
             {
@@ -264,7 +264,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void MediaPlayer_SkippingAhead(object sender, SkipRoutedEventArgs e)
+        void MediaPlayer_SkippingAhead(object sender, SkippingEventArgs e)
         {
             if (e.Position == MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime) && CurrentPlaylistItemIndex < Playlist.Count - 1)
             {

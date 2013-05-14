@@ -233,9 +233,9 @@ namespace Microsoft.PlayerFramework.Advertising
 #endif
             MediaPlayer.MarkerReached -= MediaPlayer_MarkerReached;
             MediaPlayer.MediaEnding -= MediaPlayer_MediaEnding;
-            MediaPlayer.Seeked -= MediaPlayer_Seeked;
-            MediaPlayer.ScrubbingStarted -= MediaPlayer_ScrubbingStarted;
-            MediaPlayer.ScrubbingCompleted -= MediaPlayer_ScrubbingCompleted;
+            MediaPlayer.Seeking -= MediaPlayer_Seeking;
+            MediaPlayer.StartingScrub -= MediaPlayer_StartingScrub;
+            MediaPlayer.CompletingScrub -= MediaPlayer_CompletingScrub;
             MediaPlayer.Scrubbing -= MediaPlayer_Scrubbing;
             MediaPlayer.MediaOpened -= MediaPlayer_MediaOpened;
         }
@@ -249,9 +249,9 @@ namespace Microsoft.PlayerFramework.Advertising
 #endif
             MediaPlayer.MarkerReached += MediaPlayer_MarkerReached;
             MediaPlayer.MediaEnding += MediaPlayer_MediaEnding;
-            MediaPlayer.Seeked += MediaPlayer_Seeked;
-            MediaPlayer.ScrubbingStarted += MediaPlayer_ScrubbingStarted;
-            MediaPlayer.ScrubbingCompleted += MediaPlayer_ScrubbingCompleted;
+            MediaPlayer.Seeking += MediaPlayer_Seeking;
+            MediaPlayer.StartingScrub += MediaPlayer_StartingScrub;
+            MediaPlayer.CompletingScrub += MediaPlayer_CompletingScrub;
             MediaPlayer.Scrubbing += MediaPlayer_Scrubbing;
             MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
         }
@@ -288,12 +288,12 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        void MediaPlayer_Seeked(object sender, SeekRoutedEventArgs e)
+        void MediaPlayer_Seeking(object sender, SeekingEventArgs e)
         {
             e.Canceled = EvaluateMarkers(e.PreviousPosition, e.Position);
         }
 
-        async void MediaPlayer_ScrubbingStarted(object sender, ScrubRoutedEventArgs e)
+        async void MediaPlayer_StartingScrub(object sender, StartingScrubEventArgs e)
         {
             if (activePreloadOperation != null)
             {
@@ -301,7 +301,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        void MediaPlayer_Scrubbing(object sender, ScrubProgressRoutedEventArgs e)
+        void MediaPlayer_Scrubbing(object sender, ScrubbingEventArgs e)
         {
             if (InterruptScrub)
             {
@@ -309,7 +309,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        void MediaPlayer_ScrubbingCompleted(object sender, ScrubProgressRoutedEventArgs e)
+        void MediaPlayer_CompletingScrub(object sender, CompletingScrubEventArgs e)
         {
             if (!e.Canceled)
             {
@@ -317,7 +317,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        async void MediaPlayer_MediaEnding(object sender, MediaPlayerDeferrableEventArgs e)
+        async void MediaPlayer_MediaEnding(object sender, MediaEndingEventArgs e)
         {
             if (EligableAds.OfType<PostrollAdvertisement>().Any(a => a.Source != null))
             {
@@ -369,7 +369,7 @@ namespace Microsoft.PlayerFramework.Advertising
 #if WINDOWS_PHONE7
         async void MediaPlayer_MediaLoading(object sender, MediaPlayerDeferrableEventArgs e)
 #else
-        async void MediaPlayer_MediaStarting(object sender, MediaPlayerDeferrableEventArgs e)
+        async void MediaPlayer_MediaStarting(object sender, MediaStartingEventArgs e)
 #endif
         {
             if (MediaPlayer.AllowMediaStartingDeferrals)

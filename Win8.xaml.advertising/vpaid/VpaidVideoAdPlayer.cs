@@ -94,10 +94,10 @@ namespace Microsoft.PlayerFramework.Advertising
                 clickThroughButton.Click += ClickThroughButton_Click;
                 clickThroughButton.NavigateUri = navigateUri;
 #if SILVERLIGHT
-                ClickThroughButton.TargetName = "_blank";
+                clickThroughButton.TargetName = "_blank";
 #endif
 #if WINDOWS_PHONE
-                ClickThroughButton.Content = ClickThroughButton.Content ?? MediaPlayer.GetResourceString("AdLinkLabel");
+                clickThroughButton.Content = clickThroughButton.Content ?? MediaPlayer.GetResourceString("AdLinkLabel");
 #endif
             }
 

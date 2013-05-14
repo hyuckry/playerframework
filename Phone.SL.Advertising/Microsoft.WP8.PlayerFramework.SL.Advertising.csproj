@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -95,14 +95,14 @@
     <Compile Include="..\Phone.VideoAdvertising\Compatibility\HttpClient.cs">
       <Link>Compatibility\HttpClient.cs</Link>
     </Compile>
-    <Compile Include="..\Win8.Xaml.Advertising\AdHandlerBase.cs">
-      <Link>AdHandlerBase.cs</Link>
-    </Compile>
     <Compile Include="..\Win8.Xaml.Advertising\AdHandlerPlugin.cs">
       <Link>AdHandlerPlugin.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml.Advertising\AdPlayerFactoryPlugin.cs">
       <Link>AdPlayerFactoryPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.Xaml.Advertising\AdScheduleController.cs">
+      <Link>AdScheduleController.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml.Advertising\AdSchedulerPlugin.Attached.cs">
       <Link>AdSchedulerPlugin.Attached.cs</Link>
@@ -137,6 +137,9 @@
     <Compile Include="..\Win8.Xaml.Advertising\IAdPlayerFactoryPlugin.cs">
       <Link>IAdPlayerFactoryPlugin.cs</Link>
     </Compile>
+    <Compile Include="..\Win8.Xaml.Advertising\IAdvertisement.cs">
+      <Link>IAdvertisement.cs</Link>
+    </Compile>
     <Compile Include="..\Win8.Xaml.Advertising\MastAdapter.cs">
       <Link>MastAdapter.cs</Link>
     </Compile>
@@ -158,8 +161,11 @@
     <Compile Include="..\Win8.Xaml.Advertising\VmapSchedulerPlugin.cs">
       <Link>VmapSchedulerPlugin.cs</Link>
     </Compile>
-    <Compile Include="..\Win8.xaml.advertising\vpaid\AdHost.cs">
-      <Link>Vpaid\AdHost.cs</Link>
+    <Compile Include="..\Win8.Xaml.Advertising\vpaid\VpaidHtmlAdPlayer.cs">
+      <Link>Vpaid\VpaidHtmlAdPlayer.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.Xaml.Advertising\vpaid\VpaidIFrameAdPlayer.cs">
+      <Link>Vpaid\VpaidIFrameAdPlayer.cs</Link>
     </Compile>
     <Compile Include="..\Win8.xaml.advertising\vpaid\VpaidImageAdPlayer.cs">
       <Link>Vpaid\VpaidImageAdPlayer.cs</Link>
@@ -167,14 +173,14 @@
     <Compile Include="..\Win8.xaml.advertising\vpaid\VpaidLinearAdViewModel.cs">
       <Link>Vpaid\VpaidLinearAdViewModel.cs</Link>
     </Compile>
+    <Compile Include="..\Win8.Xaml.Advertising\vpaid\VpaidNonLinearAdViewModel.Base.cs">
+      <Link>Vpaid\VpaidNonLinearAdViewModel.Base.cs</Link>
+    </Compile>
     <Compile Include="..\Win8.xaml.advertising\vpaid\VpaidNonLinearAdViewModel.cs">
       <Link>Vpaid\VpaidNonLinearAdViewModel.cs</Link>
     </Compile>
     <Compile Include="..\Win8.xaml.advertising\vpaid\VpaidVideoAdPlayer.cs">
       <Link>Vpaid\VpaidVideoAdPlayer.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml.Advertising\Vpaid\VpaidWebAdPlayer.cs">
-      <Link>Vpaid\VpaidWebAdPlayer.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

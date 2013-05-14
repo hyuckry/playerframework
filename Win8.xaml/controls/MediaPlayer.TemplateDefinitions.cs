@@ -211,7 +211,7 @@ namespace Microsoft.PlayerFramework
             {
                 mediaElementElement = mediaPlugin.MediaElement as FrameworkElement;
             }
-            MediaContainer.Children.Insert(0, mediaElementElement);
+            mediaContainer.Children.Insert(0, mediaElementElement);
             MediaElementElement = mediaElementElement as IMediaElement;
 #else
             MediaElementElement = GetTemplateChild(MediaPlayerTemplateParts.mediaElement) as MediaElement;
@@ -238,8 +238,8 @@ namespace Microsoft.PlayerFramework
             if (mediaContainer != null)
             {
 #if SILVERLIGHT
-                MediaContainer.MouseMove += MediaContainer_MouseMove;
-                MediaContainer.MouseLeftButtonDown += MediaContainer_MouseLeftButtonDown;
+                mediaContainer.MouseMove += MediaContainer_MouseMove;
+                mediaContainer.MouseLeftButtonDown += MediaContainer_MouseLeftButtonDown;
 #else
                 mediaContainer.PointerMoved += MediaContainer_PointerMoved;
                 mediaContainer.PointerPressed += MediaContainer_PointerPressed;
@@ -275,8 +275,8 @@ namespace Microsoft.PlayerFramework
             if (mediaContainer != null)
             {
 #if SILVERLIGHT
-                MediaContainer.MouseMove -= MediaContainer_MouseMove;
-                MediaContainer.MouseLeftButtonDown -= MediaContainer_MouseLeftButtonDown;
+                mediaContainer.MouseMove -= MediaContainer_MouseMove;
+                mediaContainer.MouseLeftButtonDown -= MediaContainer_MouseLeftButtonDown;
 #else
                 mediaContainer.PointerMoved -= MediaContainer_PointerMoved;
                 mediaContainer.PointerPressed -= MediaContainer_PointerPressed;
@@ -515,60 +515,60 @@ namespace Microsoft.PlayerFramework
             if (oldValue != null)
             {
                 oldValue.Interacting -= InteractiveViewModel_Interacting;
-                oldValue.Scrubbing -= InteractiveViewModel_Scrubbing;
-                oldValue.StartingScrub -= InteractiveViewModel_StartingScrub;
-                oldValue.CompletingScrub -= InteractiveViewModel_CompletingScrub;
-                oldValue.Seeking -= InteractiveViewModel_Seeking;
-                oldValue.SkippingAhead -= InteractiveViewModel_SkippingAhead;
-                oldValue.SkippingBack -= InteractiveViewModel_SkippingBack;
+                oldValue.ScrubRequested -= InteractiveViewModel_Scrubbing;
+                oldValue.ScrubStartRequested -= InteractiveViewModel_StartingScrub;
+                oldValue.ScrubCompleteRequested -= InteractiveViewModel_CompletingScrub;
+                oldValue.SeekRequested -= InteractiveViewModel_Seeking;
+                oldValue.SkipAheadRequested -= InteractiveViewModel_SkippingAhead;
+                oldValue.SkipBackRequested -= InteractiveViewModel_SkippingBack;
             }
 
             if (newValue != null)
             {
                 newValue.Interacting += InteractiveViewModel_Interacting;
-                newValue.Scrubbing += InteractiveViewModel_Scrubbing;
-                newValue.StartingScrub += InteractiveViewModel_StartingScrub;
-                newValue.CompletingScrub += InteractiveViewModel_CompletingScrub;
-                newValue.Seeking += InteractiveViewModel_Seeking;
-                newValue.SkippingAhead += InteractiveViewModel_SkippingAhead;
-                newValue.SkippingBack += InteractiveViewModel_SkippingBack;
+                newValue.ScrubRequested += InteractiveViewModel_Scrubbing;
+                newValue.ScrubStartRequested += InteractiveViewModel_StartingScrub;
+                newValue.ScrubCompleteRequested += InteractiveViewModel_CompletingScrub;
+                newValue.SeekRequested += InteractiveViewModel_Seeking;
+                newValue.SkipAheadRequested += InteractiveViewModel_SkippingAhead;
+                newValue.SkipBackRequested += InteractiveViewModel_SkippingBack;
             }
 
             if (InteractiveViewModelChanged != null) InteractiveViewModelChanged(this, new InteractiveViewModelChangedEventArgs(oldValue, newValue));
         }
 
-        void InteractiveViewModel_SkippingBack(object sender, SkippingEventArgs e)
+        void InteractiveViewModel_SkippingBack(object sender, SkipRequestedEventArgs e)
         {
             SkipBack(e.Position);
         }
 
-        void InteractiveViewModel_SkippingAhead(object sender, SkippingEventArgs e)
+        void InteractiveViewModel_SkippingAhead(object sender, SkipRequestedEventArgs e)
         {
             SkipAhead(e.Position);
         }
 
-        void InteractiveViewModel_Seeking(object sender, SeekingEventArgs e)
+        void InteractiveViewModel_Seeking(object sender, SeekRequestedEventArgs e)
         {
             bool cancel;
             Seek(e.Position, out cancel);
             e.Cancel = cancel;
         }
 
-        void InteractiveViewModel_CompletingScrub(object sender, CompletingScrubEventArgs e)
+        void InteractiveViewModel_CompletingScrub(object sender, ScrubCompleteRequestedEventArgs e)
         {
             bool cancel;
             CompleteScrub(e.Position, e.Canceled, out cancel);
             e.Cancel = cancel;
         }
 
-        void InteractiveViewModel_StartingScrub(object sender, StartingScrubEventArgs e)
+        void InteractiveViewModel_StartingScrub(object sender, ScrubStartRequestedEventArgs e)
         {
             bool cancel;
             StartScrub(e.Position, out cancel);
             e.Cancel = cancel;
         }
 
-        void InteractiveViewModel_Scrubbing(object sender, ScrubbingEventArgs e)
+        void InteractiveViewModel_Scrubbing(object sender, ScrubRequestedEventArgs e)
         {
             bool cancel;
             Scrub(e.Position, out cancel);
@@ -583,7 +583,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the InteractiveViewModel property changes.
         /// </summary>
-        public event InteractiveViewModelChangedEventHandler InteractiveViewModelChanged;
+        public event EventHandler<InteractiveViewModelChangedEventArgs> InteractiveViewModelChanged;
 
         /// <summary>
         /// Gets or sets the view model used by all interactive elements to control playback or report on the status of playback.
@@ -730,7 +730,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsInteractive property changes.
         /// </summary>
-        public event RoutedEventHandler IsInteractiveChanged;
+#if SILVERLIGHT
+        public event EventHandler IsInteractiveChanged;
+#else
+        public event EventHandler<object> IsInteractiveChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsInteractive dependency property.
@@ -775,7 +779,7 @@ namespace Microsoft.PlayerFramework
                     {
                         this.GoToVisualState(MediaPlayerVisualStates.InteractiveStates.StopInteracting);
                     }
-                    if (IsInteractiveChanged != null) IsInteractiveChanged(this, new RoutedEventArgs());
+                    if (IsInteractiveChanged != null) IsInteractiveChanged(this, EventArgs.Empty);
                 }
             });
         }
@@ -2030,7 +2034,7 @@ namespace Microsoft.PlayerFramework
 
         void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            OnMediaEnded(new MediaEndedEventArgs());
+            OnMediaEnded(new MediaEndedEventArgs(e));
         }
 
         void MediaElement_MediaOpened(object sender, RoutedEventArgs e)

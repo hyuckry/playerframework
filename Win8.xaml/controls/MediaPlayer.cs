@@ -213,7 +213,7 @@ namespace Microsoft.PlayerFramework
                 try
                 {
                     var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
-                    if (Initializing != null) Initializing(this, new MediaPlayerDeferrableEventArgs(deferrableOperation));
+                    if (Initializing != null) Initializing(this, new InitializingEventArgs(deferrableOperation));
                     await deferrableOperation.Task;
                     IsTemplateApplied = true;
                     OnInitialized();
@@ -227,7 +227,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void OnInitialized()
         {
-            if (Initialized != null) Initialized(this, new RoutedEventArgs());
+            if (Initialized != null) Initialized(this, new InitializedEventArgs());
         }
 
         #region Plugins
@@ -619,7 +619,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public void InvokeCaptionSelection()
         {
-            OnInvokeCaptionSelection(new RoutedEventArgs());
+            OnInvokeCaptionSelection(new CaptionsInvokedEventArgs());
         }
 
         /// <summary>
@@ -627,7 +627,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public void InvokeAudioSelection()
         {
-            OnInvokeAudioSelection(new RoutedEventArgs());
+            OnInvokeAudioSelection(new AudioSelectionInvokedEventArgs());
         }
 
         /// <summary>
@@ -635,8 +635,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public void SeekToLive()
         {
-            var eventArgs = new RoutedEventArgs();
-            OnSeekToLive(eventArgs);
+            OnSeekToLive(new GoLiveInvokedEventArgs());
             if (LivePosition.HasValue)
             {
                 bool canceled;
@@ -647,8 +646,8 @@ namespace Microsoft.PlayerFramework
         void Seek(TimeSpan position, out bool cancel)
         {
             var previousPosition = Position;
-            var args = new SeekRoutedEventArgs(previousPosition, position);
-            OnSeeked(args);
+            var args = new SeekingEventArgs(previousPosition, position);
+            OnSeeking(args);
             cancel = args.Canceled;
             if (!args.Canceled)
             {
@@ -658,13 +657,13 @@ namespace Microsoft.PlayerFramework
 
         void SkipAhead(TimeSpan position)
         {
-            var skippingEventArgs = new SkipRoutedEventArgs(position);
+            var skippingEventArgs = new SkippingEventArgs(position);
             if (SkippingAhead != null) SkippingAhead(this, skippingEventArgs);
             if (!skippingEventArgs.Canceled)
             {
                 var previousPosition = Position;
-                var args = new SeekRoutedEventArgs(previousPosition, position);
-                OnSeeked(args);
+                var args = new SeekingEventArgs(previousPosition, position);
+                OnSeeking(args);
                 if (!args.Canceled)
                 {
                     var t = SeekAsync(position);
@@ -674,13 +673,13 @@ namespace Microsoft.PlayerFramework
 
         void SkipBack(TimeSpan position)
         {
-            var skippingEventArgs = new SkipRoutedEventArgs(position);
+            var skippingEventArgs = new SkippingEventArgs(position);
             if (SkippingBack != null) SkippingBack(this, skippingEventArgs);
             if (!skippingEventArgs.Canceled)
             {
                 var previousPosition = Position;
-                var args = new SeekRoutedEventArgs(previousPosition, position);
-                OnSeeked(args);
+                var args = new SeekingEventArgs(previousPosition, position);
+                OnSeeking(args);
                 if (!args.Canceled)
                 {
                     var t = SeekAsync(position);
@@ -690,9 +689,9 @@ namespace Microsoft.PlayerFramework
 
         void CompleteScrub(TimeSpan position, bool alreadyCanceled, out bool canceled)
         {
-            var args = new ScrubProgressRoutedEventArgs(startScrubPosition, position);
+            var args = new CompletingScrubEventArgs(startScrubPosition, position);
             args.Canceled = alreadyCanceled;
-            OnScrubbingCompleted(args);
+            OnCompletingScrub(args);
             canceled = args.Canceled;
             if (!canceled)
             {
@@ -709,8 +708,8 @@ namespace Microsoft.PlayerFramework
         {
             startScrubPosition = Position;
             rateAfterScrub = PlaybackRate;
-            var args = new ScrubRoutedEventArgs(position);
-            OnScrubbingStarted(args);
+            var args = new StartingScrubEventArgs(position);
+            OnStartingScrub(args);
             canceled = args.Canceled;
             if (!canceled)
             {
@@ -721,7 +720,7 @@ namespace Microsoft.PlayerFramework
 
         void Scrub(TimeSpan position, out bool canceled)
         {
-            var args = new ScrubProgressRoutedEventArgs(startScrubPosition, position);
+            var args = new ScrubbingEventArgs(startScrubPosition, position);
             OnScrubbing(args);
             canceled = args.Canceled;
             if (!canceled)
@@ -758,27 +757,27 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the template is loaded for the first time and all plugins have been loaded.
         /// </summary>
-        public event RoutedEventHandler Initialized;
+        public event EventHandler<InitializedEventArgs> Initialized;
 
         /// <summary>
         /// Occurs immediately before Initialized fires but is deferrable (therefore allowing custom async operations to take place before Xaml properties are applied).
         /// </summary>
-        public event EventHandler<MediaPlayerDeferrableEventArgs> Initializing;
+        public event EventHandler<InitializingEventArgs> Initializing;
 
         /// <summary>
         /// Occurs when the SelectedCaption property changed.
         /// </summary>
-        public event SelectedCaptionChangedEventHandler SelectedCaptionChanged;
+        public event EventHandler<SelectedCaptionChangedEventArgs> SelectedCaptionChanged;
 
         /// <summary>
         /// Occurs when the SelectedAudioStream property changed.
         /// </summary>
-        public event SelectedAudioStreamChangedEventHandler SelectedAudioStreamChanged;
+        public event EventHandler<SelectedAudioStreamChangedEventArgs> SelectedAudioStreamChanged;
 
         /// <summary>
         /// Occurs when the PlayerState property changed. This is different from the MediaState.
         /// </summary>
-        public event PlayerStateChangedEventHandler PlayerStateChanged;
+        public event EventHandler<PlayerStateChangedEventArgs> PlayerStateChanged;
 
         /// <summary>
         /// Occurs just before the source is set and offers the ability to perform blocking async operations.
@@ -788,13 +787,13 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs just before the MediaEnded event fires and offers the ability to perform blocking async operations.
         /// </summary>
-        public event EventHandler<MediaPlayerDeferrableEventArgs> MediaEnding;
+        public event EventHandler<MediaEndingEventArgs> MediaEnding;
 
         /// <summary>
         /// Occurs when the timer fires and gives an opportunity to update info without creating a separate timer.
         /// This only fires while media is open and continues to fire even after it's ended or while paused.
         /// </summary>
-        public event RoutedEventHandler UpdateCompleted;
+        public event EventHandler<UpdatedEventArgs> Updated;
 
         /// <summary>
         /// Occurs when the BufferingProgress property changes.
@@ -819,7 +818,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the MediaElement is no longer playing audio or video.
         /// </summary>
-        public event MediaEndedEventHandler MediaEnded;
+        public event EventHandler<MediaEndedEventArgs> MediaEnded;
 
         /// <summary>
         /// Occurs when there is an error associated with the media Source.
@@ -829,12 +828,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the playback of new media is about to start.
         /// </summary>
-        public event EventHandler<MediaPlayerDeferrableEventArgs> MediaStarting;
+        public event EventHandler<MediaStartingEventArgs> MediaStarting;
 
         /// <summary>
         /// Occurs when the playback of new media has actually started.
         /// </summary>
-        public event RoutedEventHandler MediaStarted;
+        public event EventHandler<MediaStartedEventArgs> MediaStarted;
 
         /// <summary>
         /// Occurs when the MediaElement has opened the media source audio or video.
@@ -849,12 +848,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the MediaElement source has been closed (set to null).
         /// </summary>
-        public event RoutedEventHandler MediaClosed;
+        public event EventHandler<MediaClosedEventArgs> MediaClosed;
 
         /// <summary>
         /// Occurs when the Position property changes.
         /// </summary>
-        public event PositionChangedEventHandler PositionChanged;
+        public event EventHandler<PositionChangedEventArgs> PositionChanged;
 
         /// <summary>
         /// Occurs when the Volume property changes.
@@ -864,132 +863,132 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsMuted property changes.
         /// </summary>
-        public event RoutedEventHandler IsMutedChanged;
+        public event EventHandler<IsMutedChangedEventArgs> IsMutedChanged;
 
         /// <summary>
         /// Occurs when the IsLive property changes.
         /// </summary>
-        public event RoutedEventHandler IsLiveChanged;
+        public event EventHandler<IsLiveChangedEventArgs> IsLiveChanged;
 
         /// <summary>
         /// Occurs when the AudioStreamIndex property changes.
         /// </summary>
-        public event AudioStreamIndexChangedEventHandler AudioStreamIndexChanged;
+        public event EventHandler<AudioStreamIndexChangedEventArgs> AudioStreamIndexChanged;
 
         /// <summary>
         /// Occurs when the IsFullScreen property changes.
         /// </summary>
-        public event RoutedEventHandler IsFullScreenChanged;
+        public event EventHandler<IsFullScreenChangedEventArgs> IsFullScreenChanged;
 
         /// <summary>
         /// Occurs when the AdvertisingState property changes.
         /// </summary>
-        public event AdvertisingStateChangedEventHandler AdvertisingStateChanged;
+        public event EventHandler<AdvertisingStateChangedEventArgs> AdvertisingStateChanged;
 
         /// <summary>
         /// Occurs when the IsCaptionsActive property changes.
         /// </summary>
-        public event RoutedEventHandler IsCaptionsActiveChanged;
+        public event EventHandler<IsCaptionsActiveChangedEventArgs> IsCaptionsActiveChanged;
 
         /// <summary>
         /// Occurs while the user seeks. This is mutually exclusive from scrubbing.
         /// </summary>
-        public event EventHandler<SeekRoutedEventArgs> Seeked;
+        public event EventHandler<SeekingEventArgs> Seeking;
 
         /// <summary>
         /// Occurs while the user skips forward.
         /// </summary>
-        public event EventHandler<SkipRoutedEventArgs> SkippingAhead;
+        public event EventHandler<SkippingEventArgs> SkippingAhead;
 
         /// <summary>
         /// Occurs while the user skips backward.
         /// </summary>
-        public event EventHandler<SkipRoutedEventArgs> SkippingBack;
+        public event EventHandler<SkippingEventArgs> SkippingBack;
 
         /// <summary>
         /// Occurs while the user is scrubbing. Raised for each new position.
         /// </summary>
-        public event EventHandler<ScrubProgressRoutedEventArgs> Scrubbing;
+        public event EventHandler<ScrubbingEventArgs> Scrubbing;
 
         /// <summary>
         /// Occurs when the user has completed scrubbing.
         /// </summary>
-        public event EventHandler<ScrubProgressRoutedEventArgs> ScrubbingCompleted;
+        public event EventHandler<CompletingScrubEventArgs> CompletingScrub;
 
         /// <summary>
         /// Occurs when the user starts scrubbing.
         /// </summary>
-        public event EventHandler<ScrubRoutedEventArgs> ScrubbingStarted;
+        public event EventHandler<StartingScrubEventArgs> StartingScrub;
 
         /// <summary>
         /// Occurs when the SignalStrength property changes.
         /// </summary>
-        public event SignalStrengthChangedEventHandler SignalStrengthChanged;
+        public event EventHandler<SignalStrengthChangedEventArgs> SignalStrengthChanged;
 
         /// <summary>
         /// Occurs when the HighDefinition property changes.
         /// </summary>
-        public event RoutedEventHandler MediaQualityChanged;
+        public event EventHandler<MediaQualityChangedEventArgs> MediaQualityChanged;
 
         /// <summary>
         /// Occurs when the IsSlowMotion property changes.
         /// </summary>
-        public event RoutedEventHandler IsSlowMotionChanged;
+        public event EventHandler<IsSlowMotionChangedEventArgs> IsSlowMotionChanged;
 
         /// <summary>
         /// Occurs when the Duration property changes.
         /// </summary>
-        public event DurationChangedEventHandler DurationChanged;
+        public event EventHandler<DurationChangedEventArgs> DurationChanged;
 
         /// <summary>
         /// Occurs when the StartTime property changes.
         /// </summary>
-        public event StartTimeChangedEventHandler StartTimeChanged;
+        public event EventHandler<StartTimeChangedEventArgs> StartTimeChanged;
 
         /// <summary>
         /// Occurs when the EndTime property changes.
         /// </summary>
-        public event EndTimeChangedEventHandler EndTimeChanged;
+        public event EventHandler<EndTimeChangedEventArgs> EndTimeChanged;
 
         /// <summary>
         /// Occurs when the TimeRemaining property changes.
         /// </summary>
-        public event TimeRemainingChangedEventHandler TimeRemainingChanged;
+        public event EventHandler<TimeRemainingChangedEventArgs> TimeRemainingChanged;
 
         /// <summary>
         /// Occurs when the MaxPosition property changes.
         /// </summary>
-        public event LivePositionChangedEventHandler LivePositionChanged;
+        public event EventHandler<LivePositionChangedEventArgs> LivePositionChanged;
 
         /// <summary>
         /// Occurs when the TimeFormatConverter property changes.
         /// </summary>
-        public event TimeFormatConverterChangedEventHandler TimeFormatConverterChanged;
+        public event EventHandler<TimeFormatConverterChangedEventArgs> TimeFormatConverterChanged;
 
         /// <summary>
         /// Occurs when the SkipBackInterval property changes.
         /// </summary>
-        public event SkipBackIntervalChangedEventHandler SkipBackIntervalChanged;
+        public event EventHandler<SkipBackIntervalChangedEventArgs> SkipBackIntervalChanged;
 
         /// <summary>
         /// Occurs when the SkipAheadInterval property changes.
         /// </summary>
-        public event SkipAheadIntervalChangedEventHandler SkipAheadIntervalChanged;
+        public event EventHandler<SkipAheadIntervalChangedEventArgs> SkipAheadIntervalChanged;
 
         /// <summary>
         /// Occurs when the SeekToLive method is called.
         /// </summary>
-        public event RoutedEventHandler GoLive;
+        public event EventHandler<GoLiveInvokedEventArgs> GoLiveInvoked;
 
         /// <summary>
         /// Occurs when the InvokeCaptionSelection method is called.
         /// </summary>
-        public event RoutedEventHandler CaptionsInvoked;
+        public event EventHandler<CaptionsInvokedEventArgs> CaptionsInvoked;
 
         /// <summary>
         /// Occurs when the InvokeAudioSelection method is called.
         /// </summary>
-        public event RoutedEventHandler AudioSelectionInvoked;
+        public event EventHandler<AudioSelectionInvokedEventArgs> AudioSelectionInvoked;
 
         #endregion
 
@@ -1002,7 +1001,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsCaptionSelectionEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsCaptionSelectionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsCaptionSelectionEnabledChanged;
+#else
+        public event EventHandler<object> IsCaptionSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsCaptionSelectionEnabled dependency property.
@@ -1012,7 +1015,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsCaptionSelectionEnabledChanged()
         {
-            if (IsCaptionSelectionEnabledChanged != null) IsCaptionSelectionEnabledChanged(this, new RoutedEventArgs());
+            if (IsCaptionSelectionEnabledChanged != null) IsCaptionSelectionEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1027,7 +1030,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsCaptionSelectionAllowed property changes.
         /// </summary>
-        public event RoutedEventHandler IsCaptionSelectionAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsCaptionSelectionAllowedChanged;
+#else
+        public event EventHandler<object> IsCaptionSelectionAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether go live is allowed based on the state of the player.
@@ -1045,7 +1052,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsCaptionSelectionAllowedChanged()
         {
-            if (IsCaptionSelectionAllowedChanged != null) IsCaptionSelectionAllowedChanged(this, new RoutedEventArgs());
+            if (IsCaptionSelectionAllowedChanged != null) IsCaptionSelectionAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1054,7 +1061,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsGoLiveEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsGoLiveEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsGoLiveEnabledChanged;
+#else
+        public event EventHandler<object> IsGoLiveEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsGoLiveEnabled dependency property.
@@ -1064,7 +1075,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsGoLiveEnabledChanged()
         {
-            if (IsGoLiveEnabledChanged != null) IsGoLiveEnabledChanged(this, new RoutedEventArgs());
+            if (IsGoLiveEnabledChanged != null) IsGoLiveEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1079,7 +1090,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsGoLiveAllowed property changes.
         /// </summary>
-        public event RoutedEventHandler IsGoLiveAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsGoLiveAllowedChanged;
+#else
+        public event EventHandler<object> IsGoLiveAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether go live is allowed based on the state of the player.
@@ -1097,7 +1112,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsGoLiveAllowedChanged()
         {
-            if (IsGoLiveAllowedChanged != null) IsGoLiveAllowedChanged(this, new RoutedEventArgs());
+            if (IsGoLiveAllowedChanged != null) IsGoLiveAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1106,7 +1121,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsPlayResumeEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsPlayResumeEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPlayResumeEnabledChanged;
+#else
+        public event EventHandler<object> IsPlayResumeEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsPlayResumeEnabled dependency property.
@@ -1116,7 +1135,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsPlayResumeEnabledChanged()
         {
-            if (IsPlayResumeEnabledChanged != null) IsPlayResumeEnabledChanged(this, new RoutedEventArgs());
+            if (IsPlayResumeEnabledChanged != null) IsPlayResumeEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1131,7 +1150,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsPlayResumeAllowed property changes.
         /// </summary>
-        public event RoutedEventHandler IsPlayResumeAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPlayResumeAllowedChanged;
+#else
+        public event EventHandler<object> IsPlayResumeAllowedChanged;
+#endif
 
         /// <summary>
         /// Indicates that play is preferred over pause. Useful for binding to the toggle state of a Play/Pause button.
@@ -1146,7 +1169,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsPlayResumeAllowedChanged()
         {
-            if (IsPlayResumeAllowedChanged != null) IsPlayResumeAllowedChanged(this, new RoutedEventArgs());
+            if (IsPlayResumeAllowedChanged != null) IsPlayResumeAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1155,7 +1178,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsPauseEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsPauseEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPauseEnabledChanged;
+#else
+        public event EventHandler<object> IsPauseEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsPauseEnabled dependency property.
@@ -1165,7 +1192,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsPauseEnabledChanged()
         {
-            if (IsPauseEnabledChanged != null) IsPauseEnabledChanged(this, new RoutedEventArgs());
+            if (IsPauseEnabledChanged != null) IsPauseEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1180,7 +1207,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsPauseEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsPauseAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPauseAllowedChanged;
+#else
+        public event EventHandler<object> IsPauseAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether pause is allowed based on the state of the player.
@@ -1195,7 +1226,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsPauseAllowedChanged()
         {
-            if (IsPauseAllowedChanged != null) IsPauseAllowedChanged(this, new RoutedEventArgs());
+            if (IsPauseAllowedChanged != null) IsPauseAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1204,7 +1235,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsStopEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsStopEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsStopEnabledChanged;
+#else
+        public event EventHandler<object> IsStopEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsStopEnabled dependency property.
@@ -1214,7 +1249,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsStopEnabledChanged()
         {
-            if (IsStopEnabledChanged != null) IsStopEnabledChanged(this, new RoutedEventArgs());
+            if (IsStopEnabledChanged != null) IsStopEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1229,7 +1264,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsStopEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsStopAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsStopAllowedChanged;
+#else
+        public event EventHandler<object> IsStopAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether stop is allowed based on the state of the player.
@@ -1244,7 +1283,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsStopAllowedChanged()
         {
-            if (IsStopAllowedChanged != null) IsStopAllowedChanged(this, new RoutedEventArgs());
+            if (IsStopAllowedChanged != null) IsStopAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1253,7 +1292,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsReplayEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsReplayEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsReplayEnabledChanged;
+#else
+        public event EventHandler<object> IsReplayEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsReplayEnabled dependency property.
@@ -1263,7 +1306,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsReplayEnabledChanged()
         {
-            if (IsReplayEnabledChanged != null) IsReplayEnabledChanged(this, new RoutedEventArgs());
+            if (IsReplayEnabledChanged != null) IsReplayEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1278,7 +1321,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsReplayEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsReplayAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsReplayAllowedChanged;
+#else
+        public event EventHandler<object> IsReplayAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether replay is allowed based on the state of the player.
@@ -1293,7 +1340,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsReplayAllowedChanged()
         {
-            if (IsReplayAllowedChanged != null) IsReplayAllowedChanged(this, new RoutedEventArgs());
+            if (IsReplayAllowedChanged != null) IsReplayAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1302,7 +1349,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsAudioSelectionEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsAudioSelectionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsAudioSelectionEnabledChanged;
+#else
+        public event EventHandler<object> IsAudioSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsAudioSelectionEnabled dependency property.
@@ -1312,7 +1363,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsAudioSelectionEnabledChanged()
         {
-            if (IsAudioSelectionEnabledChanged != null) IsAudioSelectionEnabledChanged(this, new RoutedEventArgs());
+            if (IsAudioSelectionEnabledChanged != null) IsAudioSelectionEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1327,7 +1378,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsAudioSelectionEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsAudioSelectionAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsAudioSelectionAllowedChanged;
+#else
+        public event EventHandler<object> IsAudioSelectionAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether audio stream selection is allowed based on the state of the player.
@@ -1342,7 +1397,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsAudioSelectionAllowedChanged()
         {
-            if (IsAudioSelectionAllowedChanged != null) IsAudioSelectionAllowedChanged(this, new RoutedEventArgs());
+            if (IsAudioSelectionAllowedChanged != null) IsAudioSelectionAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1351,7 +1406,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsRewindEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsRewindEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsRewindEnabledChanged;
+#else
+        public event EventHandler<object> IsRewindEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsRewindEnabled dependency property.
@@ -1361,7 +1420,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsRewindEnabledChanged()
         {
-            if (IsRewindEnabledChanged != null) IsRewindEnabledChanged(this, new RoutedEventArgs());
+            if (IsRewindEnabledChanged != null) IsRewindEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1376,7 +1435,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsRewindEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsRewindAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsRewindAllowedChanged;
+#else
+        public event EventHandler<object> IsRewindAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether rewind is allowed based on the state of the player.
@@ -1391,7 +1454,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsRewindAllowedChanged()
         {
-            if (IsRewindAllowedChanged != null) IsRewindAllowedChanged(this, new RoutedEventArgs());
+            if (IsRewindAllowedChanged != null) IsRewindAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1400,7 +1463,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsFastForwardEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsFastForwardEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsFastForwardEnabledChanged;
+#else
+        public event EventHandler<object> IsFastForwardEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsFastForwardEnabled dependency property.
@@ -1410,7 +1477,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsFastForwardEnabledChanged()
         {
-            if (IsFastForwardEnabledChanged != null) IsFastForwardEnabledChanged(this, new RoutedEventArgs());
+            if (IsFastForwardEnabledChanged != null) IsFastForwardEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1425,7 +1492,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsFastForwardEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsFastForwardAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsFastForwardAllowedChanged;
+#else
+        public event EventHandler<object> IsFastForwardAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether fast forward is allowed based on the state of the player.
@@ -1440,7 +1511,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsFastForwardAllowedChanged()
         {
-            if (IsFastForwardAllowedChanged != null) IsFastForwardAllowedChanged(this, new RoutedEventArgs());
+            if (IsFastForwardAllowedChanged != null) IsFastForwardAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1449,7 +1520,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSlowMotionEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSlowMotionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSlowMotionEnabledChanged;
+#else
+        public event EventHandler<object> IsSlowMotionEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsSlowMotionEnabled dependency property.
@@ -1459,7 +1534,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsSlowMotionEnabledChanged()
         {
-            if (IsSlowMotionEnabledChanged != null) IsSlowMotionEnabledChanged(this, new RoutedEventArgs());
+            if (IsSlowMotionEnabledChanged != null) IsSlowMotionEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1474,7 +1549,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSlowMotionEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSlowMotionAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSlowMotionAllowedChanged;
+#else
+        public event EventHandler<object> IsSlowMotionAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether slow motion is allowed based on the state of the player.
@@ -1489,7 +1568,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsSlowMotionAllowedChanged()
         {
-            if (IsSlowMotionAllowedChanged != null) IsSlowMotionAllowedChanged(this, new RoutedEventArgs());
+            if (IsSlowMotionAllowedChanged != null) IsSlowMotionAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1498,7 +1577,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSeekEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSeekEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSeekEnabledChanged;
+#else
+        public event EventHandler<object> IsSeekEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsSeekEnabled dependency property.
@@ -1508,7 +1591,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsSeekEnabledChanged()
         {
-            if (IsSeekEnabledChanged != null) IsSeekEnabledChanged(this, new RoutedEventArgs());
+            if (IsSeekEnabledChanged != null) IsSeekEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1523,7 +1606,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSeekEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSeekAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSeekAllowedChanged;
+#else
+        public event EventHandler<object> IsSeekAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether seek is allowed based on the state of the player.
@@ -1538,7 +1625,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsSeekAllowedChanged()
         {
-            if (IsSeekAllowedChanged != null) IsSeekAllowedChanged(this, new RoutedEventArgs());
+            if (IsSeekAllowedChanged != null) IsSeekAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1547,7 +1634,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipPreviousEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipPreviousEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipPreviousEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipPreviousEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsSkipPreviousEnabled dependency property.
@@ -1557,7 +1648,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsSkipPreviousEnabledChanged()
         {
-            if (IsSkipPreviousEnabledChanged != null) IsSkipPreviousEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipPreviousEnabledChanged != null) IsSkipPreviousEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1572,7 +1663,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipPreviousEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipPreviousAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipPreviousAllowedChanged;
+#else
+        public event EventHandler<object> IsSkipPreviousAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether skipping previous is allowed based on the state of the player.
@@ -1587,7 +1682,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsSkipPreviousAllowedChanged()
         {
-            if (IsSkipPreviousAllowedChanged != null) IsSkipPreviousAllowedChanged(this, new RoutedEventArgs());
+            if (IsSkipPreviousAllowedChanged != null) IsSkipPreviousAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1596,7 +1691,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipNextEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipNextEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipNextEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipNextEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsSkipNextEnabled dependency property.
@@ -1606,7 +1705,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsSkipNextEnabledChanged()
         {
-            if (IsSkipNextEnabledChanged != null) IsSkipNextEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipNextEnabledChanged != null) IsSkipNextEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1621,7 +1720,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipNextEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipNextAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipNextAllowedChanged;
+#else
+        public event EventHandler<object> IsSkipNextAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether skipping next is allowed based on the state of the player.
@@ -1636,7 +1739,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsSkipNextAllowedChanged()
         {
-            if (IsSkipNextAllowedChanged != null) IsSkipNextAllowedChanged(this, new RoutedEventArgs());
+            if (IsSkipNextAllowedChanged != null) IsSkipNextAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1645,7 +1748,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipBackEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipBackEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipBackEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipBackEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsSkipBackEnabled dependency property.
@@ -1655,7 +1762,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsSkipBackEnabledChanged()
         {
-            if (IsSkipBackEnabledChanged != null) IsSkipBackEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipBackEnabledChanged != null) IsSkipBackEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1670,7 +1777,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipBackEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipBackAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipBackAllowedChanged;
+#else
+        public event EventHandler<object> IsSkipBackAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether skipping back is allowed based on the state of the player.
@@ -1685,7 +1796,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsSkipBackAllowedChanged()
         {
-            if (IsSkipBackAllowedChanged != null) IsSkipBackAllowedChanged(this, new RoutedEventArgs());
+            if (IsSkipBackAllowedChanged != null) IsSkipBackAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1694,7 +1805,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipAheadEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipAheadEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipAheadEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipAheadEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsSkipAheadEnabled dependency property.
@@ -1704,7 +1819,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsSkipAheadEnabledChanged()
         {
-            if (IsSkipAheadEnabledChanged != null) IsSkipAheadEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipAheadEnabledChanged != null) IsSkipAheadEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1719,7 +1834,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsSkipAheadEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsSkipAheadAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipAheadAllowedChanged;
+#else
+        public event EventHandler<object> IsSkipAheadAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether skipping ahead is allowed based on the state of the player.
@@ -1734,7 +1853,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsSkipAheadAllowedChanged()
         {
-            if (IsSkipAheadAllowedChanged != null) IsSkipAheadAllowedChanged(this, new RoutedEventArgs());
+            if (IsSkipAheadAllowedChanged != null) IsSkipAheadAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1743,7 +1862,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsScrubbingEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsScrubbingEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsScrubbingEnabledChanged;
+#else
+        public event EventHandler<object> IsScrubbingEnabledChanged;
+#endif
 
         /// <summary>
         /// Identifies the IsScrubbingEnabled dependency property.
@@ -1753,7 +1876,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsScrubbingEnabledChanged()
         {
-            if (IsScrubbingEnabledChanged != null) IsScrubbingEnabledChanged(this, new RoutedEventArgs());
+            if (IsScrubbingEnabledChanged != null) IsScrubbingEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -1768,7 +1891,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the IsScrubbingEnabled property changes.
         /// </summary>
-        public event RoutedEventHandler IsScrubbingAllowedChanged;
+#if SILVERLIGHT
+        public event EventHandler IsScrubbingAllowedChanged;
+#else
+        public event EventHandler<object> IsScrubbingAllowedChanged;
+#endif
 
         /// <summary>
         /// Gets whether scrubbing is allowed based on the state of the player.
@@ -1783,7 +1910,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         void NotifyIsScrubbingAllowedChanged()
         {
-            if (IsScrubbingAllowedChanged != null) IsScrubbingAllowedChanged(this, new RoutedEventArgs());
+            if (IsScrubbingAllowedChanged != null) IsScrubbingAllowedChanged(this, EventArgs.Empty);
         }
         #endregion
 
@@ -1820,7 +1947,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsDisplayModeVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsDisplayModeVisibleChanged;
+#else
+        public event EventHandler<object> IsDisplayModeVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsDisplayModeVisibleChanged;
 #endif
@@ -1852,7 +1983,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsAudioSelectionVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsAudioSelectionVisibleChanged;
+#else
+        public event EventHandler<object> IsAudioSelectionVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsAudioSelectionVisibleChanged;
 #endif
@@ -1883,7 +2018,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsCaptionSelectionVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsCaptionSelectionVisibleChanged;
+#else
+        public event EventHandler<object> IsCaptionSelectionVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsCaptionSelectionVisibleChanged;
 #endif
@@ -1914,7 +2053,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsDurationVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsDurationVisibleChanged;
+#else
+        public event EventHandler<object> IsDurationVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsDurationVisibleChanged;
 #endif
@@ -1945,7 +2088,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsTimeRemainingVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsTimeRemainingVisibleChanged;
+#else
+        public event EventHandler<object> IsTimeRemainingVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsTimeRemainingVisibleChanged;
 #endif
@@ -1976,7 +2123,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsFastForwardVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsFastForwardVisibleChanged;
+#else
+        public event EventHandler<object> IsFastForwardVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsFastForwardVisibleChanged;
 #endif
@@ -2007,7 +2158,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsFullScreenVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsFullScreenVisibleChanged;
+#else
+        public event EventHandler<object> IsFullScreenVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsFullScreenVisibleChanged;
 #endif
@@ -2038,7 +2193,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsGoLiveVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsGoLiveVisibleChanged;
+#else
+        public event EventHandler<object> IsGoLiveVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsGoLiveVisibleChanged;
 #endif
@@ -2069,7 +2228,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsPlayPauseVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsPlayPauseVisibleChanged;
+#else
+        public event EventHandler<object> IsPlayPauseVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsPlayPauseVisibleChanged;
 #endif
@@ -2100,7 +2263,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsTimeElapsedVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsTimeElapsedVisibleChanged;
+#else
+        public event EventHandler<object> IsTimeElapsedVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsTimeElapsedVisibleChanged;
 #endif
@@ -2143,7 +2310,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsSkipBackVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsSkipBackVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipBackVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsSkipBackVisibleChanged;
 #endif
@@ -2186,7 +2357,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsSkipAheadVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsSkipAheadVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipAheadVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsSkipAheadVisibleChanged;
 #endif
@@ -2217,7 +2392,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsReplayVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsReplayVisibleChanged;
+#else
+        public event EventHandler<object> IsReplayVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsReplayVisibleChanged;
 #endif
@@ -2248,7 +2427,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsRewindVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsRewindVisibleChanged;
+#else
+        public event EventHandler<object> IsRewindVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsRewindVisibleChanged;
 #endif
@@ -2279,7 +2462,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsSkipPreviousVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsSkipPreviousVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipPreviousVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsSkipPreviousVisibleChanged;
 #endif
@@ -2310,7 +2497,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsSkipNextVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsSkipNextVisibleChanged;
+#else
+        public event EventHandler<object> IsSkipNextVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsSkipNextVisibleChanged;
 #endif
@@ -2341,7 +2532,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsSlowMotionVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsSlowMotionVisibleChanged;
+#else
+        public event EventHandler<object> IsSlowMotionVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsSlowMotionVisibleChanged;
 #endif
@@ -2372,7 +2567,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsStopVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsStopVisibleChanged;
+#else
+        public event EventHandler<object> IsStopVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsStopVisibleChanged;
 #endif
@@ -2403,7 +2602,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsTimelineVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsTimelineVisibleChanged;
+#else
+        public event EventHandler<object> IsTimelineVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsTimelineVisibleChanged;
 #endif
@@ -2434,7 +2637,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsVolumeVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsVolumeVisibleChanged;
+#else
+        public event EventHandler<object> IsVolumeVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsVolumeVisibleChanged;
 #endif
@@ -2465,7 +2672,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsSignalStrengthVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsSignalStrengthVisibleChanged;
+#else
+        public event EventHandler<object> IsSignalStrengthVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsSignalStrengthVisibleChanged;
 #endif
@@ -2496,7 +2707,11 @@ namespace Microsoft.PlayerFramework
         /// Occurs when the IsResolutionIndicatorVisible property changes.
         /// </summary>
 #if SILVERLIGHT
+#if SILVERLIGHT
         public event EventHandler IsResolutionIndicatorVisibleChanged;
+#else
+        public event EventHandler<object> IsResolutionIndicatorVisibleChanged;
+#endif
 #else
         public event EventHandler<object> IsResolutionIndicatorVisibleChanged;
 #endif
@@ -2713,11 +2928,11 @@ namespace Microsoft.PlayerFramework
         /// Identifies the MediaQuality dependency property.
         /// </summary>
         public static DependencyProperty MediaQualityProperty { get { return mediaQualityProperty; } }
-        static readonly DependencyProperty mediaQualityProperty = RegisterDependencyProperty<MediaQuality>("MediaQuality", (t, o, n) => t.OnMediaQualityChanged(), MediaQuality.StandardDefinition);
+        static readonly DependencyProperty mediaQualityProperty = RegisterDependencyProperty<MediaQuality>("MediaQuality", (t, o, n) => t.OnMediaQualityChanged(o, n), MediaQuality.StandardDefinition);
 
-        void OnMediaQualityChanged()
+        void OnMediaQualityChanged(MediaQuality oldValue, MediaQuality newValue)
         {
-            OnMediaQualityChanged(new RoutedEventArgs());
+            OnMediaQualityChanged(new MediaQualityChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
@@ -2974,7 +3189,7 @@ namespace Microsoft.PlayerFramework
         {
             if (newValue) PlaybackRate = SlowMotionPlaybackRate;
             else PlaybackRate = DefaultPlaybackRate;
-            OnIsSlowMotionChanged(new RoutedEventArgs());
+            OnIsSlowMotionChanged(new IsSlowMotionChangedEventArgs());
         }
 
         /// <summary>
@@ -2998,7 +3213,7 @@ namespace Microsoft.PlayerFramework
         void OnIsCaptionsActiveChanged(bool oldValue, bool newValue)
         {
             _IsCaptionsActive = newValue;
-            OnIsCaptionsActiveChanged(new RoutedEventArgs());
+            OnIsCaptionsActiveChanged(new IsCaptionsActiveChangedEventArgs());
         }
 
         /// <summary>
@@ -3027,7 +3242,7 @@ namespace Microsoft.PlayerFramework
 #endif
             }
             _IsFullScreen = newValue;
-            OnIsFullScreenChanged(new RoutedEventArgs());
+            OnIsFullScreenChanged(new IsFullScreenChangedEventArgs());
         }
 
         /// <summary>
@@ -3235,7 +3450,7 @@ namespace Microsoft.PlayerFramework
 
         void OnIsLiveChanged(bool oldValue, bool newValue)
         {
-            OnIsLiveChanged(new RoutedEventArgs());
+            OnIsLiveChanged(new IsLiveChangedEventArgs());
             NotifyIsGoLiveAllowedChanged();
         }
 
@@ -3995,7 +4210,7 @@ namespace Microsoft.PlayerFramework
         void OnIsMutedChanged(bool oldValue, bool newValue)
         {
             _IsMuted = newValue;
-            OnIsMutedChanged(new RoutedEventArgs());
+            OnIsMutedChanged(new IsMutedChangedEventArgs());
         }
 
         /// <summary>
@@ -4188,7 +4403,7 @@ namespace Microsoft.PlayerFramework
         {
             if (IsMediaLoaded)
             {
-                OnMediaClosed(new RoutedEventArgs());
+                OnMediaClosed(EventArgs.Empty);
             }
             if (loadingInstruction == null)
             {
@@ -4295,7 +4510,7 @@ namespace Microsoft.PlayerFramework
             {
                 // raise the volume changed event if the player is unloaded because VolumeChanged does not fire on the MediaElement.
                 // this enables the scenario of playing ads without loading a source. Without it, ads would not receive volume change notifications and the volume slider will not work.
-                OnVolumeChanged(new RoutedEventArgs());
+                OnVolumeChanged(null);
             }
 #endif
         }
@@ -4356,19 +4571,19 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public bool AllowMediaStartingDeferrals { get; set; }
 
-        void OnInvokeCaptionSelection(RoutedEventArgs e)
+        void OnInvokeCaptionSelection(CaptionsInvokedEventArgs e)
         {
             if (CaptionsInvoked != null) CaptionsInvoked(this, e);
         }
 
-        void OnInvokeAudioSelection(RoutedEventArgs e)
+        void OnInvokeAudioSelection(AudioSelectionInvokedEventArgs e)
         {
             if (AudioSelectionInvoked != null) AudioSelectionInvoked(this, e);
         }
 
-        void OnSeekToLive(RoutedEventArgs e)
+        void OnSeekToLive(GoLiveInvokedEventArgs e)
         {
-            if (GoLive != null) GoLive(this, e);
+            if (GoLiveInvoked != null) GoLiveInvoked(this, e);
         }
 
         void OnMediaFailed(ExceptionRoutedEventArgs e)
@@ -4384,7 +4599,7 @@ namespace Microsoft.PlayerFramework
             var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
             if (MediaEnding != null)
             {
-                MediaEnding(this, new MediaPlayerDeferrableEventArgs(deferrableOperation));
+                MediaEnding(this, new MediaEndingEventArgs(deferrableOperation));
                 if (deferrableOperation.DeferralsExist)
                 {
                     try
@@ -4626,7 +4841,7 @@ namespace Microsoft.PlayerFramework
             SetValue(RenderedFramesPerSecondProperty, _RenderedFramesPerSecond);
             SetValue(DroppedFramesPerSecondProperty, _DroppedFramesPerSecond);
 #endif
-            if (UpdateCompleted != null) UpdateCompleted(this, new RoutedEventArgs());
+            if (Updated != null) Updated(this, new UpdatedEventArgs());
         }
 
         async void OnMediaOpened(RoutedEventArgs e)
@@ -4667,7 +4882,7 @@ namespace Microsoft.PlayerFramework
             {
                 SetValue(PlayerStateProperty, PlayerState.Starting);
                 var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
-                if (MediaStarting != null) MediaStarting(this, new MediaPlayerDeferrableEventArgs(deferrableOperation));
+                if (MediaStarting != null) MediaStarting(this, new MediaStartingEventArgs(deferrableOperation));
                 bool[] result;
                 try
                 {
@@ -4677,7 +4892,7 @@ namespace Microsoft.PlayerFramework
                 if (!result.Any() || result.All(r => r))
                 {
                     SetValue(PlayerStateProperty, PlayerState.Started);
-                    if (MediaStarted != null) MediaStarted(this, new RoutedEventArgs());
+                    if (MediaStarted != null) MediaStarted(this, new MediaStartedEventArgs());
                     return true;
                 }
             }
@@ -4752,13 +4967,13 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void OnMediaClosed(RoutedEventArgs e)
+        void OnMediaClosed(object e)
         {
             cts.Cancel();
             cts = new CancellationTokenSource(); // reset the cancellation token
             OnMediaClosed();
 
-            if (MediaClosed != null) MediaClosed(this, e);
+            if (MediaClosed != null) MediaClosed(this, new MediaClosedEventArgs());
         }
 
         /// <summary>
@@ -4814,22 +5029,22 @@ namespace Microsoft.PlayerFramework
             if (VolumeChanged != null) VolumeChanged(this, e);
         }
 
-        void OnIsMutedChanged(RoutedEventArgs e)
+        void OnIsMutedChanged(IsMutedChangedEventArgs e)
         {
             if (IsMutedChanged != null) IsMutedChanged(this, e);
         }
 
-        void OnIsLiveChanged(RoutedEventArgs e)
+        void OnIsLiveChanged(IsLiveChangedEventArgs e)
         {
             if (IsLiveChanged != null) IsLiveChanged(this, e);
         }
 
-        void OnIsCaptionsActiveChanged(RoutedEventArgs e)
+        void OnIsCaptionsActiveChanged(IsCaptionsActiveChangedEventArgs e)
         {
             if (IsCaptionsActiveChanged != null) IsCaptionsActiveChanged(this, e);
         }
 
-        void OnIsFullScreenChanged(RoutedEventArgs e)
+        void OnIsFullScreenChanged(IsFullScreenChangedEventArgs e)
         {
             if (IsFullScreenChanged != null) IsFullScreenChanged(this, e);
         }
@@ -4844,24 +5059,24 @@ namespace Microsoft.PlayerFramework
             if (AudioStreamIndexChanged != null) AudioStreamIndexChanged(this, e);
         }
 
-        void OnSeeked(SeekRoutedEventArgs e)
+        void OnSeeking(SeekingEventArgs e)
         {
-            if (Seeked != null) Seeked(this, e);
+            if (Seeking != null) Seeking(this, e);
         }
 
-        void OnScrubbing(ScrubProgressRoutedEventArgs e)
+        void OnScrubbing(ScrubbingEventArgs e)
         {
             if (Scrubbing != null) Scrubbing(this, e);
         }
 
-        void OnScrubbingCompleted(ScrubProgressRoutedEventArgs e)
+        void OnCompletingScrub(CompletingScrubEventArgs e)
         {
-            if (ScrubbingCompleted != null) ScrubbingCompleted(this, e);
+            if (CompletingScrub != null) CompletingScrub(this, e);
         }
 
-        void OnScrubbingStarted(ScrubRoutedEventArgs e)
+        void OnStartingScrub(StartingScrubEventArgs e)
         {
-            if (ScrubbingStarted != null) ScrubbingStarted(this, e);
+            if (StartingScrub != null) StartingScrub(this, e);
         }
 
         void OnPlayerStateChanged(PlayerStateChangedEventArgs e)
@@ -4874,12 +5089,12 @@ namespace Microsoft.PlayerFramework
             if (SignalStrengthChanged != null) SignalStrengthChanged(this, e);
         }
 
-        void OnMediaQualityChanged(RoutedEventArgs e)
+        void OnMediaQualityChanged(MediaQualityChangedEventArgs e)
         {
             if (MediaQualityChanged != null) MediaQualityChanged(this, e);
         }
 
-        void OnIsSlowMotionChanged(RoutedEventArgs e)
+        void OnIsSlowMotionChanged(IsSlowMotionChangedEventArgs e)
         {
             if (IsSlowMotionChanged != null) IsSlowMotionChanged(this, e);
         }

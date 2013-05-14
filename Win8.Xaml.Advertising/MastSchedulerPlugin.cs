@@ -114,7 +114,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        async void mediaPlayer_MediaStarting(object sender, MediaPlayerDeferrableEventArgs e)
+        async void mediaPlayer_MediaStarting(object sender, MediaStartingEventArgs e)
         {
             // we need to do a little trickery to find out if there is a preroll.
             capturetriggerTask = true;
@@ -146,7 +146,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        async void mediaPlayer_MediaEnding(object sender, MediaPlayerDeferrableEventArgs e)
+        async void mediaPlayer_MediaEnding(object sender, MediaEndingEventArgs e)
         {
             // we need to do a little trickery to get the post roll to play and await its completion before allowing MediaEnded to fire.
             // otherwise MediaEnded will fire during the ad and the next playlistitem will start.
@@ -180,7 +180,7 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             mastAdapter = new MastAdapter(MediaPlayer);
             mainsail.MastInterface = mastAdapter;
-            MediaPlayer.UpdateCompleted += mediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated += mediaPlayer_UpdateCompleted;
             MediaPlayer.MediaLoading += mediaPlayer_MediaLoading;
             MediaPlayer.MediaEnding += mediaPlayer_MediaEnding;
             MediaPlayer.MediaStarting += mediaPlayer_MediaStarting;
@@ -188,7 +188,7 @@ namespace Microsoft.PlayerFramework.Advertising
 
         private void UnwirePlayer()
         {
-            MediaPlayer.UpdateCompleted -= mediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated -= mediaPlayer_UpdateCompleted;
             MediaPlayer.MediaLoading -= mediaPlayer_MediaLoading;
             MediaPlayer.MediaEnding -= mediaPlayer_MediaEnding;
             MediaPlayer.MediaStarting -= mediaPlayer_MediaStarting;
@@ -272,7 +272,7 @@ namespace Microsoft.PlayerFramework.Advertising
 #endif
         }
 
-        void mediaPlayer_UpdateCompleted(object sender, RoutedEventArgs e)
+        void mediaPlayer_UpdateCompleted(object sender, object e)
         {
             if (!MediaPlayer.IsScrubbing && mastAdapter.IsPlaying)
             {

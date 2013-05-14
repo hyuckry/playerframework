@@ -24,7 +24,7 @@ namespace Microsoft.PlayerFramework
     [System.ComponentModel.Composition.PartCreationPolicy(System.ComponentModel.Composition.CreationPolicy.NonShared)]
     [System.ComponentModel.Composition.Export(typeof(IPlugin))]
 #endif
-    public sealed class PosterPlugin : PluginBase
+    public sealed class PosterPlugin : IPlugin
     {
         PosterView posterElement;
         Panel posterContainer;
@@ -35,16 +35,19 @@ namespace Microsoft.PlayerFramework
         public Style PosterViewStyle { get; set; }
 
         /// <inheritdoc /> 
-        protected override bool OnActivate()
+        public MediaPlayer MediaPlayer { get; set; }
+
+        /// <inheritdoc /> 
+        public void Load()
         {
-            if (CurrentMediaSource.PosterSource != null)
+            if (MediaPlayer.PosterSource != null)
             {
                 posterContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(e => e.Name == MediaPlayerTemplateParts.PosterContainer);
                 if (posterContainer != null)
                 {
                     posterElement = new PosterView()
                     {
-                        Source = CurrentMediaSource.PosterSource,
+                        Source = MediaPlayer.PosterSource,
                         Style = PosterViewStyle
                     };
                     posterContainer.Children.Add(posterElement);
@@ -52,18 +55,30 @@ namespace Microsoft.PlayerFramework
                     posterElement.Stretch = MediaPlayer.Stretch;
                     MediaPlayer.StretchChanged += MediaPlayer_StretchChanged;
 #endif
-                    return true;
                 }
             }
-            return false;
         }
 
         /// <inheritdoc /> 
-        protected override void OnDeactivate()
+        public void Update(IMediaSource mediaSource)
         {
-            posterContainer.Children.Remove(posterElement);
-            posterElement = null;
-            posterContainer = null;
+            // unload and load; there is usually a new poster to show.
+            Unload();
+            Load();
+        }
+
+        /// <inheritdoc /> 
+        public void Unload()
+        {
+            if (posterContainer != null)
+            {
+                if (posterElement != null)
+                {
+                    posterContainer.Children.Remove(posterElement);
+                    posterElement = null;
+                }
+                posterContainer = null;
+            }
 
 #if SILVERLIGHT
             MediaPlayer.StretchChanged -= MediaPlayer_StretchChanged;

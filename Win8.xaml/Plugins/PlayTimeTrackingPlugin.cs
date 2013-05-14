@@ -31,7 +31,11 @@ namespace Microsoft.PlayerFramework
         }
 
         /// <inheritdoc /> 
+#if SILVERLIGHT
+        public event EventHandler<EventTrackedEventArgs> EventTracked;
+#else
         public event EventHandler<IEventTrackedEventArgs> EventTracked;
+#endif
 
         /// <summary>
         /// Identifies the PreloadTime dependency property.
@@ -74,7 +78,7 @@ namespace Microsoft.PlayerFramework
         /// <inheritdoc /> 
         public void Load()
         {
-            MediaPlayer.UpdateCompleted += MediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated += MediaPlayer_Updated;
             MediaPlayer.CurrentStateChanged += MediaPlayer_CurrentStateChanged;
             MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
         }
@@ -88,7 +92,7 @@ namespace Microsoft.PlayerFramework
         /// <inheritdoc /> 
         public void Unload()
         {
-            MediaPlayer.UpdateCompleted -= MediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated -= MediaPlayer_Updated;
             MediaPlayer.CurrentStateChanged -= MediaPlayer_CurrentStateChanged;
             MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
         }
@@ -122,7 +126,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        private void MediaPlayer_UpdateCompleted(object sender, RoutedEventArgs e)
+        private void MediaPlayer_Updated(object sender, object e)
         {
             EvaluteTrackingEvents();
         }

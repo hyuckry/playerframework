@@ -229,7 +229,7 @@ namespace Microsoft.PlayerFramework.Adaptive
             Manager.MediaReady();
         }
 
-        void MediaPlayer_UpdateCompleted(object sender, RoutedEventArgs e)
+        void MediaPlayer_Updated(object sender, object e)
         {
             Manager.RefreshState(MediaPlayer.Position);
         }
@@ -281,7 +281,7 @@ namespace Microsoft.PlayerFramework.Adaptive
             MediaPlayer.SelectedCaptionChanged += MediaPlayer_SelectedCaptionChanged;
             MediaPlayer.SizeChanged += MediaPlayer_SizeChanged;
             MediaPlayer.MediaLoading += MediaPlayer_MediaLoading;
-            MediaPlayer.UpdateCompleted += MediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated += MediaPlayer_Updated;
             MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             isLoaded = true;
         }
@@ -296,7 +296,7 @@ namespace Microsoft.PlayerFramework.Adaptive
             MediaPlayer.SelectedAudioStreamChanged -= MediaPlayer_SelectedAudioStreamChanged;
             MediaPlayer.SelectedCaptionChanged -= MediaPlayer_SelectedCaptionChanged;
             MediaPlayer.SizeChanged -= MediaPlayer_SizeChanged;
-            MediaPlayer.UpdateCompleted -= MediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated -= MediaPlayer_Updated;
             Manager.DataReceived -= manager_DataReceived;
             Manager.StateChanged -= manager_StateChanged;
             Manager.ManifestReady -= manager_ManifestReady;

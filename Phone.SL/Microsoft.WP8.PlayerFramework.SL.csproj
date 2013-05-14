@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -95,6 +95,30 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Win8.xaml\commands\IViewModelCommand.cs">
+      <Link>Commands\IViewModelCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\Controls\ControlPanel\MediaPlayerControl.cs">
+      <Link>Controls\ControlPanel\MediaPlayerControl.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\interfaces\IAudioStream.cs">
+      <Link>Interfaces\IAudioStream.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\interfaces\ICaption.cs">
+      <Link>Interfaces\ICaption.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\Plugins\PlayTimeTrackingPlugin.Attached.cs">
+      <Link>Plugins\PlayTimeTrackingPlugin.Attached.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\Plugins\PositionTrackingPlugin.Attached.cs">
+      <Link>Plugins\PositionTrackingPlugin.Attached.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\Primitives\EventTracking.cs">
+      <Link>Primitives\EventTracking.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\Primitives\MediaPayerEventArgs.cs">
+      <Link>Primitives\MediaPayerEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\MediaState.cs">
       <Link>Primitives\MediaState.cs</Link>
     </Compile>
@@ -119,14 +143,8 @@
     <Compile Include="..\Win8.Xaml\Controls\ControlPanel\DeselectableListBox.cs">
       <Link>Controls\ControlPanel\DeselectableListBox.cs</Link>
     </Compile>
-    <Compile Include="..\Win8.Xaml\Controls\ControlPanel\MediaPlayerButton.cs">
-      <Link>Controls\ControlPanel\MediaPlayerButton.cs</Link>
-    </Compile>
     <Compile Include="..\Win8.Xaml\Controls\ControlPanel\PositionedItemsControl.cs">
       <Link>Controls\ControlPanel\PositionedItemsControl.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Controls\ControlPanel\PositionedItemsPanel.cs">
-      <Link>Controls\ControlPanel\PositionedItemsPanel.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Controls\ControlPanel\ResolutionIndicator.cs">
       <Link>Controls\ControlPanel\ResolutionIndicator.cs</Link>
@@ -160,9 +178,6 @@
     </Compile>
     <Compile Include="..\Win8.xaml\controls\InteractiveViewModel.cs">
       <Link>Controls\InteractiveViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Controls\InteractiveViewModelBase.cs">
-      <Link>Controls\InteractiveViewModelBase.cs</Link>
     </Compile>
     <Compile Include="..\Win8.xaml\controls\MediaPlayer.cs">
       <Link>Controls\MediaPlayer.cs</Link>
@@ -248,9 +263,6 @@
     <Compile Include="..\Win8.Xaml\Plugins\PlayTimeTrackingPlugin.cs">
       <Link>Plugins\PlayTimeTrackingPlugin.cs</Link>
     </Compile>
-    <Compile Include="..\Win8.Xaml\Plugins\PluginBase.cs">
-      <Link>Plugins\PluginBase.cs</Link>
-    </Compile>
     <Compile Include="..\Win8.Xaml\Plugins\PositionTrackingPlugin.cs">
       <Link>Plugins\PositionTrackingPlugin.cs</Link>
     </Compile>
@@ -259,12 +271,6 @@
     </Compile>
     <Compile Include="..\Win8.xaml\plugins\PosterView.cs">
       <Link>Plugins\PosterView.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Plugins\TrackingPlugin.Attached.cs">
-      <Link>Plugins\TrackingPlugin.Attached.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Plugins\TrackingPluginBase.cs">
-      <Link>Plugins\TrackingPluginBase.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\AdvertisingStateEnum.cs">
       <Link>Primitives\AdvertisingStateEnum.cs</Link>
@@ -278,17 +284,11 @@
     <Compile Include="..\Win8.xaml\primitives\Caption.cs">
       <Link>Primitives\Caption.cs</Link>
     </Compile>
-    <Compile Include="..\Win8.Xaml\Primitives\CategoryConstants.cs">
-      <Link>Primitives\CategoryConstants.cs</Link>
-    </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\InteractionType.cs">
       <Link>Primitives\InteractionType.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\MediaEndedBehaviorEnum.cs">
       <Link>Primitives\MediaEndedBehaviorEnum.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Primitives\MediaPlayerActionEventArgs.cs">
-      <Link>Primitives\MediaPlayerActionEventArgs.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\MediaPlayerDeferrableOperation.cs">
       <Link>Primitives\MediaPlayerDeferrableOperation.cs</Link>
@@ -319,12 +319,6 @@
     </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\PlaylistItem.Metadata.cs">
       <Link>Primitives\PlaylistItem.Metadata.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Primitives\PositionRoutedEventArgs.cs">
-      <Link>Primitives\PositionRoutedEventArgs.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Primitives\SelectedAudioStreamChangedEventArgs.cs">
-      <Link>Primitives\SelectedAudioStreamChangedEventArgs.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Primitives\VisualMarker.cs">
       <Link>Primitives\VisualMarker.cs</Link>

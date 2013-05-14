@@ -99,12 +99,12 @@ namespace Microsoft.PlayerFramework.Advertising
             OnPropertyChanged(() => Volume);
         }
 
-        void MediaPlayer_IsMutedChanged(object sender, RoutedEventArgs e)
+        void MediaPlayer_IsMutedChanged(object sender, object e)
         {
             OnPropertyChanged(() => IsMuted);
         }
 
-        void MediaPlayer_IsFullScreenChanged(object sender, RoutedEventArgs e)
+        void MediaPlayer_IsFullScreenChanged(object sender, object e)
         {
             OnPropertyChanged(() => IsFullScreen);
         }
@@ -637,7 +637,11 @@ namespace Microsoft.PlayerFramework.Advertising
         #region Events
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler CurrentStateChanged;
+#if SILVERLIGHT
+        public event EventHandler CurrentStateChanged;
+#else
+        public event EventHandler<object> CurrentStateChanged;
+#endif
 
         /// <summary>
         /// Invokes the CurrentStateChanged event.
@@ -649,7 +653,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsGoLiveEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsGoLiveEnabledChanged;
+#else
+        public event EventHandler<object> IsGoLiveEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the go live enabled state may have changed.
@@ -661,7 +669,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsPlayResumeEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPlayResumeEnabledChanged;
+#else
+        public event EventHandler<object> IsPlayResumeEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the play resume enabled state may have changed.
@@ -673,7 +685,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsPauseEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPauseEnabledChanged;
+#else
+        public event EventHandler<object> IsPauseEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the pause enabled state may have changed.
@@ -685,7 +701,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsStopEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsStopEnabledChanged;
+#else
+        public event EventHandler<object> IsStopEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the stop enabled state may have changed.
@@ -697,7 +717,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsReplayEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsReplayEnabledChanged;
+#else
+        public event EventHandler<object> IsReplayEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the replay enabled state may have changed.
@@ -709,7 +733,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsAudioSelectionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsAudioSelectionEnabledChanged;
+#else
+        public event EventHandler<object> IsAudioSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the audio stream selection enabled state may have changed.
@@ -721,7 +749,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsCaptionSelectionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsCaptionSelectionEnabledChanged;
+#else
+        public event EventHandler<object> IsCaptionSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the audio stream selection enabled state may have changed.
@@ -733,7 +765,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsRewindEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsRewindEnabledChanged;
+#else
+        public event EventHandler<object> IsRewindEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the rewind enabled state may have changed.
@@ -745,7 +781,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsFastForwardEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsFastForwardEnabledChanged;
+#else
+        public event EventHandler<object> IsFastForwardEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the fast forward enabled state may have changed.
@@ -757,7 +797,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSlowMotionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSlowMotionEnabledChanged;
+#else
+        public event EventHandler<object> IsSlowMotionEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the slow motion enabled state may have changed.
@@ -769,7 +813,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSeekEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSeekEnabledChanged;
+#else
+        public event EventHandler<object> IsSeekEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the seek enabled state may have changed.
@@ -781,7 +829,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipPreviousEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipPreviousEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipPreviousEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip Previous enabled state may have changed.
@@ -793,7 +845,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipNextEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipNextEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipNextEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip next enabled state may have changed.
@@ -805,7 +861,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipBackEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipBackEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipBackEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip back enabled state may have changed.
@@ -817,7 +877,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipAheadEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipAheadEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipAheadEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip Ahead enabled state may have changed.
@@ -829,7 +893,11 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsScrubbingEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsScrubbingEnabledChanged;
+#else
+        public event EventHandler<object> IsScrubbingEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the scrubbing enabled state may have changed.
@@ -841,22 +909,22 @@ namespace Microsoft.PlayerFramework.Advertising
         }
 
         /// <inheritdoc /> 
-        public event EventHandler<SkippingEventArgs> SkippingBack;
+        public event EventHandler<SkipRequestedEventArgs> SkipBackRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<SkippingEventArgs> SkippingAhead;
+        public event EventHandler<SkipRequestedEventArgs> SkipAheadRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<SeekingEventArgs> Seeking;
+        public event EventHandler<SeekRequestedEventArgs> SeekRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<StartingScrubEventArgs> StartingScrub;
+        public event EventHandler<ScrubStartRequestedEventArgs> ScrubStartRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<ScrubbingEventArgs> Scrubbing;
+        public event EventHandler<ScrubRequestedEventArgs> ScrubRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<CompletingScrubEventArgs> CompletingScrub;
+        public event EventHandler<ScrubCompleteRequestedEventArgs> ScrubCompleteRequested;
 
         /// <inheritdoc /> 
         public event EventHandler<InteractionEventArgs> Interacting;

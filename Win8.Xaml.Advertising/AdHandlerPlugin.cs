@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Input;
 #if !WINDOWS_PHONE
 using System.Windows.Browser;
+#else
+using Microsoft.Phone.Tasks;
 #endif
 #else
 using Windows.UI.Xaml;
@@ -245,7 +247,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        void MediaPlayer_MediaClosed(object sender, RoutedEventArgs e)
+        void MediaPlayer_MediaClosed(object sender, object e)
         {
             // always close all active ads when the media is closed
             var task = CancelActiveAds();

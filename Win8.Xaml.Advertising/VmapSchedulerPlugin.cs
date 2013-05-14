@@ -234,7 +234,7 @@ namespace Microsoft.PlayerFramework.Advertising
             ShutdownTimer();
         }
 
-        void mediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
+        void mediaPlayer_IsLiveChanged(object sender, object e)
         {
             if (MediaPlayer.IsLive)
             {

@@ -137,8 +137,8 @@ namespace Microsoft.PlayerFramework
             if (volumeSliderContainerElement != null)
             {
 #if SILVERLIGHT
-                VolumeSliderContainerElement.MouseEnter += VolumeSliderContainerElement_MouseEnter;
-                VolumeSliderContainerElement.MouseLeave += VolumeSliderContainerElement_MouseLeave;
+                volumeSliderContainerElement.MouseEnter += VolumeSliderContainerElement_MouseEnter;
+                volumeSliderContainerElement.MouseLeave += VolumeSliderContainerElement_MouseLeave;
 #else
                 volumeSliderContainerElement.PointerEntered += VolumeSliderContainerElement_PointerEntered;
                 volumeSliderContainerElement.PointerExited += VolumeSliderContainerElement_PointerExited;
@@ -160,8 +160,8 @@ namespace Microsoft.PlayerFramework
             if (volumeSliderContainerElement != null)
             {
 #if SILVERLIGHT
-                VolumeSliderContainerElement.MouseEnter -= VolumeSliderContainerElement_MouseEnter;
-                VolumeSliderContainerElement.MouseLeave -= VolumeSliderContainerElement_MouseLeave;
+                volumeSliderContainerElement.MouseEnter -= VolumeSliderContainerElement_MouseEnter;
+                volumeSliderContainerElement.MouseLeave -= VolumeSliderContainerElement_MouseLeave;
 #else
                 volumeSliderContainerElement.PointerEntered -= VolumeSliderContainerElement_PointerEntered;
                 volumeSliderContainerElement.PointerExited -= VolumeSliderContainerElement_PointerExited;

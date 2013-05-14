@@ -101,7 +101,7 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
         /// </summary>
         protected ObservableCollection<ActiveCaption> ActiveCaptions { get; private set; }
         
-        void MediaPlayer_CaptionsInvoked(object sender, RoutedEventArgs e)
+        void MediaPlayer_CaptionsInvoked(object sender, object e)
         {
             MediaPlayer.IsCaptionsActive = !MediaPlayer.IsCaptionsActive;
         }

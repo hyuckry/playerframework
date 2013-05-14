@@ -31,7 +31,7 @@ namespace Microsoft.PlayerFramework
 
         /// <inheritdoc /> 
 #if SILVERLIGHT
-        public event EventHandler EventTracked;
+        public event EventHandler<EventTrackedEventArgs> EventTracked;
 #else
         public event EventHandler<IEventTrackedEventArgs> EventTracked;
 #endif
@@ -97,7 +97,11 @@ namespace Microsoft.PlayerFramework
         /// Manually fires an event
         /// </summary>
         /// <param name="eventArgs">The event to fire</param>
+#if SILVERLIGHT
+        private void OnTrackEvent(EventTrackedEventArgs eventArgs)
+#else
         private void OnTrackEvent(IEventTrackedEventArgs eventArgs)
+#endif
         {
             if (EventTracked != null) EventTracked(this, eventArgs);
         }
@@ -136,8 +140,8 @@ namespace Microsoft.PlayerFramework
             MediaPlayer.MediaStarted += MediaPlayer_MediaStarted;
             MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             MediaPlayer.MarkerReached += MediaPlayer_MarkerReached;
-            MediaPlayer.Seeked += MediaPlayer_Seeked;
-            MediaPlayer.ScrubbingCompleted += MediaPlayer_ScrubbingCompleted;
+            MediaPlayer.Seeking += MediaPlayer_Seeking;
+            MediaPlayer.CompletingScrub += MediaPlayer_CompletingScrub;
         }
 
         /// <inheritdoc /> 
@@ -154,8 +158,8 @@ namespace Microsoft.PlayerFramework
             MediaPlayer.MediaStarted -= MediaPlayer_MediaStarted;
             MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
             MediaPlayer.MarkerReached -= MediaPlayer_MarkerReached;
-            MediaPlayer.Seeked -= MediaPlayer_Seeked;
-            MediaPlayer.ScrubbingCompleted -= MediaPlayer_ScrubbingCompleted;
+            MediaPlayer.Seeking -= MediaPlayer_Seeking;
+            MediaPlayer.CompletingScrub -= MediaPlayer_CompletingScrub;
             UninitializeTrackingEvents(TrackingEvents);
         }
 
@@ -236,8 +240,8 @@ namespace Microsoft.PlayerFramework
                 }
             }
         }
-        
-        void MediaPlayer_MediaClosed(object sender, RoutedEventArgs e)
+
+        void MediaPlayer_MediaClosed(object sender, object e)
         {
             trackingEventsToInitializeOnStart.Clear();
         }
@@ -259,7 +263,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        private void MediaPlayer_MediaStarted(object sender, RoutedEventArgs e)
+        private void MediaPlayer_MediaStarted(object sender, object e)
         {
             if (!MediaPlayer.StartupPosition.HasValue)
             {
@@ -278,12 +282,12 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        private void MediaPlayer_Seeked(object sender, SeekRoutedEventArgs e)
+        private void MediaPlayer_Seeking(object sender, SeekingEventArgs e)
         {
             EvaluateMarkers(e.PreviousPosition, e.Position, true);
         }
 
-        private void MediaPlayer_ScrubbingCompleted(object sender, ScrubProgressRoutedEventArgs e)
+        private void MediaPlayer_CompletingScrub(object sender, CompletingScrubEventArgs e)
         {
             EvaluateMarkers(e.StartPosition, e.Position, true);
         }
@@ -339,7 +343,11 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Contains additional information about a tracking event that has occurred.
     /// </summary>
+#if SILVERLIGHT
+    public sealed class PositionEventTrackedEventArgs : EventTrackedEventArgs, IEventTrackedEventArgs
+#else
     public sealed class PositionEventTrackedEventArgs : IEventTrackedEventArgs
+#endif
     {
         /// <summary>
         /// Creates a new instance of PositionEventTrackedEventArgs

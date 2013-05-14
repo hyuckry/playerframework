@@ -45,7 +45,7 @@ namespace Microsoft.Phone.PlayerFramework.SL.Test
 
         void Current_Deactivated(object sender, DeactivatedEventArgs e)
         {
-            player.Close(); // shut things like ads down.
+            player.Unload(); // shut things like ads down.
             deactivatedState = playerState;
         }
     }

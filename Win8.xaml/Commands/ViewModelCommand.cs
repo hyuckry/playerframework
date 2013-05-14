@@ -64,7 +64,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// The collection of event handlers delegates that will invoke CanExecuteChanged.
         /// </summary>
-        protected IList<HandlerReference<IInteractiveViewModel, RoutedEventHandler>> ChangeHandlers { get; set; }
+#if SILVERLIGHT
+        protected IList<HandlerReference<IInteractiveViewModel, EventHandler>> ChangeHandlers { get; set; }
+#else
+        protected IList<HandlerReference<IInteractiveViewModel, EventHandler<object>>> ChangeHandlers { get; set; }
+#endif
 
         /// <inheritdoc /> 
         public event EventHandler CanExecuteChanged;
@@ -75,7 +79,11 @@ namespace Microsoft.PlayerFramework
         /// <param name="executeMethod">A delegate to handle the Execute method</param>
         /// <param name="canExecuteMethod">A delegate to handle the CanExecute method</param>
         /// <param name="changeHandlers">A param array of delegates to call to wire and unwire notification for the CanExecuteChanged event.</param>
-        public ViewModelCommand(Action<IInteractiveViewModel> executeMethod, Func<IInteractiveViewModel, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, RoutedEventHandler>[] changeHandlers)
+#if SILVERLIGHT
+        public ViewModelCommand(Action<IInteractiveViewModel> executeMethod, Func<IInteractiveViewModel, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, EventHandler>[] changeHandlers)
+#else
+        public ViewModelCommand(Action<IInteractiveViewModel> executeMethod, Func<IInteractiveViewModel, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, EventHandler<object>>[] changeHandlers)
+#endif
         {
             this.ExecuteMethod = executeMethod;
             this.CanExecuteMethod = canExecuteMethod;
@@ -217,7 +225,11 @@ namespace Microsoft.PlayerFramework
         /// <param name="executeMethod">A delegate to handle the Execute method</param>
         /// <param name="canExecuteMethod">A delegate to handle the CanExecute method</param>
         /// <param name="changeHandlers">A param array of delegates to call to wire and unwire notification for the CanExecuteChanged event.</param>
-        public TypedViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, T, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, RoutedEventHandler>[] changeHandlers)
+#if SILVERLIGHT
+        public TypedViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, T, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, EventHandler>[] changeHandlers)
+#else
+        public TypedViewModelCommand(Action<IInteractiveViewModel, T> executeMethod, Func<IInteractiveViewModel, T, bool> canExecuteMethod, params HandlerReference<IInteractiveViewModel, EventHandler<object>>[] changeHandlers)
+#endif
         {
             this.ExecuteParameterMethod = executeMethod;
             this.CanExecuteParameterMethod = canExecuteMethod;

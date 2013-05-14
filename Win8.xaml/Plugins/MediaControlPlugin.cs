@@ -185,7 +185,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void InteractiveViewModel_IsPlayResumeEnabledChanged(object sender, RoutedEventArgs e)
+        void InteractiveViewModel_IsPlayResumeEnabledChanged(object sender, object e)
         {
             MediaControl.IsPlaying = !MediaPlayer.InteractiveViewModel.IsPlayResumeEnabled;
         }

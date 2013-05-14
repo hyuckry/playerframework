@@ -44,7 +44,7 @@ namespace Microsoft.PlayerFramework
         {
             LoadChapters();
             MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            MediaPlayer.MediaEnded += MediaPlayer_MediaClosed;
+            MediaPlayer.MediaClosed += MediaPlayer_MediaClosed;
         }
 
         /// <inheritdoc /> 
@@ -66,7 +66,7 @@ namespace Microsoft.PlayerFramework
             LoadChapters();
         }
 
-        void MediaPlayer_MediaClosed(object sender, RoutedEventArgs e)
+        void MediaPlayer_MediaClosed(object sender, object e)
         {
             UnloadChapters();
         }

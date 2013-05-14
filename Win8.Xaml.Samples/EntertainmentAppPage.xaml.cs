@@ -38,7 +38,7 @@ namespace Microsoft.PlayerFramework.Samples
             player.Initialized += player_Initialized;
         }
 
-        void player_Initialized(object sender, RoutedEventArgs e)
+        void player_Initialized(object sender, object e)
         {
             player.ControlPanel.Loaded += StartLayoutUpdates;
             player.ControlPanel.Unloaded += StopLayoutUpdates;

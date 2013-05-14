@@ -60,7 +60,7 @@ namespace Microsoft.PlayerFramework
         }
 
         InteractionType deactivationMode;
-        void MediaPlayer_CaptionsInvoked(object sender, RoutedEventArgs e)
+        void MediaPlayer_CaptionsInvoked(object sender, object e)
         {
             if (MediaPlayer.AvailableCaptions.Any())
             {

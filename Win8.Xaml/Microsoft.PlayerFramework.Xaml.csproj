@@ -135,26 +135,10 @@
     <Compile Include="Plugins\MediaPlayerPlugin.cs" />
     <Compile Include="Primitives\AdvertisingStateEnum.cs" />
     <Compile Include="Primitives\AutoHideBehavior.cs" />
-    <Compile Include="Primitives\AdvertisingStateChangedEventArgs.cs" />
-    <Compile Include="Primitives\AudioStreamIndexChangedEventArgs.cs" />
     <Compile Include="Interfaces\ICaption.cs" />
     <Compile Include="Interfaces\IAudioStream.cs" />
-    <Compile Include="Primitives\MediaEndedEventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Primitives\TimeFormatConverterChangedEventArgs.cs" />
-    <Compile Include="Primitives\SkipAheadIntervalChangedEventArgs.cs" />
-    <Compile Include="Primitives\SkipBackIntervalChangedEventArgs.cs" />
-    <Compile Include="Primitives\LivePositionChangedEventArgs.cs" />
-    <Compile Include="Primitives\TimeRemainingChangedEventArgs.cs" />
-    <Compile Include="Primitives\EndTimeChangedEventArgs.cs" />
-    <Compile Include="Primitives\StartTimeChangedEventArgs.cs" />
-    <Compile Include="Primitives\DurationChangedEventArgs.cs" />
-    <Compile Include="Primitives\SignalStrengthChangedEventArgs.cs" />
-    <Compile Include="Primitives\PositionChangedEventArgs.cs" />
-    <Compile Include="Primitives\PlayerStateChangedEventArgs.cs" />
+    <Compile Include="Primitives\MediaPayerEventArgs.cs" />
     <Compile Include="Primitives\InteractionType.cs" />
-    <Compile Include="Primitives\InteractiveViewModelChangedEventArgs.cs" />
     <Compile Include="Primitives\MediaEndedBehaviorEnum.cs" />
     <Compile Include="Primitives\MediaPlayerTemplateParts.cs" />
     <Compile Include="Primitives\MediaPlayerVisualStates.cs" />
@@ -166,9 +150,7 @@
     <Compile Include="Primitives\EventTracking.cs" />
     <Compile Include="Plugins\PlaylistPlugin.Commands.cs" />
     <Compile Include="Primitives\PlaylistItem.Metadata.cs" />
-    <Compile Include="Primitives\PositionRoutedEventArgs.cs" />
     <Compile Include="Primitives\MediaPlayerDeferrableOperation.cs" />
-    <Compile Include="Primitives\SelectedAudioStreamChangedEventArgs.cs" />
     <Compile Include="Controls\InteractiveViewModel.cs" />
     <Compile Include="Controls\MediaPlayer.cs" />
     <Compile Include="Controls\MediaPlayer.TemplateDefinitions.cs" />
@@ -211,7 +193,6 @@
     <Compile Include="Controls\ControlPanel\SeekableSliderTemplateParts.cs" />
     <Compile Include="Controls\ControlPanel\SeekableSliderVisualStates.cs" />
     <Compile Include="Controls\ControlPanel\SignalStrength.cs" />
-    <Compile Include="Primitives\SelectedCaptionChangedEventArgs.cs" />
     <Compile Include="Primitives\VisualMarker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

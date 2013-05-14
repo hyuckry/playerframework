@@ -40,9 +40,9 @@ namespace Microsoft.PlayerFramework.Analytics
                     mediaPlayer.MediaStarted -= mediaPlayer_MediaStarted;
                     mediaPlayer.CurrentStateChanged -= mediaPlayer_CurrentStateChanged;
                     mediaPlayer.IsFullScreenChanged -= mediaPlayer_IsFullScreenChanged;
-                    mediaPlayer.Seeked -= mediaPlayer_Seeked;
-                    mediaPlayer.ScrubbingStarted -= mediaPlayer_ScrubbingStarted;
-                    mediaPlayer.ScrubbingCompleted -= mediaPlayer_ScrubbingCompleted;
+                    mediaPlayer.Seeking -= mediaPlayer_Seeking;
+                    mediaPlayer.StartingScrub -= mediaPlayer_StartingScrub;
+                    mediaPlayer.CompletingScrub -= mediaPlayer_CompletingScrub;
                     mediaPlayer.RateChanged -= mediaPlayer_RateChanged;
                     mediaPlayer.IsLiveChanged -= mediaPlayer_IsLiveChanged;
                     mediaPlayer.SelectedCaptionChanged -= mediaPlayer_SelectedCaptionChanged;
@@ -67,9 +67,9 @@ namespace Microsoft.PlayerFramework.Analytics
                     mediaPlayer.MediaStarted += mediaPlayer_MediaStarted;
                     mediaPlayer.CurrentStateChanged += mediaPlayer_CurrentStateChanged;
                     mediaPlayer.IsFullScreenChanged += mediaPlayer_IsFullScreenChanged;
-                    mediaPlayer.Seeked += mediaPlayer_Seeked;
-                    mediaPlayer.ScrubbingStarted += mediaPlayer_ScrubbingStarted;
-                    mediaPlayer.ScrubbingCompleted += mediaPlayer_ScrubbingCompleted;
+                    mediaPlayer.Seeking += mediaPlayer_Seeking;
+                    mediaPlayer.StartingScrub += mediaPlayer_StartingScrub;
+                    mediaPlayer.CompletingScrub += mediaPlayer_CompletingScrub;
                     mediaPlayer.RateChanged += mediaPlayer_RateChanged;
                     mediaPlayer.IsLiveChanged += mediaPlayer_IsLiveChanged;
                     mediaPlayer.SelectedCaptionChanged += mediaPlayer_SelectedCaptionChanged;
@@ -159,7 +159,7 @@ namespace Microsoft.PlayerFramework.Analytics
             if (CaptionTrackChanged != null) CaptionTrackChanged(this, EventArgs.Empty);
         }
 
-        void mediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
+        void mediaPlayer_IsLiveChanged(object sender, object e)
         {
             if (IsLiveChanged != null) IsLiveChanged(this, EventArgs.Empty);
         }
@@ -176,22 +176,22 @@ namespace Microsoft.PlayerFramework.Analytics
             }
         }
 
-        void mediaPlayer_ScrubbingCompleted(object sender, ScrubProgressRoutedEventArgs e)
+        void mediaPlayer_CompletingScrub(object sender, CompletingScrubEventArgs e)
         {
             if (ScrubCompleted != null) ScrubCompleted(this, new ScrubCompletedEventArgs(e.Position));
         }
 
-        void mediaPlayer_ScrubbingStarted(object sender, ScrubRoutedEventArgs e)
+        void mediaPlayer_StartingScrub(object sender, StartingScrubEventArgs e)
         {
             if (ScrubStarted != null) ScrubStarted(this, EventArgs.Empty);
         }
 
-        void mediaPlayer_Seeked(object sender, SeekRoutedEventArgs e)
+        void mediaPlayer_Seeking(object sender, SeekingEventArgs e)
         {
             if (Seeked != null) Seeked(this, new SeekedEventArgs(e.PreviousPosition, e.Position));
         }
 
-        void mediaPlayer_IsFullScreenChanged(object sender, RoutedEventArgs e)
+        void mediaPlayer_IsFullScreenChanged(object sender, object e)
         {
             if (FullScreenChanged != null) FullScreenChanged(this, EventArgs.Empty);
         }
@@ -214,7 +214,7 @@ namespace Microsoft.PlayerFramework.Analytics
             }
         }
 
-        void mediaPlayer_MediaStarted(object sender, RoutedEventArgs e)
+        void mediaPlayer_MediaStarted(object sender, object e)
         {
             if (StreamStarted != null) StreamStarted(this, EventArgs.Empty);
         }
@@ -228,7 +228,7 @@ namespace Microsoft.PlayerFramework.Analytics
 #endif
         }
 
-        void mediaPlayer_MediaClosed(object sender, RoutedEventArgs e)
+        void mediaPlayer_MediaClosed(object sender, object e)
         {
             if (StreamClosed != null) StreamClosed(this, EventArgs.Empty);
         }
@@ -238,7 +238,7 @@ namespace Microsoft.PlayerFramework.Analytics
             if (StreamLoaded != null) StreamLoaded(this, EventArgs.Empty);
         }
 
-        void mediaPlayer_MediaEnding(object sender, MediaPlayerDeferrableEventArgs e)
+        void mediaPlayer_MediaEnding(object sender, MediaEndingEventArgs e)
         {
             if (StreamEnded != null) StreamEnded(this, EventArgs.Empty);
         }

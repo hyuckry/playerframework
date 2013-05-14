@@ -65,7 +65,7 @@ namespace Microsoft.PlayerFramework
     /// Provides a default implementation of IEventTrackedEventArgs
     /// </summary>
 #if SILVERLIGHT
-    public sealed class EventTrackedEventArgs : EventArgs, IEventTrackedEventArgs
+    public class EventTrackedEventArgs : EventArgs, IEventTrackedEventArgs
 #else
     public sealed class EventTrackedEventArgs : IEventTrackedEventArgs
 #endif

@@ -463,7 +463,7 @@ namespace Microsoft.PlayerFramework.Advertising
                 .Where(m => m.IsSeekable && m.Time.Add(SkipPreviousThreshold) < Position && m.Time < MaxPosition)
                 .OrderByDescending(m => m.Time).FirstOrDefault();
 
-            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.StartTime));
+            if (SkipBackRequested != null) SkipBackRequested(this, new SkipRequestedEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.StartTime));
         }
 
         /// <inheritdoc /> 
@@ -475,7 +475,7 @@ namespace Microsoft.PlayerFramework.Advertising
                 .Where(m => m.IsSeekable && m.Time > Position && m.Time < MaxPosition)
                 .OrderBy(m => m.Time).FirstOrDefault();
 
-            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)));
+            if (SkipAheadRequested != null) SkipAheadRequested(this, new SkipRequestedEventArgs(marker != null ? GetMediaPlayerPosition(marker.Time) : MediaPlayer.LivePosition.GetValueOrDefault(MediaPlayer.EndTime)));
         }
 
         /// <inheritdoc /> 
@@ -484,7 +484,7 @@ namespace Microsoft.PlayerFramework.Advertising
             OnInteracting(InteractionType.Hard);
             TimeSpan position = SkipBackInterval.HasValue ? TimeSpanExtensions.Max(Position.Subtract(SkipBackInterval.Value), StartTime) : StartTime;
 
-            if (SkippingBack != null) SkippingBack(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
+            if (SkipBackRequested != null) SkipBackRequested(this, new SkipRequestedEventArgs(GetMediaPlayerPosition(position)));
         }
 
         /// <inheritdoc /> 
@@ -493,7 +493,7 @@ namespace Microsoft.PlayerFramework.Advertising
             OnInteracting(InteractionType.Hard);
             TimeSpan position = SkipAheadInterval.HasValue ? TimeSpanExtensions.Min(Position.Add(SkipAheadInterval.Value), MaxPosition) : MaxPosition;
 
-            if (SkippingAhead != null) SkippingAhead(this, new SkippingEventArgs(GetMediaPlayerPosition(position)));
+            if (SkipAheadRequested != null) SkipAheadRequested(this, new SkipRequestedEventArgs(GetMediaPlayerPosition(position)));
         }
 
         /// <inheritdoc /> 
@@ -501,8 +501,8 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnInteracting(InteractionType.Hard);
 
-            var args = new SeekingEventArgs(GetMediaPlayerPosition(position));
-            if (Seeking != null) Seeking(this, args);
+            var args = new SeekRequestedEventArgs(GetMediaPlayerPosition(position));
+            if (SeekRequested != null) SeekRequested(this, args);
             canceled = args.Cancel;
         }
 
@@ -511,8 +511,8 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnInteracting(InteractionType.Hard);
 
-            var args = new CompletingScrubEventArgs(GetMediaPlayerPosition(position), canceled);
-            if (CompletingScrub != null) CompletingScrub(this, args);
+            var args = new ScrubCompleteRequestedEventArgs(GetMediaPlayerPosition(position), canceled);
+            if (ScrubCompleteRequested != null) ScrubCompleteRequested(this, args);
             cancel = canceled || args.Cancel;
         }
 
@@ -521,8 +521,8 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnInteracting(InteractionType.Hard);
 
-            var args = new StartingScrubEventArgs(GetMediaPlayerPosition(position));
-            if (StartingScrub != null) StartingScrub(this, args);
+            var args = new ScrubStartRequestedEventArgs(GetMediaPlayerPosition(position));
+            if (ScrubStartRequested != null) ScrubStartRequested(this, args);
             canceled = args.Cancel;
         }
 
@@ -531,8 +531,8 @@ namespace Microsoft.PlayerFramework.Advertising
         {
             OnInteracting(InteractionType.Hard);
 
-            var args = new ScrubbingEventArgs(GetMediaPlayerPosition(position));
-            if (Scrubbing != null) Scrubbing(this, args);
+            var args = new ScrubRequestedEventArgs(GetMediaPlayerPosition(position));
+            if (ScrubRequested != null) ScrubRequested(this, args);
             canceled = args.Cancel;
         }
 
@@ -584,7 +584,11 @@ namespace Microsoft.PlayerFramework.Advertising
         #region Events
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsGoLiveEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsGoLiveEnabledChanged;
+#else
+        public event EventHandler<object> IsGoLiveEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the go live enabled state may have changed.
@@ -592,11 +596,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsGoLiveEnabledChanged()
         {
             OnPropertyChanged(() => IsGoLiveEnabled);
-            if (IsGoLiveEnabledChanged != null) IsGoLiveEnabledChanged(this, new RoutedEventArgs());
+            if (IsGoLiveEnabledChanged != null) IsGoLiveEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsPlayResumeEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPlayResumeEnabledChanged;
+#else
+        public event EventHandler<object> IsPlayResumeEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the play resume enabled state may have changed.
@@ -604,11 +612,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsPlayResumeEnabledChanged()
         {
             OnPropertyChanged(() => IsPlayResumeEnabled);
-            if (IsPlayResumeEnabledChanged != null) IsPlayResumeEnabledChanged(this, new RoutedEventArgs());
+            if (IsPlayResumeEnabledChanged != null) IsPlayResumeEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsPauseEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsPauseEnabledChanged;
+#else
+        public event EventHandler<object> IsPauseEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the pause enabled state may have changed.
@@ -616,11 +628,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsPauseEnabledChanged()
         {
             OnPropertyChanged(() => IsPauseEnabled);
-            if (IsPauseEnabledChanged != null) IsPauseEnabledChanged(this, new RoutedEventArgs());
+            if (IsPauseEnabledChanged != null) IsPauseEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsStopEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsStopEnabledChanged;
+#else
+        public event EventHandler<object> IsStopEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the stop enabled state may have changed.
@@ -628,11 +644,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsStopEnabledChanged()
         {
             OnPropertyChanged(() => IsStopEnabled);
-            if (IsStopEnabledChanged != null) IsStopEnabledChanged(this, new RoutedEventArgs());
+            if (IsStopEnabledChanged != null) IsStopEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsReplayEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsReplayEnabledChanged;
+#else
+        public event EventHandler<object> IsReplayEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the replay enabled state may have changed.
@@ -640,11 +660,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsReplayEnabledChanged()
         {
             OnPropertyChanged(() => IsReplayEnabled);
-            if (IsReplayEnabledChanged != null) IsReplayEnabledChanged(this, new RoutedEventArgs());
+            if (IsReplayEnabledChanged != null) IsReplayEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsAudioSelectionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsAudioSelectionEnabledChanged;
+#else
+        public event EventHandler<object> IsAudioSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the audio stream selection enabled state may have changed.
@@ -652,11 +676,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsAudioSelectionEnabledChanged()
         {
             OnPropertyChanged(() => IsAudioSelectionEnabled);
-            if (IsAudioSelectionEnabledChanged != null) IsAudioSelectionEnabledChanged(this, new RoutedEventArgs());
+            if (IsAudioSelectionEnabledChanged != null) IsAudioSelectionEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsCaptionSelectionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsCaptionSelectionEnabledChanged;
+#else
+        public event EventHandler<object> IsCaptionSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the audio stream selection enabled state may have changed.
@@ -664,11 +692,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsCaptionSelectionEnabledChanged()
         {
             OnPropertyChanged(() => IsCaptionSelectionEnabled);
-            if (IsCaptionSelectionEnabledChanged != null) IsCaptionSelectionEnabledChanged(this, new RoutedEventArgs());
+            if (IsCaptionSelectionEnabledChanged != null) IsCaptionSelectionEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsRewindEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsRewindEnabledChanged;
+#else
+        public event EventHandler<object> IsRewindEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the rewind enabled state may have changed.
@@ -676,11 +708,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsRewindEnabledChanged()
         {
             OnPropertyChanged(() => IsRewindEnabled);
-            if (IsRewindEnabledChanged != null) IsRewindEnabledChanged(this, new RoutedEventArgs());
+            if (IsRewindEnabledChanged != null) IsRewindEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsFastForwardEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsFastForwardEnabledChanged;
+#else
+        public event EventHandler<object> IsFastForwardEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the fast forward enabled state may have changed.
@@ -688,11 +724,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsFastForwardEnabledChanged()
         {
             OnPropertyChanged(() => IsFastForwardEnabled);
-            if (IsFastForwardEnabledChanged != null) IsFastForwardEnabledChanged(this, new RoutedEventArgs());
+            if (IsFastForwardEnabledChanged != null) IsFastForwardEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSlowMotionEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSlowMotionEnabledChanged;
+#else
+        public event EventHandler<object> IsSlowMotionEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the slow motion enabled state may have changed.
@@ -700,11 +740,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsSlowMotionEnabledChanged()
         {
             OnPropertyChanged(() => IsSlowMotionEnabled);
-            if (IsSlowMotionEnabledChanged != null) IsSlowMotionEnabledChanged(this, new RoutedEventArgs());
+            if (IsSlowMotionEnabledChanged != null) IsSlowMotionEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSeekEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSeekEnabledChanged;
+#else
+        public event EventHandler<object> IsSeekEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the seek enabled state may have changed.
@@ -712,11 +756,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsSeekEnabledChanged()
         {
             OnPropertyChanged(() => IsSeekEnabled);
-            if (IsSeekEnabledChanged != null) IsSeekEnabledChanged(this, new RoutedEventArgs());
+            if (IsSeekEnabledChanged != null) IsSeekEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipPreviousEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipPreviousEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipPreviousEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip Previous enabled state may have changed.
@@ -724,11 +772,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsSkipPreviousEnabledChanged()
         {
             OnPropertyChanged(() => IsSkipPreviousEnabled);
-            if (IsSkipPreviousEnabledChanged != null) IsSkipPreviousEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipPreviousEnabledChanged != null) IsSkipPreviousEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipNextEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipNextEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipNextEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip next enabled state may have changed.
@@ -736,11 +788,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsSkipNextEnabledChanged()
         {
             OnPropertyChanged(() => IsSkipNextEnabled);
-            if (IsSkipNextEnabledChanged != null) IsSkipNextEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipNextEnabledChanged != null) IsSkipNextEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipBackEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipBackEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipBackEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip back enabled state may have changed.
@@ -748,11 +804,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsSkipBackEnabledChanged()
         {
             OnPropertyChanged(() => IsSkipBackEnabled);
-            if (IsSkipBackEnabledChanged != null) IsSkipBackEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipBackEnabledChanged != null) IsSkipBackEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsSkipAheadEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsSkipAheadEnabledChanged;
+#else
+        public event EventHandler<object> IsSkipAheadEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the skip Ahead enabled state may have changed.
@@ -760,11 +820,15 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsSkipAheadEnabledChanged()
         {
             OnPropertyChanged(() => IsSkipAheadEnabled);
-            if (IsSkipAheadEnabledChanged != null) IsSkipAheadEnabledChanged(this, new RoutedEventArgs());
+            if (IsSkipAheadEnabledChanged != null) IsSkipAheadEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler IsScrubbingEnabledChanged;
+#if SILVERLIGHT
+        public event EventHandler IsScrubbingEnabledChanged;
+#else
+        public event EventHandler<object> IsScrubbingEnabledChanged;
+#endif
 
         /// <summary>
         /// Indicates that the scrubbing enabled state may have changed.
@@ -772,29 +836,33 @@ namespace Microsoft.PlayerFramework.Advertising
         void NotifyIsScrubbingEnabledChanged()
         {
             OnPropertyChanged(() => IsScrubbingEnabled);
-            if (IsScrubbingEnabledChanged != null) IsScrubbingEnabledChanged(this, new RoutedEventArgs());
+            if (IsScrubbingEnabledChanged != null) IsScrubbingEnabledChanged(this, EventArgs.Empty);
         }
 
         /// <inheritdoc /> 
-        public event RoutedEventHandler CurrentStateChanged;
+#if SILVERLIGHT
+        public event EventHandler CurrentStateChanged;
+#else
+        public event EventHandler<object> CurrentStateChanged;
+#endif
 
         /// <inheritdoc /> 
-        public event EventHandler<SkippingEventArgs> SkippingBack;
+        public event EventHandler<SkipRequestedEventArgs> SkipBackRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<SkippingEventArgs> SkippingAhead;
+        public event EventHandler<SkipRequestedEventArgs> SkipAheadRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<SeekingEventArgs> Seeking;
+        public event EventHandler<SeekRequestedEventArgs> SeekRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<StartingScrubEventArgs> StartingScrub;
+        public event EventHandler<ScrubStartRequestedEventArgs> ScrubStartRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<ScrubbingEventArgs> Scrubbing;
+        public event EventHandler<ScrubRequestedEventArgs> ScrubRequested;
 
         /// <inheritdoc /> 
-        public event EventHandler<CompletingScrubEventArgs> CompletingScrub;
+        public event EventHandler<ScrubCompleteRequestedEventArgs> ScrubCompleteRequested;
 
         /// <inheritdoc /> 
         public event EventHandler<InteractionEventArgs> Interacting;

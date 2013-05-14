@@ -7,7 +7,7 @@
     <FontFamily x:Key="SymbolThemeFontFamily">Segoe UI Symbol</FontFamily>
     <sys:Double x:Key="SliderTrackThemeHeight">12</sys:Double>
 
-    <Style x:Key="MediaPlayerControlStyle" TargetType="local:MediaPlayerControl">
+    <Style x:Key="MediaPlayerControlStyle" TargetType="ContentControl">
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
@@ -16,7 +16,7 @@
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Control"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:MediaPlayerControl">
+                <ControlTemplate TargetType="ContentControl">
                     <Grid>
                         <ContentControl x:Name="ContentPresenter" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
                     </Grid>
@@ -62,24 +62,24 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MediaPlayerButtonStyle" TargetType="local:MediaPlayerButton">
+    <Style x:Key="MediaPlayerButtonStyle" TargetType="Button">
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}"/>
-        <Setter Property="StrokeThickness" Value="3"/>
-        <Setter Property="Size" Value="70"/>
+        <Setter Property="local:MediaPlayerControl.StrokeThickness" Value="3"/>
+        <Setter Property="local:MediaPlayerControl.Size" Value="70"/>
         <Setter Property="FontSize" Value="35"/>
         <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Button"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:MediaPlayerButton">
-                    <Grid Height="{TemplateBinding Size}" Width="{TemplateBinding Size}">
-                        <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding StrokeThickness}" Fill="{TemplateBinding Background}"/>
-                        <ContentControl x:Name="ContentPresenter" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding ContentTransform}"/>
+                <ControlTemplate TargetType="Button">
+                    <Grid Height="{TemplateBinding local:MediaPlayerControl.Size}" Width="{TemplateBinding local:MediaPlayerControl.Size}">
+                        <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" local:MediaPlayerControl.StrokeThickness="{TemplateBinding local:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}"/>
+                        <ContentControl x:Name="ContentPresenter" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding local:MediaPlayerControl.ContentTransform}"/>
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -113,23 +113,23 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MediaPlayerToggleButtonStyle" TargetType="local:MediaPlayerToggleButton">
+    <Style x:Key="MediaPlayerToggleButtonStyle" TargetType="ToggleButton">
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}" />
-        <Setter Property="StrokeThickness" Value="4"/>
-        <Setter Property="Size" Value="70"/>
+        <Setter Property="local:MediaPlayerControl.StrokeThickness" Value="4"/>
+        <Setter Property="local:MediaPlayerControl.Size" Value="70"/>
         <Setter Property="FontSize" Value="40"/>
         <Setter Property="AutomationProperties.ItemType" Value="MediaPlayer Button"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:MediaPlayerToggleButton">
-                    <Grid Height="{TemplateBinding Size}" Width="{TemplateBinding Size}">
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid Height="{TemplateBinding local:MediaPlayerControl.Size}" Width="{TemplateBinding local:MediaPlayerControl.Size}">
                         <Grid>
-                            <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding StrokeThickness}" Fill="{TemplateBinding Background}"/>
-                            <ContentControl x:Name="Content" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding ContentTransform}"/>
+                            <Ellipse x:Name="Border" Stroke="{TemplateBinding BorderBrush}" local:MediaPlayerControl.StrokeThickness="{TemplateBinding local:MediaPlayerControl.StrokeThickness}" Fill="{TemplateBinding Background}"/>
+                            <ContentControl x:Name="Content" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RenderTransformOrigin=".5,.5" RenderTransform="{TemplateBinding local:MediaPlayerControl.ContentTransform}"/>
                         </Grid>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -211,8 +211,8 @@
     <Style TargetType="local:PlayPauseButton" BasedOn="{StaticResource MediaPlayerButtonStyle}">
         <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
         <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="SelectedContent" Value=""/>
-        <Setter Property="UnselectedContent" Value=""/>
+        <Setter Property="PausedContent" Value=""/>
+        <Setter Property="PlayingContent" Value=""/>
         <Setter Property="AutomationProperties.AutomationId" Value="PlayPauseButton"/>
     </Style>
 
@@ -220,16 +220,16 @@
         <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="FontSize" Value="30"/>
-        <Setter Property="SelectedContent" Value=""/>
-        <Setter Property="UnselectedContent" Value=""/>
+        <Setter Property="FullScreenContent" Value=""/>
+        <Setter Property="NotFullScreenContent" Value=""/>
         <Setter Property="AutomationProperties.AutomationId" Value="FullScreenButton"/>
     </Style>
 
     <Style TargetType="local:MuteButton" BasedOn="{StaticResource MediaPlayerButtonStyle}">
         <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
         <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="SelectedContent" Value=""/>
-        <Setter Property="UnselectedContent" Value=""/>
+        <Setter Property="MutedContent" Value=""/>
+        <Setter Property="UnmutedContent" Value=""/>
         <Setter Property="AutomationProperties.AutomationId" Value="MuteButton"/>
     </Style>
 
@@ -238,7 +238,7 @@
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="FontSize" Value="45"/>
         <Setter Property="Padding" Value="3.5,0.5,0,0"/>
-        <Setter Property="ContentTransform">
+        <Setter Property="local:MediaPlayerControl.ContentTransform">
             <Setter.Value>
                 <RotateTransform Angle="90"/>
             </Setter.Value>
@@ -296,7 +296,7 @@
         <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Content" Value=""/>
-        <Setter Property="ContentTransform">
+        <Setter Property="local:MediaPlayerControl.ContentTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="-1"/>
             </Setter.Value>
@@ -430,10 +430,10 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <local:MuteButton x:Name="MuteButton" ViewModel="{TemplateBinding ViewModel}" Style="{TemplateBinding MuteButtonStyle}"/>
+                        <local:MuteButton x:Name="MuteButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Style="{TemplateBinding MuteButtonStyle}"/>
                         <Grid x:Name="VolumeSliderContainer" VerticalAlignment="Top">
                             <Border Margin="{TemplateBinding PanelPosition}" Background="{TemplateBinding PanelBackground}">
-                                <local:VolumeSlider x:Name="VolumeSlider" ViewModel="{TemplateBinding ViewModel}" Width="{StaticResource SliderTrackThemeHeight}" Orientation="Vertical" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <local:VolumeSlider x:Name="VolumeSlider" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Width="{StaticResource SliderTrackThemeHeight}" Orientation="Vertical" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Border>
                         </Grid>
                     </Grid>
@@ -728,7 +728,7 @@
                                 VerticalAlignment="Stretch"
                                 Orientation="Horizontal"
                                 Height="{TemplateBinding Height}"
-                                DataContext="{TemplateBinding ViewModel}">
+                                DataContext="{TemplateBinding local:MediaPlayerControl.ViewModel}">
                             <local:SeekableSlider.HorizontalForegroundContent>
                                 <local:PositionedItemsControl x:Name="PositionedItemsControl"
                                     ItemsSource="{Binding VisualMarkers}"
@@ -737,7 +737,7 @@
                                     <local:PositionedItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Button IsEnabled="{Binding IsSeekable}"
-                                            local:PositionedItemsPanel.Position="{Binding Time.TotalSeconds}"
+                                            local:PositionedItemsControl.Position="{Binding Time.TotalSeconds}"
                                             Content="{Binding Text}">
                                                 <Button.Style>
                                                     <Binding Path="Style" ConverterParameter="{StaticResource VisualMarkerStyle}">
@@ -808,7 +808,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
-                        <Border x:Name="Border" DataContext="{TemplateBinding ViewModel}" Background="{TemplateBinding Background}">
+                        <Border x:Name="Border" DataContext="{TemplateBinding local:MediaPlayerControl.ViewModel}" Background="{TemplateBinding Background}">
                             <Border.Resources>
                                 <local:BoolToVisibilityConverter x:Key="VisibleIfConverter" />
                             </Border.Resources>
@@ -821,39 +821,39 @@
                                 </Grid.RowDefinitions>
 
                                 <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Margin="0,15,10,15">
-                                    <local:ReplayButton x:Name="ReplayButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsReplayButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" Size="45"/>
-                                    <local:StopButton x:Name="StopButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsStopButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" Size="45"/>
-                                    <local:SlowMotionButton x:Name="SlowMotionButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSlowMotionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" Size="45"/>
-                                    <local:CaptionSelectionButton x:Name="CaptionSelectionButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsCaptionSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" Size="45"/>
-                                    <local:AudioSelectionButton x:Name="AudioSelectionButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsAudioSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" Size="45"/>
-                                    <local:GoLiveButton x:Name="GoLiveButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsGoLiveButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="18" Size="45"/>
+                                    <local:ReplayButton x:Name="ReplayButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsReplayButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" local:MediaPlayerControl.Size="45"/>
+                                    <local:StopButton x:Name="StopButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsStopButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" local:MediaPlayerControl.Size="45"/>
+                                    <local:SlowMotionButton x:Name="SlowMotionButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSlowMotionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" local:MediaPlayerControl.Size="45"/>
+                                    <local:CaptionSelectionButton x:Name="CaptionSelectionButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsCaptionSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" local:MediaPlayerControl.Size="45"/>
+                                    <local:AudioSelectionButton x:Name="AudioSelectionButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsAudioSelectionButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="25" local:MediaPlayerControl.Size="45"/>
+                                    <local:GoLiveButton x:Name="GoLiveButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsGoLiveButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0" FontSize="18" local:MediaPlayerControl.Size="45"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center">
 
                                     <StackPanel Orientation="Horizontal" x:Name="NonEssentialsNearLeft">
-                                        <local:SkipPreviousButton x:Name="SkipPreviousButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipPreviousButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
-                                        <local:RewindButton x:Name="RewindButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsRewindButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
-                                        <local:SkipBackButton x:Name="SkipBackButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipBackButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
+                                        <local:SkipPreviousButton x:Name="SkipPreviousButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipPreviousButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
+                                        <local:RewindButton x:Name="RewindButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsRewindButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
+                                        <local:SkipBackButton x:Name="SkipBackButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipBackButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
                                     </StackPanel>
 
-                                    <local:PlayPauseButton x:Name="PlayPauseButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsPlayPauseButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="50,0,50,0"/>
+                                    <local:PlayPauseButton x:Name="PlayPauseButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsPlayPauseButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="50,0,50,0"/>
 
                                     <StackPanel Orientation="Horizontal" x:Name="NonEssentialsNearRight">
-                                        <local:SkipAheadButton x:Name="SkipAheadButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipAheadButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
-                                        <local:FastForwardButton x:Name="FastForwardButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsFastForwardButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
-                                        <local:SkipNextButton x:Name="SkipNextButton" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsSkipNextButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
+                                        <local:SkipAheadButton x:Name="SkipAheadButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipAheadButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
+                                        <local:FastForwardButton x:Name="FastForwardButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsFastForwardButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
+                                        <local:SkipNextButton x:Name="SkipNextButton" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsSkipNextButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Margin="10,0,10,0"/>
                                     </StackPanel>
 
                                 </StackPanel>
 
-                                <local:Timeline x:Name="Timeline" Grid.Row="2" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsTimelineVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Height="25" Padding="0,10,0,10" Margin="10,40,10,0"/>
+                                <local:Timeline x:Name="Timeline" Grid.Row="2" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsTimelineVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}" Height="25" Padding="0,10,0,10" Margin="10,40,10,0"/>
 
                                 <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Left" Margin="10,0,10,15">
-                                    <local:TimeElapsed x:Name="TimeElapsed" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsTimeElapsedButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}"/>
+                                    <local:TimeElapsed x:Name="TimeElapsed" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsTimeElapsedButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}"/>
                                     <TextBlock Text=" / " FontSize="{StaticResource PhoneFontSizeNormal}" FontFamily="{StaticResource PhoneFontFamilyNormal}"/>
-                                    <local:TimeRemaining x:Name="TimeRemaining" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsTimeRemainingButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}"/>
-                                    <local:TotalDuration x:Name="TotalDuration" ViewModel="{TemplateBinding ViewModel}" Visibility="{Binding IsDurationButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}"/>
+                                    <local:TimeRemaining x:Name="TimeRemaining" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsTimeRemainingButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}"/>
+                                    <local:TotalDuration x:Name="TotalDuration" local:MediaPlayerControl.ViewModel="{TemplateBinding local:MediaPlayerControl.ViewModel}" Visibility="{Binding IsDurationButtonVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource VisibleIfConverter}}"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Right" Margin="10,0,10,15">
@@ -1045,7 +1045,7 @@
                         </Grid>
                         <Grid x:Name="ErrorsContainer" Visibility="Collapsed"/>
                         <Grid x:Name="InteractivityContainer" Visibility="Collapsed">
-                            <local:ControlPanel x:Name="ControlPanel" ViewModel="{TemplateBinding InteractiveViewModel}"
+                            <local:ControlPanel x:Name="ControlPanel" local:MediaPlayerControl.ViewModel="{TemplateBinding Interactivelocal:MediaPlayerControl.ViewModel}"
                                 IsGoLiveButtonVisible="{TemplateBinding IsGoLiveVisible}"
                                 IsAudioSelectionButtonVisible="{TemplateBinding IsAudioSelectionVisible}"
                                 IsCaptionSelectionButtonVisible="{TemplateBinding IsCaptionSelectionVisible}"
@@ -1083,7 +1083,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:LoaderView">
                     <Grid Background="{TemplateBinding Background}">
-                        <local:MediaPlayerButton x:Name="LoadButton" Style="{StaticResource MediaPlayerButtonStyle}" FontSize="70" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content=""/>
+                        <local:PlayButton IsEnabled="True" x:Name="LoadButton" Style="{StaticResource MediaPlayerButtonStyle}" FontSize="70" local:MediaPlayerControl.Size="140" local:MediaPlayerControl.StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content=""/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -1098,7 +1098,7 @@
                     <Grid Background="{TemplateBinding Background}">
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{TemplateBinding ErrorText}" Margin="0,0,0,12" FontSize="24" HorizontalAlignment="Center"/>
-                            <local:MediaPlayerButton x:Name="RetryButton" Style="{StaticResource MediaPlayerButtonStyle}" FontSize="70" Size="140" StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content=""/>
+                            <local:PlayButton IsEnabled="True" x:Name="RetryButton" Style="{StaticResource MediaPlayerButtonStyle}" FontSize="70" local:MediaPlayerControl.Size="140" local:MediaPlayerControl.StrokeThickness="3" VerticalAlignment="Center" HorizontalAlignment="Center" Content=""/>
                             <TextBlock x:Name="RetryInstructions" Margin="0,12,0,12" FontSize="24" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Grid>

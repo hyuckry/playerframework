@@ -363,7 +363,7 @@ namespace Microsoft.PlayerFramework
 
         #region MediaPlayer Events
 
-        void ViewModel_CurrentStateChanged(object sender, RoutedEventArgs e)
+        void ViewModel_CurrentStateChanged(object sender, object e)
         {
             UpdateCurrentStateVisualState();
         }

@@ -60,7 +60,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void MediaPlayer_AudioSelectionInvoked(object sender, RoutedEventArgs e)
+        void MediaPlayer_AudioSelectionInvoked(object sender, object e)
         {
             if (MediaPlayer.AvailableAudioStreams.Any())
             {

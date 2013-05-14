@@ -70,7 +70,7 @@ namespace Microsoft.PlayerFramework.Adaptive
             Manager.EndOfLive += Manager_EndOfLive;
             Manager.OutsideWindowEdge += Manager_OutsideWindowEdge;
             MediaPlayer.SelectedAudioStreamChanged += MediaPlayer_SelectedAudioStreamChanged;
-            MediaPlayer.UpdateCompleted += MediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated += MediaPlayer_Updated;
 #if WINDOWS_PHONE
             MediaPlayer.MediaLoading += MediaPlayer_MediaLoading;
             MediaPlayer.MediaClosed += MediaPlayer_MediaClosed;
@@ -91,7 +91,7 @@ namespace Microsoft.PlayerFramework.Adaptive
             Manager.EndOfLive -= Manager_EndOfLive;
             Manager.OutsideWindowEdge -= Manager_OutsideWindowEdge;
             MediaPlayer.SelectedAudioStreamChanged -= MediaPlayer_SelectedAudioStreamChanged;
-            MediaPlayer.UpdateCompleted -= MediaPlayer_UpdateCompleted;
+            MediaPlayer.Updated -= MediaPlayer_Updated;
 #if WINDOWS_PHONE
             MediaPlayer.MediaLoading -= MediaPlayer_MediaLoading;
             MediaPlayer.MediaClosed -= MediaPlayer_MediaClosed;
@@ -147,7 +147,7 @@ namespace Microsoft.PlayerFramework.Adaptive
         }
 
 #if WINDOWS_PHONE
-        void MediaPlayer_MediaLoading(object sender, MediaPlayerDeferrableEventArgs e)
+        void MediaPlayer_MediaLoading(object sender, MediaLoadingEventArgs e)
         {
             if (Manager.DownloaderPlugin is ILifetimeAwareDownloaderPlugin)
             { 
@@ -156,7 +156,7 @@ namespace Microsoft.PlayerFramework.Adaptive
             }
         }
 
-        void MediaPlayer_MediaClosed(object sender, RoutedEventArgs e)
+        void MediaPlayer_MediaClosed(object sender, MediaClosedEventArgs e)
         {
             if (Manager.DownloaderPlugin is ILifetimeAwareDownloaderPlugin)
             {
@@ -165,7 +165,7 @@ namespace Microsoft.PlayerFramework.Adaptive
         }
 #endif
 
-        void MediaPlayer_UpdateCompleted(object sender, RoutedEventArgs e)
+        void MediaPlayer_Updated(object sender, UpdatedEventArgs e)
         {
             if (SSME.SmoothStreamingSource != null)
             {

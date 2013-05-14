@@ -60,8 +60,8 @@ namespace Microsoft.PlayerFramework.TimedText
                 e.OldValue.PayloadChanged -= caption_PayloadChanged;
                 e.OldValue.PayloadAugmented -= caption_PayloadAugmented;
             }
-            MediaPlayer.IsCaptionsActive = (e.NewValue as Caption != null);
-            UpdateCaption(e.NewValue as Caption);
+            MediaPlayer.IsCaptionsActive = (e.NewValue as ICaption != null);
+            UpdateCaption(e.NewValue as ICaption);
             if (e.NewValue != null)
             {
                 e.NewValue.PayloadChanged += caption_PayloadChanged;
@@ -82,7 +82,7 @@ namespace Microsoft.PlayerFramework.TimedText
             captionsPanel.NaturalVideoSize = new Size(MediaPlayer.NaturalVideoWidth, MediaPlayer.NaturalVideoHeight);
         }
 
-        void MediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
+        void MediaPlayer_IsLiveChanged(object sender, object e)
         {
             if (MediaPlayer.IsLive)
             {
@@ -114,7 +114,7 @@ namespace Microsoft.PlayerFramework.TimedText
 
         void timer_Tick(object sender, object e)
         {
-            var caption = MediaPlayer.SelectedCaption as Caption;
+            var caption = MediaPlayer.SelectedCaption as ICaption;
             RefreshCaption(caption, false);
         }
 
@@ -133,9 +133,9 @@ namespace Microsoft.PlayerFramework.TimedText
                 captionsPanel = new TimedTextCaptions();
                 captionsPanel.NaturalVideoSize = new Size(MediaPlayer.NaturalVideoWidth, MediaPlayer.NaturalVideoHeight);
                 captionsPanel.Style = TimedTextCaptionsStyle;
-                MediaPlayer.IsCaptionsActive = (MediaPlayer.SelectedCaption as Caption != null);
+                MediaPlayer.IsCaptionsActive = (MediaPlayer.SelectedCaption as ICaption != null);
                 captionsContainer.Children.Add(captionsPanel);
-                UpdateCaption(MediaPlayer.SelectedCaption as Caption);
+                UpdateCaption(MediaPlayer.SelectedCaption as ICaption);
 
                 MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
                 MediaPlayer.PositionChanged += MediaPlayer_PositionChanged;
@@ -179,7 +179,7 @@ namespace Microsoft.PlayerFramework.TimedText
         /// Will cause the caption source to download and get parsed, and will will start playing.
         /// </summary>
         /// <param name="caption">The caption track to use.</param>
-        public void UpdateCaption(Caption caption)
+        public void UpdateCaption(ICaption caption)
         {
             captionsPanel.Clear();
             RefreshCaption(caption, true);
@@ -187,15 +187,15 @@ namespace Microsoft.PlayerFramework.TimedText
 
         void caption_PayloadChanged(object sender, object e)
         {
-            RefreshCaption(sender as Caption, false);
+            RefreshCaption(sender as ICaption, false);
         }
 
         void caption_PayloadAugmented(object sender, PayloadAugmentedEventArgs e)
         {
-            AugmentCaption(sender as Caption, e.Payload, e.StartTime, e.EndTime);
+            AugmentCaption(sender as ICaption, e.Payload, e.StartTime, e.EndTime);
         }
 
-        private async void AugmentCaption(Caption caption, object payload, TimeSpan startTime, TimeSpan endTime)
+        private async void AugmentCaption(ICaption caption, object payload, TimeSpan startTime, TimeSpan endTime)
         {
             if (caption != null)
             {
@@ -216,13 +216,18 @@ namespace Microsoft.PlayerFramework.TimedText
                 }
                 if (result != null)
                 {
-                    allTasks = EnqueueTask(() => captionsPanel.AugmentTtml(result, startTime, endTime).AsTask(), allTasks);
+#if SILVERLIGHT
+                    var t = captionsPanel.AugmentTtml(result, startTime, endTime);
+#else
+                    var t = captionsPanel.AugmentTtml(result, startTime, endTime).AsTask();
+#endif
+                    allTasks = EnqueueTask(() => t, allTasks);
                     await allTasks;
                 }
             }
         }
 
-        private async void RefreshCaption(Caption caption, bool forceRefresh)
+        private async void RefreshCaption(ICaption caption, bool forceRefresh)
         {
             if (caption != null)
             {
@@ -256,7 +261,12 @@ namespace Microsoft.PlayerFramework.TimedText
 
                 if (result != null)
                 {
-                    allTasks = EnqueueTask(() => captionsPanel.ParseTtml(result, forceRefresh).AsTask(), allTasks);
+#if SILVERLIGHT
+                    var t = captionsPanel.ParseTtml(result, forceRefresh);
+#else
+                    var t = captionsPanel.ParseTtml(result, forceRefresh).AsTask();
+#endif
+                    allTasks = EnqueueTask(() => t, allTasks);
                     await allTasks;
                     IsSourceLoaded = true;
 

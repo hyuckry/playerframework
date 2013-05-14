@@ -27,42 +27,46 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Raised to indicate that the user is requesting to skip back
         /// </summary>
-        event EventHandler<SkippingEventArgs> SkippingBack;
+        event EventHandler<SkipRequestedEventArgs> SkipBackRequested;
 
         /// <summary>
         /// Raised to indicate that the user is requesting to skip ahead
         /// </summary>
-        event EventHandler<SkippingEventArgs> SkippingAhead;
+        event EventHandler<SkipRequestedEventArgs> SkipAheadRequested;
 
         /// <summary>
         /// Raised to indicate that the user is requesting to seek
         /// </summary>
-        event EventHandler<SeekingEventArgs> Seeking;
+        event EventHandler<SeekRequestedEventArgs> SeekRequested;
 
         /// <summary>
         /// Raised to indicate that the user is requesting to start scrubbing
         /// </summary>
-        event EventHandler<StartingScrubEventArgs> StartingScrub;
+        event EventHandler<ScrubStartRequestedEventArgs> ScrubStartRequested;
 
         /// <summary>
-        /// Raised to indicate that the user is requesting to scrub
+        /// Raised to indicate that the user is scrubbing
         /// </summary>
-        event EventHandler<ScrubbingEventArgs> Scrubbing;
+        event EventHandler<ScrubRequestedEventArgs> ScrubRequested;
 
         /// <summary>
-        /// Raised to indicate that the user is requesting to finish scrubbing
+        /// Raised to indicate that the user is completing the scrub
         /// </summary>
-        event EventHandler<CompletingScrubEventArgs> CompletingScrub;
-
-        /// <summary>
-        /// Occurs when the value of the CurrentState property changes.
-        /// </summary>
-        event RoutedEventHandler CurrentStateChanged;
+        event EventHandler<ScrubCompleteRequestedEventArgs> ScrubCompleteRequested;
 
         /// <summary>
         /// Raised when the user interacts
         /// </summary>
         event EventHandler<InteractionEventArgs> Interacting;
+
+        /// <summary>
+        /// Occurs when the value of the CurrentState property changes.
+        /// </summary>
+#if SILVERLIGHT
+        event EventHandler CurrentStateChanged;
+#else
+        event EventHandler<object> CurrentStateChanged;
+#endif
 
         /// <summary>
         /// Can be called by UI elements to indicate that the user is interacting
@@ -154,7 +158,7 @@ namespace Microsoft.PlayerFramework
         /// Gets the caption stream names to be displayed to the user for selecting from multiple captions.
         /// </summary>
         IEnumerable<IAudioStream> AvailableAudioStreams { get; }
-        
+
         /// <summary>
         /// Gets a an IValueConverter that is used to display the time to the user such as the position, duration, and time remaining.
         /// The default value applies the string format of "h\\:mm\\:ss".
@@ -187,7 +191,7 @@ namespace Microsoft.PlayerFramework
         /// Gets or sets if the player should indicate it is in fullscreen mode.
         /// </summary>
         bool IsFullScreen { get; set; }
-        
+
         /// <summary>
         /// Gets the signal strength used to indicate visually to the user the quality of the bitrate.
         /// Note: This is only useful for adaptive streaming.
@@ -277,82 +281,146 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Raised when the IsPlayResumeEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsPlayResumeEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsPlayResumeEnabledChanged;
+#else
+        event EventHandler<object> IsPlayResumeEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsPauseEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsPauseEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsPauseEnabledChanged;
+#else
+        event EventHandler<object> IsPauseEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsStopEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsStopEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsStopEnabledChanged;
+#else
+        event EventHandler<object> IsStopEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsReplayEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsReplayEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsReplayEnabledChanged;
+#else
+        event EventHandler<object> IsReplayEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsAudioSelectionEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsAudioSelectionEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsAudioSelectionEnabledChanged;
+#else
+        event EventHandler<object> IsAudioSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsAudioSelectionEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsCaptionSelectionEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsCaptionSelectionEnabledChanged;
+#else
+        event EventHandler<object> IsCaptionSelectionEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsRewindEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsRewindEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsRewindEnabledChanged;
+#else
+        event EventHandler<object> IsRewindEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsFastForwardEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsFastForwardEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsFastForwardEnabledChanged;
+#else
+        event EventHandler<object> IsFastForwardEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsSlowMotionEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsSlowMotionEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsSlowMotionEnabledChanged;
+#else
+        event EventHandler<object> IsSlowMotionEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsSeekEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsSeekEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsSeekEnabledChanged;
+#else
+        event EventHandler<object> IsSeekEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsSkipPreviousEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsSkipPreviousEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsSkipPreviousEnabledChanged;
+#else
+        event EventHandler<object> IsSkipPreviousEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsSkipNextEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsSkipNextEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsSkipNextEnabledChanged;
+#else
+        event EventHandler<object> IsSkipNextEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsSkipBackEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsSkipBackEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsSkipBackEnabledChanged;
+#else
+        event EventHandler<object> IsSkipBackEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsSkipAheadEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsSkipAheadEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsSkipAheadEnabledChanged;
+#else
+        event EventHandler<object> IsSkipAheadEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsScrubbingEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsScrubbingEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsScrubbingEnabledChanged;
+#else
+        event EventHandler<object> IsScrubbingEnabledChanged;
+#endif
 
         /// <summary>
         /// Raised when the IsGoLiveEnabled property changes.
         /// </summary>
-        event RoutedEventHandler IsGoLiveEnabledChanged;
+#if SILVERLIGHT
+        event EventHandler IsGoLiveEnabledChanged;
+#else
+        event EventHandler<object> IsGoLiveEnabledChanged;
+#endif
 
         /// <summary>
         /// Invokes the closed captioning feature.
@@ -363,7 +431,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the audio stream selection feature.
         /// </summary>
         void InvokeAudioSelection();
-        
+
         /// <summary>
         /// Seeks to the live position on the media. Only supported during live media playback.
         /// </summary>
@@ -485,16 +553,16 @@ namespace Microsoft.PlayerFramework
     /// Provides information about the Seeking event.
     /// </summary>
 #if SILVERLIGHT
-    public sealed class SeekingEventArgs : EventArgs
+    public sealed class SeekRequestedEventArgs : EventArgs
 #else
-    public sealed class SeekingEventArgs
+    public sealed class SeekRequestedEventArgs
 #endif
     {
         /// <summary>
         /// Creates a new instance of the SeekingEventArgs
         /// </summary>
         /// <param name="position">The position the user is seeking to.</param>
-        public SeekingEventArgs(TimeSpan position)
+        public SeekRequestedEventArgs(TimeSpan position)
         {
             Position = position;
         }
@@ -509,38 +577,14 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public bool Cancel { get; set; }
     }
-
-    /// <summary>
-    /// Provides information about a SkippingAhead or SkippingBack event.
-    /// </summary>
-#if SILVERLIGHT
-    public sealed class SkippingEventArgs : EventArgs
-#else
-    public sealed class SkippingEventArgs
-#endif
-    {
-        /// <summary>
-        /// Creates a new instance of the SkippingEventArgs
-        /// </summary>
-        /// <param name="position">The position the user is seeking to.</param>
-        public SkippingEventArgs(TimeSpan position)
-        {
-            Position = position;
-        }
-
-        /// <summary>
-        /// The position the user is skipping to.
-        /// </summary>
-        public TimeSpan Position { get; private set; }
-    }
-
+    
     /// <summary>
     /// Provides information about a CompletingScrub event.
     /// </summary>
 #if SILVERLIGHT
-    public sealed class CompletingScrubEventArgs : EventArgs
+    public sealed class ScrubCompleteRequestedEventArgs : EventArgs
 #else
-    public sealed class CompletingScrubEventArgs
+    public sealed class ScrubCompleteRequestedEventArgs
 #endif
     {
         /// <summary>
@@ -548,7 +592,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="position">The position the user is scrubbing to.</param>
         /// <param name="canceled">Indicates that the operation was already cancelled.</param>
-        public CompletingScrubEventArgs(TimeSpan position, bool canceled)
+        public ScrubCompleteRequestedEventArgs(TimeSpan position, bool canceled)
         {
             Position = position;
             Canceled = canceled;
@@ -574,16 +618,16 @@ namespace Microsoft.PlayerFramework
     /// Provides information about a Scrubbing event.
     /// </summary>
 #if SILVERLIGHT
-    public sealed class ScrubbingEventArgs : EventArgs
+    public sealed class ScrubRequestedEventArgs : EventArgs
 #else
-    public sealed class ScrubbingEventArgs
+    public sealed class ScrubRequestedEventArgs
 #endif
     {
         /// <summary>
-        /// Creates a new instance of the SkippingEventArgs
+        /// Creates a new instance of the ScrubbingEventArgs
         /// </summary>
         /// <param name="position">The position the user is scrubbing to.</param>
-        public ScrubbingEventArgs(TimeSpan position)
+        public ScrubRequestedEventArgs(TimeSpan position)
         {
             Position = position;
         }
@@ -603,16 +647,16 @@ namespace Microsoft.PlayerFramework
     /// Provides information about a StartingScrub event.
     /// </summary>
 #if SILVERLIGHT
-    public sealed class StartingScrubEventArgs : EventArgs
+    public sealed class ScrubStartRequestedEventArgs : EventArgs
 #else
-    public sealed class StartingScrubEventArgs
+    public sealed class ScrubStartRequestedEventArgs
 #endif
     {
         /// <summary>
-        /// Creates a new instance of the SkippingEventArgs
+        /// Creates a new instance of the StartingScrubEventArgs
         /// </summary>
         /// <param name="position">The position the user is scrubbing to.</param>
-        public StartingScrubEventArgs(TimeSpan position)
+        public ScrubStartRequestedEventArgs(TimeSpan position)
         {
             Position = position;
         }
@@ -621,10 +665,34 @@ namespace Microsoft.PlayerFramework
         /// The position the user is scrubbing to.
         /// </summary>
         public TimeSpan Position { get; private set; }
-        
+
         /// <summary>
         /// Gets or sets if the operation should be cancelled.
         /// </summary>
         public bool Cancel { get; set; }
+    }
+
+    /// <summary>
+    /// Provides information about a SkippingAhead or SkippingBack event.
+    /// </summary>
+#if SILVERLIGHT
+    public sealed class SkipRequestedEventArgs : EventArgs
+#else
+    public sealed class SkipRequestedEventArgs
+#endif
+    {
+        /// <summary>
+        /// Creates a new instance of the SkippingEventArgs
+        /// </summary>
+        /// <param name="position">The position the user is seeking to.</param>
+        public SkipRequestedEventArgs(TimeSpan position)
+        {
+            Position = position;
+        }
+
+        /// <summary>
+        /// The position the user is skipping to.
+        /// </summary>
+        public TimeSpan Position { get; private set; }
     }
 }

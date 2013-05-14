@@ -71,9 +71,9 @@ namespace Microsoft.PlayerFramework
             if (availableBar != null)
             {
 #if SILVERLIGHT
-                AvailableBar.MouseLeftButtonDown += bar_PointerPressed;
-                AvailableBar.MouseLeftButtonUp += bar_PointerReleased;
-                AvailableBar.MouseMove += bar_PointerMoved;
+                availableBar.MouseLeftButtonDown += bar_PointerPressed;
+                availableBar.MouseLeftButtonUp += bar_PointerReleased;
+                availableBar.MouseMove += bar_PointerMoved;
 #else
                 availableBar.PointerPressed += bar_PointerPressed;
                 availableBar.PointerReleased += bar_PointerReleased;
@@ -99,9 +99,9 @@ namespace Microsoft.PlayerFramework
             if (availableBar != null)
             {
 #if SILVERLIGHT
-                AvailableBar.MouseLeftButtonDown -= bar_PointerPressed;
-                AvailableBar.MouseLeftButtonUp -= bar_PointerReleased;
-                AvailableBar.MouseMove -= bar_PointerMoved;
+                availableBar.MouseLeftButtonDown -= bar_PointerPressed;
+                availableBar.MouseLeftButtonUp -= bar_PointerReleased;
+                availableBar.MouseMove -= bar_PointerMoved;
 #else
                 availableBar.PointerPressed -= bar_PointerPressed;
                 availableBar.PointerReleased -= bar_PointerReleased;
@@ -661,7 +661,7 @@ namespace Microsoft.PlayerFramework
             {
                 thumb.CancelDrag();
 #if SILVERLIGHT
-                Thumb.ReleaseMouseCapture();
+                thumb.ReleaseMouseCapture();
 #else
                 thumb.ReleasePointerCaptures();
 #endif

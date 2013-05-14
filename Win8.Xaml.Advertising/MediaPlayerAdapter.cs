@@ -41,16 +41,12 @@ namespace Microsoft.PlayerFramework.Advertising
             AdContainer.SizeChanged += AdContainer_SizeChanged;
         }
 
-        void MediaPlayer_IsMutedChanged(object sender, RoutedEventArgs e)
+        void MediaPlayer_IsMutedChanged(object sender, object e)
         {
             if (IsMutedChanged != null) IsMutedChanged(this, EventArgs.Empty);
         }
 
-#if SILVERLIGHT
-        void MediaPlayer_VolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-#else
         void MediaPlayer_VolumeChanged(object sender, RoutedEventArgs e)
-#endif
         {
             if (VolumeChanged != null) VolumeChanged(this, EventArgs.Empty);
         }
@@ -60,7 +56,7 @@ namespace Microsoft.PlayerFramework.Advertising
             if (DimensionsChanged != null) DimensionsChanged(this, EventArgs.Empty);
         }
 
-        void MediaPlayer_IsFullScreenChanged(object sender, RoutedEventArgs e)
+        void MediaPlayer_IsFullScreenChanged(object sender, object e)
         {
             if (FullscreenChanged != null) FullscreenChanged(this, EventArgs.Empty);
         }

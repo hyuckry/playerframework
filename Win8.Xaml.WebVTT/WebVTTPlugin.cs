@@ -72,8 +72,8 @@ namespace Microsoft.PlayerFramework.WebVTT
                 e.OldValue.PayloadChanged -= caption_PayloadChanged;
                 e.OldValue.PayloadAugmented -= caption_PayloadAugmented;
             }
-            MediaPlayer.IsCaptionsActive = (e.NewValue as Caption != null);
-            UpdateCaption(e.NewValue as Caption);
+            MediaPlayer.IsCaptionsActive = (e.NewValue as ICaption != null);
+            UpdateCaption(e.NewValue as ICaption);
             if (e.NewValue != null)
             {
                 e.NewValue.PayloadChanged += caption_PayloadChanged;
@@ -90,7 +90,7 @@ namespace Microsoft.PlayerFramework.WebVTT
             }
         }
 
-        void MediaPlayer_IsLiveChanged(object sender, RoutedEventArgs e)
+        void MediaPlayer_IsLiveChanged(object sender, object e)
         {
             if (MediaPlayer.IsLive)
             {
@@ -122,7 +122,7 @@ namespace Microsoft.PlayerFramework.WebVTT
 
         void timer_Tick(object sender, object e)
         {
-            var caption = MediaPlayer.SelectedCaption as Caption;
+            var caption = MediaPlayer.SelectedCaption as ICaption;
             RefreshCaption(caption);
         }
 
@@ -141,9 +141,9 @@ namespace Microsoft.PlayerFramework.WebVTT
                 markerManager.MarkerReached += MarkerManager_MarkerReached;
                 captionsPanel = new WebVTTPanel();
                 captionsPanel.Style = CaptionsPanelStyle;
-                MediaPlayer.IsCaptionsActive = (MediaPlayer.SelectedCaption as Caption != null);
+                MediaPlayer.IsCaptionsActive = (MediaPlayer.SelectedCaption as ICaption != null);
                 captionsContainer.Children.Add(captionsPanel);
-                UpdateCaption(MediaPlayer.SelectedCaption as Caption);
+                UpdateCaption(MediaPlayer.SelectedCaption as ICaption);
 
                 MediaPlayer.PositionChanged += MediaPlayer_PositionChanged;
                 MediaPlayer.SelectedCaptionChanged += MediaPlayer_SelectedCaptionChanged;
@@ -203,7 +203,7 @@ namespace Microsoft.PlayerFramework.WebVTT
         /// Will cause the caption source to download and get parsed, and will will start playing.
         /// </summary>
         /// <param name="caption">The caption track to use.</param>
-        public void UpdateCaption(Caption caption)
+        public void UpdateCaption(ICaption caption)
         {
             markerManager.Clear();
             captionsPanel.Clear();
@@ -212,15 +212,15 @@ namespace Microsoft.PlayerFramework.WebVTT
 
         void caption_PayloadChanged(object sender, object e)
         {
-            RefreshCaption(sender as Caption);
+            RefreshCaption(sender as ICaption);
         }
 
         void caption_PayloadAugmented(object sender, PayloadAugmentedEventArgs e)
         {
-            AugmentCaption(sender as Caption, e.Payload, e.StartTime, e.EndTime);
+            AugmentCaption(sender as ICaption, e.Payload, e.StartTime, e.EndTime);
         }
 
-        private async void AugmentCaption(Caption caption, object payload, TimeSpan startTime, TimeSpan endTime)
+        private async void AugmentCaption(ICaption caption, object payload, TimeSpan startTime, TimeSpan endTime)
         {
             if (caption != null)
             {
@@ -288,7 +288,7 @@ namespace Microsoft.PlayerFramework.WebVTT
             }
         }
 
-        private async void RefreshCaption(Caption caption)
+        private async void RefreshCaption(ICaption caption)
         {
             if (caption != null)
             {

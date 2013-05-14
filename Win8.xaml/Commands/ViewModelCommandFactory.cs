@@ -21,7 +21,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.Pause(),
                 vm => vm.IsPauseEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsPauseEnabledChanged -= eh, (vm, eh) => vm.IsPauseEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsPauseEnabledChanged -= eh, (vm, eh) => vm.IsPauseEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsPauseEnabledChanged -= eh, (vm, eh) => vm.IsPauseEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -34,7 +38,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.PlayResume(),
                 vm => vm.IsPlayResumeEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsPlayResumeEnabledChanged -= eh, (vm, eh) => vm.IsPlayResumeEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsPlayResumeEnabledChanged -= eh, (vm, eh) => vm.IsPlayResumeEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsPlayResumeEnabledChanged -= eh, (vm, eh) => vm.IsPlayResumeEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -47,7 +55,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.Stop(),
                 vm => vm.IsStopEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsStopEnabledChanged -= eh, (vm, eh) => vm.IsStopEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsStopEnabledChanged -= eh, (vm, eh) => vm.IsStopEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsStopEnabledChanged -= eh, (vm, eh) => vm.IsStopEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -60,7 +72,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.Replay(),
                 vm => vm.IsReplayEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsReplayEnabledChanged -= eh, (vm, eh) => vm.IsReplayEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsReplayEnabledChanged -= eh, (vm, eh) => vm.IsReplayEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsReplayEnabledChanged -= eh, (vm, eh) => vm.IsReplayEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -73,7 +89,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.DecreasePlaybackRate(),
                 vm => vm.IsRewindEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsRewindEnabledChanged -= eh, (vm, eh) => vm.IsRewindEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsRewindEnabledChanged -= eh, (vm, eh) => vm.IsRewindEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsRewindEnabledChanged -= eh, (vm, eh) => vm.IsRewindEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -86,7 +106,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.IncreasePlaybackRate(),
                 vm => vm.IsFastForwardEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsFastForwardEnabledChanged -= eh, (vm, eh) => vm.IsFastForwardEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsFastForwardEnabledChanged -= eh, (vm, eh) => vm.IsFastForwardEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsFastForwardEnabledChanged -= eh, (vm, eh) => vm.IsFastForwardEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -99,7 +123,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.IsSlowMotion = !vm.IsSlowMotion,
                 vm => vm.IsSlowMotionEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSlowMotionEnabledChanged -= eh, (vm, eh) => vm.IsSlowMotionEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSlowMotionEnabledChanged -= eh, (vm, eh) => vm.IsSlowMotionEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsSlowMotionEnabledChanged -= eh, (vm, eh) => vm.IsSlowMotionEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -136,7 +164,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.InvokeCaptionSelection(),
                 vm => vm.IsCaptionSelectionEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsCaptionSelectionEnabledChanged -= eh, (vm, eh) => vm.IsCaptionSelectionEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsCaptionSelectionEnabledChanged -= eh, (vm, eh) => vm.IsCaptionSelectionEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsCaptionSelectionEnabledChanged -= eh, (vm, eh) => vm.IsCaptionSelectionEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -149,7 +181,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.InvokeAudioSelection(),
                 vm => vm.IsAudioSelectionEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsAudioSelectionEnabledChanged -= eh, (vm, eh) => vm.IsAudioSelectionEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsAudioSelectionEnabledChanged -= eh, (vm, eh) => vm.IsAudioSelectionEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsAudioSelectionEnabledChanged -= eh, (vm, eh) => vm.IsAudioSelectionEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -174,7 +210,11 @@ namespace Microsoft.PlayerFramework
             return new TypedViewModelCommand<TimeSpan>(
                 (vm, position) => { bool canceled; vm.Seek(position, out canceled); },
                 (vm, position) => vm.IsSeekEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSeekEnabledChanged -= eh, (vm, eh) => vm.IsSeekEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSeekEnabledChanged -= eh, (vm, eh) => vm.IsSeekEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsSeekEnabledChanged -= eh, (vm, eh) => vm.IsSeekEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -187,7 +227,11 @@ namespace Microsoft.PlayerFramework
             return new TypedViewModelCommand<VisualMarker>(
                 (vm, position) => vm.SkipPrevious(),
                 (vm, position) => vm.IsSkipPreviousEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSkipPreviousEnabledChanged -= eh, (vm, eh) => vm.IsSkipPreviousEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSkipPreviousEnabledChanged -= eh, (vm, eh) => vm.IsSkipPreviousEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsSkipPreviousEnabledChanged -= eh, (vm, eh) => vm.IsSkipPreviousEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -200,7 +244,11 @@ namespace Microsoft.PlayerFramework
             return new TypedViewModelCommand<VisualMarker>(
                 (vm, position) => vm.SkipNext(),
                 (vm, position) => vm.IsSkipNextEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSkipNextEnabledChanged -= eh, (vm, eh) => vm.IsSkipNextEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSkipNextEnabledChanged -= eh, (vm, eh) => vm.IsSkipNextEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsSkipNextEnabledChanged -= eh, (vm, eh) => vm.IsSkipNextEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -213,7 +261,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.SkipBack(),
                 vm => vm.IsSkipBackEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSkipBackEnabledChanged -= eh, (vm, eh) => vm.IsSkipBackEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSkipBackEnabledChanged -= eh, (vm, eh) => vm.IsSkipBackEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsSkipBackEnabledChanged -= eh, (vm, eh) => vm.IsSkipBackEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -226,7 +278,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.SkipAhead(),
                 vm => vm.IsSkipAheadEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsSkipAheadEnabledChanged -= eh, (vm, eh) => vm.IsSkipAheadEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSkipAheadEnabledChanged -= eh, (vm, eh) => vm.IsSkipAheadEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsSkipAheadEnabledChanged -= eh, (vm, eh) => vm.IsSkipAheadEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -239,7 +295,11 @@ namespace Microsoft.PlayerFramework
             return new ViewModelCommand(
                 vm => vm.GoLive(),
                 vm => vm.IsGoLiveEnabled,
-                new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsGoLiveEnabledChanged -= eh, (vm, eh) => vm.IsGoLiveEnabledChanged += eh)
+#if SILVERLIGHT
+                new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsGoLiveEnabledChanged -= eh, (vm, eh) => vm.IsGoLiveEnabledChanged += eh)
+#else
+                new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsGoLiveEnabledChanged -= eh, (vm, eh) => vm.IsGoLiveEnabledChanged += eh)
+#endif
                 );
         }
 
@@ -262,9 +322,14 @@ namespace Microsoft.PlayerFramework
                     }
                 },
             vm => vm.IsPauseEnabled || vm.IsPlayResumeEnabled,
-            new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsPlayResumeEnabledChanged -= eh, (vm, eh) => vm.IsPlayResumeEnabledChanged += eh),
-            new HandlerReference<IInteractiveViewModel, RoutedEventHandler>((vm, eh) => vm.IsPauseEnabledChanged -= eh, (vm, eh) => vm.IsPauseEnabledChanged += eh)
-            );
+#if SILVERLIGHT
+            new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsPlayResumeEnabledChanged -= eh, (vm, eh) => vm.IsPlayResumeEnabledChanged += eh),
+            new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsPauseEnabledChanged -= eh, (vm, eh) => vm.IsPauseEnabledChanged += eh)
+#else
+            new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsPlayResumeEnabledChanged -= eh, (vm, eh) => vm.IsPlayResumeEnabledChanged += eh),
+            new HandlerReference<IInteractiveViewModel, EventHandler<object>>((vm, eh) => vm.IsPauseEnabledChanged -= eh, (vm, eh) => vm.IsPauseEnabledChanged += eh)
+#endif
+);
         }
     }
 }

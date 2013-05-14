@@ -19,7 +19,7 @@ using Windows.Foundation;
 
 namespace Microsoft.PlayerFramework.Advertising
 {
-    public sealed class VpaidHtmlAdPlayer : ContentControl, IVpaid2
+    public sealed class VpaidIFrameAdPlayer : ContentControl, IVpaid2
     {
         readonly DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(250) };
         readonly MarkerHelper markerHelper = new MarkerHelper();
@@ -59,9 +59,9 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <summary>
         /// Creates a new instance of VpaidImageAdPlayer.
         /// </summary>
-        private VpaidHtmlAdPlayer()
+        private VpaidIFrameAdPlayer()
         {
-            this.DefaultStyleKey = typeof(VpaidHtmlAdPlayer);
+            this.DefaultStyleKey = typeof(VpaidIFrameAdPlayer);
             IsHitTestVisible = false;
             Background = new SolidColorBrush(Colors.Transparent);
             State = AdState.None;
@@ -75,7 +75,7 @@ namespace Microsoft.PlayerFramework.Advertising
         /// <param name="suggestedDuration">The duration of the ad. If not specified, the ad is closed when the next ad is played.</param>
         /// <param name="clickThru">The Uri to navigate to when the ad is clicked or tapped. Can be null of no action should take place.</param>
         /// <param name="dimensions">The dimensions of the ad.</param>
-        public VpaidHtmlAdPlayer(FlexibleOffset skippableOffset, TimeSpan? suggestedDuration, Uri clickThru, Size dimensions)
+        public VpaidIFrameAdPlayer(FlexibleOffset skippableOffset, TimeSpan? suggestedDuration, Uri clickThru, Size dimensions)
             : this()
         {
             initialDimensions = dimensions;
@@ -120,10 +120,10 @@ namespace Microsoft.PlayerFramework.Advertising
                 clickThroughButton.Click += ClickThroughButton_Click;
                 clickThroughButton.NavigateUri = navigateUri;
 #if SILVERLIGHT
-                ClickThroughButton.TargetName = "_blank";
+                clickThroughButton.TargetName = "_blank";
 #endif
 #if WINDOWS_PHONE
-                ClickThroughButton.Content = ClickThroughButton.Content ?? MediaPlayer.GetResourceString("AdLinkLabel");
+                clickThroughButton.Content = clickThroughButton.Content ?? MediaPlayer.GetResourceString("AdLinkLabel");
 #endif
             }
 
@@ -216,7 +216,7 @@ namespace Microsoft.PlayerFramework.Advertising
             WebView.LoadCompleted += WebView_LoadCompleted;
             WebView.NavigationFailed += WebView_NavigationFailed;
 #endif
-            WebView.NavigateToString(creativeData);
+            WebView.Navigate(new Uri(creativeData));
         }
 
 #if WINDOWS_PHONE
@@ -383,6 +383,7 @@ namespace Microsoft.PlayerFramework.Advertising
             this.SizeChanged -= AdPlayer_SizeChanged;
             timer.Tick -= timer_Tick;
             if (timer.IsEnabled) timer.Stop();
+
             if (WebView != null)
             {
 #if WINDOWS_PHONE
