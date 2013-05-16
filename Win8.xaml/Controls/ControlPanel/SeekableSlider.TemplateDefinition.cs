@@ -528,7 +528,7 @@ namespace Microsoft.PlayerFramework
         private void ThumbDragStarted(object sender, DragStartedEventArgs e)
         {
             UpdateScrubbingVisualState();
-            OnScrubbingStarted(new ValueRoutedEventArgs(Value));
+            OnScrubbingStarted(new SeekableSliderManipulatedEventArgs(Value));
         }
 
         private void ThumbDragDelta(object sender, DragDeltaEventArgs e)
@@ -545,7 +545,7 @@ namespace Microsoft.PlayerFramework
             {
                 if (Value > Max) Value = Max;
                 UpdateScrubbingVisualState();
-                OnScrubbingCompleted(new ValueRoutedEventArgs(Value));
+                OnScrubbingCompleted(new SeekableSliderManipulatedEventArgs(Value));
             }
         }
 
@@ -575,7 +575,7 @@ namespace Microsoft.PlayerFramework
                 if (newValue.HasValue)
                 {
                     var value = Math.Min(newValue.Value, Max);
-                    var args = new ValueRoutedEventArgs(value);
+                    var args = new SeekableSliderManipulatedEventArgs(value);
                     OnScrubbingStarted(args);
                     if (!args.Canceled)
                     {
@@ -605,7 +605,7 @@ namespace Microsoft.PlayerFramework
 
                 if (pointerCaptured)
                 {
-                    OnScrubbingCompleted(new ValueRoutedEventArgs(Value));
+                    OnScrubbingCompleted(new SeekableSliderManipulatedEventArgs(Value));
                     pointerReleaseAction();
                     pointerReleaseAction = null;
                     pointerCaptured = false;

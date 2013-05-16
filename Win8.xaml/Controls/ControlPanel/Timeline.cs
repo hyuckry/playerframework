@@ -126,7 +126,7 @@ namespace Microsoft.PlayerFramework
             ViewModel.Seek(marker.Time, out canceled);
         }
 
-        void ProgressSliderElement_Seeked(object sender, ValueRoutedEventArgs e)
+        void ProgressSliderElement_Seeked(object sender, SeekableSliderManipulatedEventArgs e)
         {
             if (ViewModel != null)
             {
@@ -136,7 +136,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void ProgressSliderElement_Scrubbing(object sender, ValueRoutedEventArgs e)
+        void ProgressSliderElement_Scrubbing(object sender, SeekableSliderManipulatedEventArgs e)
         {
             if (ViewModel != null)
             {
@@ -152,7 +152,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void ProgressSliderElement_ScrubbingCompleted(object sender, ValueRoutedEventArgs e)
+        void ProgressSliderElement_ScrubbingCompleted(object sender, SeekableSliderManipulatedEventArgs e)
         {
             if (ViewModel != null)
             {
@@ -162,7 +162,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void ProgressSliderElement_ScrubbingStarted(object sender, ValueRoutedEventArgs e)
+        void ProgressSliderElement_ScrubbingStarted(object sender, SeekableSliderManipulatedEventArgs e)
         {
             if (ViewModel != null)
             {

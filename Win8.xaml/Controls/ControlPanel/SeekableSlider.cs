@@ -50,28 +50,28 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the user seeked.
         /// </summary>
-        public event EventHandler<ValueRoutedEventArgs> Seeked;
+        public event EventHandler<SeekableSliderManipulatedEventArgs> Seeked;
 
         /// <summary>
         /// Occurs when the user begins scrubbing.
         /// </summary>
-        public event EventHandler<ValueRoutedEventArgs> ScrubbingStarted;
+        public event EventHandler<SeekableSliderManipulatedEventArgs> ScrubbingStarted;
 
         /// <summary>
         /// Occurs when the user scrubs.
         /// </summary>
-        public event EventHandler<ValueRoutedEventArgs> Scrubbing;
+        public event EventHandler<SeekableSliderManipulatedEventArgs> Scrubbing;
 
         /// <summary>
         /// Occurs when the user completes scrubbing.
         /// </summary>
-        public event EventHandler<ValueRoutedEventArgs> ScrubbingCompleted;
+        public event EventHandler<SeekableSliderManipulatedEventArgs> ScrubbingCompleted;
 
         /// <summary>
         /// Invokes the Seeked event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        void OnSeeked(ValueRoutedEventArgs e)
+        void OnSeeked(SeekableSliderManipulatedEventArgs e)
         {
             if (Seeked != null)
             {
@@ -88,7 +88,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the ScrubbingCompleted event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        void OnScrubbingCompleted(ValueRoutedEventArgs e)
+        void OnScrubbingCompleted(SeekableSliderManipulatedEventArgs e)
         {
             if (ScrubbingCompleted != null)
             {
@@ -105,7 +105,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the Scrubbing event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        void OnScrubbing(ValueRoutedEventArgs e)
+        void OnScrubbing(SeekableSliderManipulatedEventArgs e)
         {
             if (Scrubbing != null)
             {
@@ -122,7 +122,7 @@ namespace Microsoft.PlayerFramework
         /// Invokes the ScrubbingStarted event.
         /// </summary>
         /// <param name="e">EventArgs used to provide info about the event</param>
-        void OnScrubbingStarted(ValueRoutedEventArgs e)
+        void OnScrubbingStarted(SeekableSliderManipulatedEventArgs e)
         {
             if (ScrubbingStarted != null)
             {
@@ -147,7 +147,7 @@ namespace Microsoft.PlayerFramework
                 }
                 else
                 {
-                    var args = new ValueRoutedEventArgs(value);
+                    var args = new SeekableSliderManipulatedEventArgs(value);
                     if (IsScrubbing)
                     {
                         OnScrubbing(args);
@@ -343,9 +343,13 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// EventArgs class to return a double.
     /// </summary>
-    public sealed class ValueRoutedEventArgs : RoutedEventArgs
+#if SILVERLIGHT
+    public sealed class ValueEventArgs : EventArgs
+#else
+    public sealed class SeekableSliderManipulatedEventArgs
+#endif
     {
-        internal ValueRoutedEventArgs(double Value)
+        internal SeekableSliderManipulatedEventArgs(double Value)
         {
             this.Value = Value;
         }
