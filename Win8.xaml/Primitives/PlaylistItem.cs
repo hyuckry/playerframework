@@ -279,8 +279,5 @@ namespace Microsoft.PlayerFramework
             get { return GetValue(AvailableCaptionsProperty) as IList<ICaption>; }
         }
         #endregion
-
-        /// <inheritdoc /> 
-        public MediaPlayer Player { get; internal set; }
     }
 }

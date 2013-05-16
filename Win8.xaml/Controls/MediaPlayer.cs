@@ -2728,9 +2728,6 @@ namespace Microsoft.PlayerFramework
 
         #endregion
 
-        /// <inheritdoc /> 
-        MediaPlayer IMediaSource.Player { get { return this; } }
-
         #region TimeFormatConverter
         /// <summary>
         /// Identifies the TimeFormatConverter dependency property.
