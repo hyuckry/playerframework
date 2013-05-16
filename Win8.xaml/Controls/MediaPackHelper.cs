@@ -12,18 +12,16 @@ namespace Microsoft.PlayerFramework
     /// </summary>
     public static class MediaPackHelper
     {
-        /// <summary>
-        /// Creates a new instance of MediaPackHelper.
-        /// </summary>
-        static MediaPackHelper()
-        {
-            MediaPackUri = new Uri("http://www.microsoft.com/en-ie/download/details.aspx?id=30685");
-        }
-
+        static Uri mediaPackUri = new Uri("http://www.microsoft.com/en-ie/download/details.aspx?id=30685");
+        
         /// <summary>
         /// Gets or sets the download url for the media feature pack.
         /// </summary>
-        public static Uri MediaPackUri { get; set; }
+        public static Uri MediaPackUri
+        {
+            get { return mediaPackUri; }
+            set { mediaPackUri = value; }
+        }
 
         /// <summary>
         /// Determines if the Media Feature Pack is required.
@@ -74,7 +72,7 @@ namespace Microsoft.PlayerFramework
         {
             return AsyncInfo.Run(c => promptForMediaPack());
         }
-            
+
         static async Task promptForMediaPack()
 #else
         public static async Task PromptForMediaPack()
