@@ -43,7 +43,7 @@ namespace Microsoft.PlayerFramework
                     Style = BufferingViewStyle
                 };
                 bufferingContainer.Children.Add(bufferingElement);
-                bufferingElement.SetBinding(MediaPlayerControl.ViewModelProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
+                bufferingElement.SetBinding(BufferingView.ViewModelProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
             }
         }
 
@@ -58,7 +58,7 @@ namespace Microsoft.PlayerFramework
         {
             if (bufferingElement != null)
             {
-                bufferingElement.ClearValue(MediaPlayerControl.ViewModelProperty);
+                bufferingElement.ClearValue(BufferingView.ViewModelProperty);
                 bufferingContainer.Children.Remove(bufferingElement);
                 bufferingElement = null;
                 bufferingContainer = null;

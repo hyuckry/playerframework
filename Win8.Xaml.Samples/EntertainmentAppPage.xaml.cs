@@ -59,9 +59,9 @@ namespace Microsoft.PlayerFramework.Samples
 
         private void UpdateViewModel(IInteractiveViewModel vm)
         {
-            MediaPlayerControl.SetViewModel(ReplayButton, vm);
-            MediaPlayerControl.SetViewModel(CaptionSelectionButton, vm);
-            MediaPlayerControl.SetViewModel(AudioSelectionButton, vm);
+            ReplayButton.ViewModel = vm;
+            CaptionSelectionButton.ViewModel = vm;
+            AudioSelectionButton.ViewModel = vm;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

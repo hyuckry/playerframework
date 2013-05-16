@@ -344,7 +344,7 @@ namespace Microsoft.PlayerFramework
     /// EventArgs class to return a double.
     /// </summary>
 #if SILVERLIGHT
-    public sealed class ValueEventArgs : EventArgs
+    public sealed class SeekableSliderManipulatedEventArgs : EventArgs
 #else
     public sealed class SeekableSliderManipulatedEventArgs
 #endif

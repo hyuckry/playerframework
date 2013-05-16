@@ -28,7 +28,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a play/pause toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class PlayPauseButton : Button, IMediaPlayerControl
+    public sealed class PlayPauseButton : Button
     {
         /// <summary>
         /// Creates a new instance of PlayPauseButton.
@@ -43,9 +43,26 @@ namespace Microsoft.PlayerFramework
             PlayingName = MediaPlayer.GetResourceString("PauseButtonLabel");
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(PlayPauseButton), new PropertyMetadata(null, (s, d) => ((PlayPauseButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
             this.SetBinding(PlayPauseButton.IsPausedProperty, new Binding() { Path = new PropertyPath("IsPlayResumeEnabled"), Source = newValue });
         }
 
@@ -189,7 +206,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a fullscreen toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class FullScreenButton : Button, IMediaPlayerControl
+    public sealed class FullScreenButton : Button
     {
         /// <summary>
         /// Creates a new instance of FullScreenButton.
@@ -204,9 +221,26 @@ namespace Microsoft.PlayerFramework
             NotFullScreenName = MediaPlayer.GetResourceString("FullScreenButtonLabel");
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(FullScreenButton), new PropertyMetadata(null, (s, d) => ((FullScreenButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+        
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
             this.SetBinding(FullScreenButton.IsFullScreenProperty, new Binding() { Path = new PropertyPath("IsFullScreen"), Source = newValue });
         }
 
@@ -350,7 +384,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a mute toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class MuteButton : Button, IMediaPlayerControl
+    public sealed class MuteButton : Button
     {
         /// <summary>
         /// Creates a new instance of MuteButton.
@@ -365,9 +399,26 @@ namespace Microsoft.PlayerFramework
             UnmutedName = MediaPlayer.GetResourceString("MuteButtonLabel");
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(MuteButton), new PropertyMetadata(null, (s, d) => ((MuteButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
             this.SetBinding(MuteButton.IsMutedProperty, new Binding() { Path = new PropertyPath("IsMuted"), Source = newValue });
         }
 
@@ -511,7 +562,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a slow motion toggle button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class SlowMotionButton : ToggleButton, IMediaPlayerControl
+    public sealed class SlowMotionButton : ToggleButton
     {
         /// <summary>
         /// Creates a new instance of SlowMotionButton.
@@ -525,9 +576,26 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("SlowMotionButtonLabel"));
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(SlowMotionButton), new PropertyMetadata(null, (s, d) => ((SlowMotionButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
             this.SetBinding(ToggleButton.IsCheckedProperty, new Binding() { Path = new PropertyPath("IsSlowMotion"), Source = newValue });
         }
     }
@@ -547,6 +615,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("PlayButtonLabel"));
             Command = ViewModelCommandFactory.CreatePlayResumeCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(PlayButton), new PropertyMetadata(null, (s, d) => ((PlayButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
@@ -563,6 +653,28 @@ namespace Microsoft.PlayerFramework
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("PauseButtonLabel"));
             Command = ViewModelCommandFactory.CreatePauseCommand();
+        }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(PauseButton), new PropertyMetadata(null, (s, d) => ((PauseButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
         }
     }
 
@@ -581,6 +693,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("CaptionSelectionButtonLabel"));
             Command = ViewModelCommandFactory.CreateCaptionsCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(CaptionSelectionButton), new PropertyMetadata(null, (s, d) => ((CaptionSelectionButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
@@ -597,6 +731,28 @@ namespace Microsoft.PlayerFramework
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("GoLiveButtonLabel"));
             Command = ViewModelCommandFactory.CreateGoLiveCommand();
+        }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(GoLiveButton), new PropertyMetadata(null, (s, d) => ((GoLiveButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
         }
     }
 
@@ -615,6 +771,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("AudioSelectionButtonLabel"));
             Command = ViewModelCommandFactory.CreateAudioSelectionCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(AudioSelectionButton), new PropertyMetadata(null, (s, d) => ((AudioSelectionButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
@@ -631,6 +809,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("SkipBackButtonLabel"));
 
             Command = ViewModelCommandFactory.CreateSkipBackCommand();
+        }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(SkipBackButton), new PropertyMetadata(null, (s, d) => ((SkipBackButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
         }
     }
 
@@ -650,12 +850,34 @@ namespace Microsoft.PlayerFramework
 
             Command = ViewModelCommandFactory.CreateSkipAheadCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(SkipAheadButton), new PropertyMetadata(null, (s, d) => ((SkipAheadButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
     /// Represents a time elapsed + skip back button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class TimeElapsedButton : Button, IMediaPlayerControl
+    public sealed class TimeElapsedButton : Button
     {
         string skipBackPointerOverStringFormat;
         Binding contentHoverBinding;
@@ -675,9 +897,27 @@ namespace Microsoft.PlayerFramework
             Command = ViewModelCommandFactory.CreateSkipBackCommand();
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(TimeElapsedButton), new PropertyMetadata(null, (s, d) => ((TimeElapsedButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+
             contentHoverBinding = new Binding() { Path = new PropertyPath("SkipBackInterval"), Source = newValue, Converter = new StringFormatConverter() { StringFormat = skipBackPointerOverStringFormat } };
             contentUnhoverBinding = new Binding() { Path = new PropertyPath("Position"), Source = newValue, Converter = newValue != null ? newValue.TimeFormatConverter : null };
 
@@ -690,7 +930,7 @@ namespace Microsoft.PlayerFramework
                 this.SetBinding(Button.ContentProperty, contentHoverBinding);
             }
             else
-            { 
+            {
                 this.SetBinding(Button.ContentProperty, contentUnhoverBinding);
             }
         }
@@ -729,7 +969,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a total duration + skip ahead button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class DurationButton : Button, IMediaPlayerControl
+    public sealed class DurationButton : Button
     {
         string skipAheadPointerOverStringFormat;
         Binding contentHoverBinding;
@@ -749,9 +989,27 @@ namespace Microsoft.PlayerFramework
             Command = ViewModelCommandFactory.CreateSkipAheadCommand();
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(DurationButton), new PropertyMetadata(null, (s, d) => ((DurationButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+
             contentHoverBinding = new Binding() { Path = new PropertyPath("SkipAheadInterval"), Source = newValue, Converter = new StringFormatConverter() { StringFormat = skipAheadPointerOverStringFormat } };
             contentUnhoverBinding = new Binding() { Path = new PropertyPath("Duration"), Source = newValue, Converter = newValue != null ? newValue.TimeFormatConverter : null };
 
@@ -764,7 +1022,7 @@ namespace Microsoft.PlayerFramework
                 this.SetBinding(Button.ContentProperty, contentHoverBinding);
             }
             else
-            { 
+            {
                 this.SetBinding(Button.ContentProperty, contentUnhoverBinding);
             }
         }
@@ -803,7 +1061,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time remaining + skip ahead button that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class TimeRemainingButton : Button, IMediaPlayerControl
+    public sealed class TimeRemainingButton : Button
     {
         string skipAheadPointerOverStringFormat;
         Binding contentHoverBinding;
@@ -823,9 +1081,27 @@ namespace Microsoft.PlayerFramework
             Command = ViewModelCommandFactory.CreateSkipAheadCommand();
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(TimeRemainingButton), new PropertyMetadata(null, (s, d) => ((TimeRemainingButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+
             contentHoverBinding = new Binding() { Path = new PropertyPath("SkipAheadInterval"), Source = newValue, Converter = new StringFormatConverter() { StringFormat = skipAheadPointerOverStringFormat } };
             contentUnhoverBinding = new Binding() { Path = new PropertyPath("TimeRemaining"), Source = newValue, Converter = newValue != null ? newValue.TimeFormatConverter : null };
 
@@ -877,7 +1153,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a total duration textblock that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class TotalDuration : ContentControl, IMediaPlayerControl
+    public sealed class TotalDuration : ContentControl
     {
         /// <summary>
         /// Creates a new instance of TotalDuration.
@@ -887,8 +1163,23 @@ namespace Microsoft.PlayerFramework
             this.DefaultStyleKey = typeof(TotalDuration);
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(TotalDuration), new PropertyMetadata(null, (s, d) => ((TotalDuration)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
             this.SetBinding(ContentControl.ContentProperty, new Binding() { Path = new PropertyPath("Duration"), Source = newValue, Converter = newValue != null ? newValue.TimeFormatConverter : null });
         }
@@ -897,7 +1188,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time elapsed textblock that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class TimeElapsed : ContentControl, IMediaPlayerControl
+    public sealed class TimeElapsed : ContentControl
     {
         /// <summary>
         /// Creates a new instance of TimeElapsed.
@@ -907,8 +1198,23 @@ namespace Microsoft.PlayerFramework
             this.DefaultStyleKey = typeof(TimeElapsed);
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(TimeElapsed), new PropertyMetadata(null, (s, d) => ((TimeElapsed)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
             this.SetBinding(ContentControl.ContentProperty, new Binding() { Path = new PropertyPath("Position"), Source = newValue, Converter = newValue != null ? newValue.TimeFormatConverter : null });
         }
@@ -917,7 +1223,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a time remaining textblock that can be bound to MediaPlayer.InteractiveViewModel
     /// </summary>
-    public sealed class TimeRemaining : ContentControl, IMediaPlayerControl
+    public sealed class TimeRemaining : ContentControl
     {
         /// <summary>
         /// Creates a new instance of TimeRemaining.
@@ -927,8 +1233,23 @@ namespace Microsoft.PlayerFramework
             this.DefaultStyleKey = typeof(TimeRemaining);
         }
 
-        /// <inheritdoc /> 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(TimeRemaining), new PropertyMetadata(null, (s, d) => ((TimeRemaining)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
             this.SetBinding(ContentControl.ContentProperty, new Binding() { Path = new PropertyPath("TimeRemaining"), Source = newValue, Converter = newValue != null ? newValue.TimeFormatConverter : null });
         }
@@ -949,6 +1270,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("SkipPreviousButtonLabel"));
             Command = ViewModelCommandFactory.CreateSkipPreviousCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(SkipPreviousButton), new PropertyMetadata(null, (s, d) => ((SkipPreviousButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
@@ -965,6 +1308,28 @@ namespace Microsoft.PlayerFramework
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("SkipNextButtonLabel"));
             Command = ViewModelCommandFactory.CreateSkipNextCommand();
+        }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(SkipNextButton), new PropertyMetadata(null, (s, d) => ((SkipNextButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
         }
     }
 
@@ -983,6 +1348,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("StopButtonLabel"));
             Command = ViewModelCommandFactory.CreateStopCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(StopButton), new PropertyMetadata(null, (s, d) => ((StopButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
@@ -999,6 +1386,28 @@ namespace Microsoft.PlayerFramework
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("RewindButtonLabel"));
             Command = ViewModelCommandFactory.CreateRewindCommand();
+        }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(RewindButton), new PropertyMetadata(null, (s, d) => ((RewindButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
         }
     }
 
@@ -1017,6 +1426,28 @@ namespace Microsoft.PlayerFramework
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("FastForwardButtonLabel"));
             Command = ViewModelCommandFactory.CreateFastForwardCommand();
         }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(FastForwardButton), new PropertyMetadata(null, (s, d) => ((FastForwardButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
+        }
     }
 
     /// <summary>
@@ -1033,6 +1464,28 @@ namespace Microsoft.PlayerFramework
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("ReplayButtonLabel"));
             Command = ViewModelCommandFactory.CreateReplayCommand();
+        }
+
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(ReplayButton), new PropertyMetadata(null, (s, d) => ((ReplayButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            var vmCommand = Command as IViewModelCommand;
+            if (vmCommand != null) vmCommand.ViewModel = newValue;
         }
     }
 }

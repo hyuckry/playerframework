@@ -29,7 +29,7 @@ namespace Microsoft.PlayerFramework
     [TemplatePart(Name = TimelineTemplateParts.DownloadProgressBarElement, Type = typeof(ProgressBar))]
     [TemplatePart(Name = TimelineTemplateParts.ProgressSliderElement, Type = typeof(SeekableSlider))]
     [TemplatePart(Name = TimelineTemplateParts.PositionedItemsControl, Type = typeof(PositionedItemsControl))]
-    public sealed class Timeline : Control, IMediaPlayerControl
+    public sealed class Timeline : Control
     {
         ProgressBar downloadProgressBarElement;
 
@@ -178,12 +178,23 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        IInteractiveViewModel ViewModel
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(Timeline), new PropertyMetadata(null, (s, d) => ((Timeline)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
-            get { return MediaPlayerControl.GetViewModel(this); }
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
         }
 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
             InitializeProgressSlider(newValue);
         }

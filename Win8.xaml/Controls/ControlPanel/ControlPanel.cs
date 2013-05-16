@@ -21,7 +21,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A MediaPlayer control panel to allow user control over audio or video.
     /// </summary>
-    public sealed partial class ControlPanel : Control, IMediaPlayerControl
+    public sealed partial class ControlPanel : Control
     {
         /// <summary>
         /// Instantiates a new instance of the ControlPanel class.
@@ -48,7 +48,23 @@ namespace Microsoft.PlayerFramework
             IsTemplateApplied = true;
         }
 
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(ControlPanel), new PropertyMetadata(null, (s, d) => ((ControlPanel)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
+
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
             if (oldValue != null)
             {
@@ -61,11 +77,6 @@ namespace Microsoft.PlayerFramework
                     InitializeViewModel(newValue);
                 }
             }
-        }
-
-        IInteractiveViewModel ViewModel
-        {
-            get { return MediaPlayerControl.GetViewModel(this); }
         }
 
         /// <summary>

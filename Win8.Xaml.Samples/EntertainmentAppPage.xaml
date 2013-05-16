@@ -60,9 +60,9 @@
     <Page.BottomAppBar>
         <AppBar x:Name="lowerAppBar" Background="{StaticResource AppBarBackgroundThemeBrush}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <mmppf:ReplayButton x:Name="ReplayButton" mmppf:MediaPlayerControl.ViewModel="{Binding InteractiveViewModel, ElementName=player}" Style="{StaticResource AppBarButtonStyle}"/>
-                <mmppf:CaptionSelectionButton x:Name="CaptionSelectionButton" mmppf:MediaPlayerControl.ViewModel="{Binding InteractiveViewModel, ElementName=player}" Style="{StaticResource AppBarButtonStyle}"/>
-                <mmppf:AudioSelectionButton x:Name="AudioSelectionButton" mmppf:MediaPlayerControl.ViewModel="{Binding InteractiveViewModel, ElementName=player}" Style="{StaticResource AppBarButtonStyle}"/>
+                <mmppf:ReplayButton x:Name="ReplayButton" ViewModel="{Binding InteractiveViewModel, ElementName=player}" Style="{StaticResource AppBarButtonStyle}"/>
+                <mmppf:CaptionSelectionButton x:Name="CaptionSelectionButton" ViewModel="{Binding InteractiveViewModel, ElementName=player}" Style="{StaticResource AppBarButtonStyle}"/>
+                <mmppf:AudioSelectionButton x:Name="AudioSelectionButton" ViewModel="{Binding InteractiveViewModel, ElementName=player}" Style="{StaticResource AppBarButtonStyle}"/>
             </StackPanel>
         </AppBar>
     </Page.BottomAppBar>

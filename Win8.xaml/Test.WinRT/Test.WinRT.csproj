@@ -101,58 +101,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\..\Lib\Portable\ZLib\ZLib.csproj">
-      <Project>{2d385553-240d-4f31-a78f-72686bb2613b}</Project>
-      <Name>ZLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.AdaptiveStreaming.Analytics\Microsoft.AdaptiveStreaming.Analytics.csproj">
-      <Project>{bfd7f8cb-c154-43e8-9647-d1f8005f71ab}</Project>
-      <Name>Microsoft.AdaptiveStreaming.Analytics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.AdaptiveStreaming\Microsoft.AdaptiveStreaming.csproj">
-      <Project>{b252fc20-5150-43d0-bb77-802df3231ef1}</Project>
-      <Name>Microsoft.AdaptiveStreaming</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.TimedText\Microsoft.TimedText.csproj">
-      <Project>{d1f1ea17-4a91-4f3b-a243-f2b41d6cbce6}</Project>
-      <Name>Microsoft.TimedText</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.VideoAdvertising\Microsoft.VideoAdvertising.csproj">
-      <Project>{f863edc6-2886-4d39-a578-89f4ff729d82}</Project>
-      <Name>Microsoft.VideoAdvertising</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.VideoAnalytics\Microsoft.VideoAnalytics.csproj">
-      <Project>{961ce8ee-f4be-403f-ac06-a53ce1c7ce4c}</Project>
-      <Name>Microsoft.VideoAnalytics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.WebVTT\Microsoft.WebVTT.csproj">
-      <Project>{a3abccaa-b41b-4ab6-a1d9-a1e0d939b140}</Project>
-      <Name>Microsoft.WebVTT</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.Xaml.Adaptive\Microsoft.PlayerFramework.Xaml.Adaptive.csproj">
-      <Project>{66c646d5-855a-4ca9-91e2-190c6834f7c0}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml.Adaptive</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.Xaml.Advertising\Microsoft.PlayerFramework.Xaml.Advertising.csproj">
-      <Project>{2e19fe19-9b06-416d-8ffc-c432d6285cb9}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml.Advertising</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.Xaml.Analytics\Microsoft.PlayerFramework.Xaml.Analytics.csproj">
-      <Project>{da1f6f23-4c7f-4e0c-8884-f283ee0f3633}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml.Analytics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.Xaml.CaptionMarkers\Microsoft.PlayerFramework.Xaml.CaptionMarkers.csproj">
-      <Project>{46262466-50e8-4acb-bb8d-6973ae6d00dd}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml.CaptionMarkers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.Xaml.TimedText\Microsoft.PlayerFramework.Xaml.TimedText.csproj">
-      <Project>{54fb8bf9-02df-490f-9837-0195afd3f1aa}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml.TimedText</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Win8.Xaml.WebVTT\Microsoft.PlayerFramework.Xaml.WebVTT.csproj">
-      <Project>{2ba82c57-a6fe-4b07-a2d9-fcec84e8650d}</Project>
-      <Name>Microsoft.PlayerFramework.Xaml.WebVTT</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Microsoft.PlayerFramework.Xaml.csproj">
       <Project>{81ae6f43-2ba7-4e89-8d7c-a78b152222bd}</Project>
       <Name>Microsoft.PlayerFramework.Xaml</Name>
@@ -192,14 +140,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="Microsoft.Media.AdaptiveStreamingClient, Version=1.0">
-      <Name>Microsoft Smooth Streaming Client SDK for Windows 8</Name>
-    </SDKReference>
-    <SDKReference Include="Microsoft.VCLibs, Version=11.0">
-      <Name>Microsoft Visual C++ Runtime Package</Name>
-    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

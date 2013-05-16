@@ -22,7 +22,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// A control that allows the user to change the volume.
     /// </summary>
-    public sealed class VolumeSlider : Control, IMediaPlayerControl
+    public sealed class VolumeSlider : Control
     {
         //<local:SeekableSlider x:Name="HorizontalVolumeSlider" local:RangeBaseBehavior.Command="{Binding VolumeCommand, Source={StaticResource Commands}}" ActualValue="{Binding Volume}" Maximum="1" HorizontalAlignment="Center" Width="83" Visibility="Collapsed">
         //    <ToolTipService.ToolTip>
@@ -77,25 +77,31 @@ namespace Microsoft.PlayerFramework
                 ViewModel.Volume = e.NewValue;
             }
         }
+        
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(VolumeSlider), new PropertyMetadata(null, (s, d) => ((VolumeSlider)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
 
         /// <summary>
-        /// Provides notification that the view model has changed.
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
         /// </summary>
-        /// <param name="oldValue">The old view model. Note: this could be null.</param>
-        /// <param name="newValue">The new view model. Note: this could be null.</param>
-        void IMediaPlayerControl.OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        public IInteractiveViewModel ViewModel
+        {
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
         {
             if (slider != null)
             {
                 slider.SetBinding(SeekableSlider.ActualValueProperty, new Binding() { Path = new PropertyPath("Volume"), Source = ViewModel });
             }
         }
-
-        IInteractiveViewModel ViewModel
-        {
-            get { return MediaPlayerControl.GetViewModel(this); }
-        }
-
+        
         /// <summary>
         /// Identifies the Orientation dependency property.
         /// </summary>

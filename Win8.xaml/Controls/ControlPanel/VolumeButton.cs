@@ -279,10 +279,26 @@ namespace Microsoft.PlayerFramework
                 IsVolumeVisible = true;
             }
         }
+        
+        /// <summary>
+        /// Identifies the ViewModel dependency property.
+        /// </summary>
+        public static DependencyProperty ViewModelProperty { get { return viewModelProperty; } }
+        static readonly DependencyProperty viewModelProperty = DependencyProperty.Register("ViewModel", typeof(IInteractiveViewModel), typeof(VolumeButton), new PropertyMetadata(null, (s, d) => ((VolumeButton)s).OnViewModelChanged(d.OldValue as IInteractiveViewModel, d.NewValue as IInteractiveViewModel)));
 
-        IInteractiveViewModel ViewModel
+        /// <summary>
+        /// Gets or sets the InteractiveViewModel object used to provide state updates and serve user interaction requests.
+        /// This is usually an instance of the MediaPlayer but could be a custom implementation to support unique interaction such as in the case of advertising.
+        /// </summary>
+        public IInteractiveViewModel ViewModel
         {
-            get { return MediaPlayerControl.GetViewModel(this); }
+            get { return GetValue(ViewModelProperty) as IInteractiveViewModel; }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        void OnViewModelChanged(IInteractiveViewModel oldValue, IInteractiveViewModel newValue)
+        {
+            // nothing to do
         }
 
         /// <summary>

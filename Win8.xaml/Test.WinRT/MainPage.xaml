@@ -10,11 +10,11 @@
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <!--<mmppf:MediaPlayer Source="http://smf.blob.core.windows.net/samples/videos/bigbuck.mp4"/>-->
-        <mmppf:MediaPlayer Source="http://mediadl.microsoft.com/mediadl/iisnet/smoothmedia/Experience/BigBuckBunny_720p.ism/Manifest">
+        <mmppf:MediaPlayer Source="http://smf.blob.core.windows.net/samples/videos/bigbuck.mp4"/>
+        <!--<mmppf:MediaPlayer Source="http://mediadl.microsoft.com/mediadl/iisnet/smoothmedia/Experience/BigBuckBunny_720p.ism/Manifest">
             <mmppf:MediaPlayer.Plugins>
                 <adaptive:AdaptivePlugin />
             </mmppf:MediaPlayer.Plugins>
-        </mmppf:MediaPlayer>
+        </mmppf:MediaPlayer>-->
     </Grid>
 </Page>
