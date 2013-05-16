@@ -49,7 +49,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Supports an opportunity to cancel or intercept a command that is about to execute.
         /// </summary>
-        public event EventHandler<CancelEventArgs> Executing;
+        public event EventHandler<ExecutingEventArgs> Executing;
 
         /// <summary>
         /// The action to invoke when the Execute method is called.
@@ -140,7 +140,7 @@ namespace Microsoft.PlayerFramework
         {
             if (Executing != null)
             {
-                var args = new CancelEventArgs();
+                var args = new ExecutingEventArgs();
                 Executing(this, args);
                 return !args.Cancel;
             }
@@ -319,5 +319,34 @@ namespace Microsoft.PlayerFramework
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Provides data for an Executing event.
+    /// </summary>
+#if SILVERLIGHT
+    internal class ExecutingEventArgs : EventArgs
+#else
+    internal class ExecutingEventArgs
+#endif
+    { 
+        /// <summary>
+        /// Initializes a new instance of the ExecutingEventArgs class with the Cancel property set to false.
+        /// </summary>
+        public ExecutingEventArgs() { }
+
+        /// <summary>
+        /// Initializes a new instance of the ExecutingEventArgs class with the Cancel property set to the given value.
+        /// </summary>
+        /// <param name="cancel">true to cancel the event; otherwise, false.</param>
+        public ExecutingEventArgs(bool cancel)
+        {
+            Cancel = cancel;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the event should be canceled. true if the event should be canceled; otherwise, false.
+        /// </summary>
+        public bool Cancel { get; set; }
     }
 }

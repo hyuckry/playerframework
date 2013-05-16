@@ -189,7 +189,7 @@ namespace Microsoft.PlayerFramework
             if (volumeCollapseTimer.IsEnabled) volumeCollapseTimer.Stop();
         }
 
-        void vmCommand_Executing(object sender, CancelEventArgs e)
+        void vmCommand_Executing(object sender, ExecutingEventArgs e)
         {
             if (!IsVolumeVisible)
             {
