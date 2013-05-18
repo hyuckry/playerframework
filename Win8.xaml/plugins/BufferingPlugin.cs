@@ -21,7 +21,7 @@ namespace Microsoft.PlayerFramework
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
     public sealed class BufferingPlugin : IPlugin
     {
-        BufferingView bufferingElement;
+        BufferingView bufferingView;
         Panel bufferingContainer;
 
         /// <summary>
@@ -38,12 +38,10 @@ namespace Microsoft.PlayerFramework
             bufferingContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(e => e.Name == MediaPlayerTemplateParts.BufferingContainer);
             if (bufferingContainer != null)
             {
-                bufferingElement = new BufferingView()
-                {
-                    Style = BufferingViewStyle
-                };
-                bufferingContainer.Children.Add(bufferingElement);
-                bufferingElement.SetBinding(BufferingView.ViewModelProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
+                bufferingView = new BufferingView();
+                if (BufferingViewStyle != null) bufferingView.Style = BufferingViewStyle;
+                bufferingContainer.Children.Add(bufferingView);
+                bufferingView.SetBinding(BufferingView.ViewModelProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
             }
         }
 
@@ -56,11 +54,11 @@ namespace Microsoft.PlayerFramework
         /// <inheritdoc /> 
         public void Unload()
         {
-            if (bufferingElement != null)
+            if (bufferingView != null)
             {
-                bufferingElement.ClearValue(BufferingView.ViewModelProperty);
-                bufferingContainer.Children.Remove(bufferingElement);
-                bufferingElement = null;
+                bufferingView.ClearValue(BufferingView.ViewModelProperty);
+                bufferingContainer.Children.Remove(bufferingView);
+                bufferingView = null;
                 bufferingContainer = null;
             }
         }

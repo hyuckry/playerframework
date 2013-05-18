@@ -23,7 +23,7 @@ namespace Microsoft.PlayerFramework
     public sealed class AudioSelectionPlugin : IPlugin
     {
         InteractionType deactivationMode;
-        private AudioSelectionView selectorView;
+        private AudioSelectionView audioSelectionView;
 
         /// <summary>
         /// Gets or sets the style to be used for the CaptionSelectorView
@@ -64,14 +64,12 @@ namespace Microsoft.PlayerFramework
         {
             if (MediaPlayer.AvailableAudioStreams.Any())
             {
-                selectorView = new AudioSelectionView()
-                {
-                    Style = AudioSelectionViewStyle
-                };
-                selectorView.SetBinding(FrameworkElement.DataContextProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
+                audioSelectionView = new AudioSelectionView();
+                if (AudioSelectionViewStyle != null) audioSelectionView.Style = AudioSelectionViewStyle;
+                audioSelectionView.SetBinding(FrameworkElement.DataContextProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
                 SettingsContainer.Visibility = Visibility.Visible;
-                SettingsContainer.Children.Add(selectorView);
-                selectorView.Close += SelectorView_Close;
+                SettingsContainer.Children.Add(audioSelectionView);
+                audioSelectionView.Close += SelectorView_Close;
                 deactivationMode = MediaPlayer.InteractiveDeactivationMode;
                 MediaPlayer.InteractiveDeactivationMode = InteractionType.None;
             }
@@ -84,14 +82,14 @@ namespace Microsoft.PlayerFramework
 
         private void OnClose()
         {
-            if (selectorView != null)
+            if (audioSelectionView != null)
             {
-                selectorView.Close -= SelectorView_Close;
-                selectorView.Visibility = Visibility.Collapsed;
-                SettingsContainer.Children.Remove(selectorView);
+                audioSelectionView.Close -= SelectorView_Close;
+                audioSelectionView.Visibility = Visibility.Collapsed;
+                SettingsContainer.Children.Remove(audioSelectionView);
                 SettingsContainer.Visibility = Visibility.Collapsed;
                 MediaPlayer.InteractiveDeactivationMode = deactivationMode;
-                selectorView = null;
+                audioSelectionView = null;
             }
         }
     }

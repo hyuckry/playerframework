@@ -20,7 +20,7 @@ namespace Microsoft.PlayerFramework
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
     public sealed class ErrorPlugin : IPlugin
     {
-        ErrorView errorViewElement;
+        ErrorView errorView;
         Panel errorContainer;
         string errorText;
 
@@ -61,7 +61,7 @@ namespace Microsoft.PlayerFramework
             set
             {
                 errorText = value;
-                if (errorViewElement != null) errorViewElement.ErrorText = errorText;
+                if (errorView != null) errorView.ErrorText = errorText;
             }
         }
 
@@ -74,13 +74,13 @@ namespace Microsoft.PlayerFramework
             errorContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(e => e.Name == MediaPlayerTemplateParts.ErrorsContainer);
             if (errorContainer != null)
             {
-                errorViewElement = new ErrorView()
+                errorView = new ErrorView()
                 {
-                    Style = ErrorViewStyle,
                     ErrorText = ErrorText
                 };
-                errorViewElement.Retry += errorViewElement_Retry;
-                errorContainer.Children.Add(errorViewElement);
+                if (ErrorViewStyle != null) errorView.Style = ErrorViewStyle;
+                errorView.Retry += errorViewElement_Retry;
+                errorContainer.Children.Add(errorView);
             }
         }
 
@@ -95,11 +95,11 @@ namespace Microsoft.PlayerFramework
         {
             if (errorContainer != null)
             {
-                if (errorViewElement != null)
+                if (errorView != null)
                 {
-                    errorViewElement.Retry -= errorViewElement_Retry;
-                    errorContainer.Children.Remove(errorViewElement);
-                    errorViewElement = null;
+                    errorView.Retry -= errorViewElement_Retry;
+                    errorContainer.Children.Remove(errorView);
+                    errorView = null;
                 }
                 errorContainer = null;
             }

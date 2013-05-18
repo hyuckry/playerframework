@@ -79,9 +79,9 @@ namespace Microsoft.PlayerFramework
                 var marker = new VisualMarker() 
                 { 
                     Text = chapter.Text, 
-                    Time = chapter.Time,
-                    Style = MarkerStyle
+                    Time = chapter.Time
                 };
+                if (MarkerStyle != null) marker.Style = MarkerStyle;
                 ChapterMarkers.Add(marker);
                 MediaPlayer.VisualMarkers.Add(marker);
             }

@@ -21,7 +21,7 @@ namespace Microsoft.PlayerFramework
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
     public sealed class LoaderPlugin : IPlugin
     {
-        LoaderView loaderViewElement;
+        LoaderView loaderView;
         Panel loaderViewContainer;
 
         /// <summary>
@@ -38,12 +38,10 @@ namespace Microsoft.PlayerFramework
             loaderViewContainer = MediaPlayer.Containers.OfType<Panel>().FirstOrDefault(e => e.Name == MediaPlayerTemplateParts.LoaderViewContainer);
             if (loaderViewContainer != null)
             {
-                loaderViewElement = new LoaderView()
-                {
-                    Style = LoaderViewStyle
-                };
-                loaderViewElement.Load += loaderViewElement_Load;
-                loaderViewContainer.Children.Add(loaderViewElement);
+                loaderView = new LoaderView();
+                if (LoaderViewStyle != null) loaderView.Style = LoaderViewStyle;
+                loaderView.Load += loaderViewElement_Load;
+                loaderViewContainer.Children.Add(loaderView);
             }
         }
 
@@ -58,11 +56,11 @@ namespace Microsoft.PlayerFramework
         {
             if (loaderViewContainer != null)
             {
-                if (loaderViewElement != null)
+                if (loaderView != null)
                 {
-                    loaderViewElement.Load -= loaderViewElement_Load;
-                    loaderViewContainer.Children.Remove(loaderViewElement);
-                    loaderViewElement = null;
+                    loaderView.Load -= loaderViewElement_Load;
+                    loaderViewContainer.Children.Remove(loaderView);
+                    loaderView = null;
                 }
                 loaderViewContainer = null;
             }
