@@ -177,47 +177,33 @@ namespace Microsoft.PlayerFramework
             private set { SetValue(NextPlaylistItemProperty, value); }
         }
 
-        void IPlugin.Load()
+        /// <inheritdoc /> 
+        public void Load()
+        {
+            MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
+            MediaPlayer.Initialized += MediaPlayer_Initialized;
+            MediaPlayer.SkippingAhead += MediaPlayer_SkippingAhead;
+            MediaPlayer.SkippingBack += MediaPlayer_SkippingBack;
+        }
+
+        /// <inheritdoc /> 
+        public void Update(IMediaSource mediaSource)
         {
 
         }
 
-        void IPlugin.Update(IMediaSource mediaSource)
+        /// <inheritdoc /> 
+        public void Unload()
         {
-
-        }
-
-        void IPlugin.Unload()
-        {
+            MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
+            MediaPlayer.Initialized -= MediaPlayer_Initialized;
+            MediaPlayer.SkippingAhead -= MediaPlayer_SkippingAhead;
+            MediaPlayer.SkippingBack -= MediaPlayer_SkippingBack;
             CurrentPlaylistItem = null;
         }
 
-        private MediaPlayer MediaPlayer;
-        /// <summary>
-        /// The current MediaPlayer
-        /// </summary>
-        MediaPlayer IPlugin.MediaPlayer
-        {
-            get { return MediaPlayer; }
-            set
-            {
-                if (MediaPlayer != null)
-                {
-                    MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
-                    MediaPlayer.Initialized -= MediaPlayer_Initialized;
-                    MediaPlayer.SkippingAhead -= MediaPlayer_SkippingAhead;
-                    MediaPlayer.SkippingBack -= MediaPlayer_SkippingBack;
-                }
-                MediaPlayer = value;
-                if (MediaPlayer != null)
-                {
-                    MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-                    MediaPlayer.Initialized += MediaPlayer_Initialized;
-                    MediaPlayer.SkippingAhead += MediaPlayer_SkippingAhead;
-                    MediaPlayer.SkippingBack += MediaPlayer_SkippingBack;
-                }
-            }
-        }
+        /// <inheritdoc /> 
+        public MediaPlayer MediaPlayer { get; set; }
 
         void MediaPlayer_Initialized(object sender, object e)
         {
