@@ -280,8 +280,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the FullScreenContent dependency property.
         /// </summary>
-        public static DependencyProperty FullScreenContentProperty { get { return selectedContentProperty; } }
-        static readonly DependencyProperty selectedContentProperty = DependencyProperty.Register("FullScreenContent", typeof(object), typeof(FullScreenButton), new PropertyMetadata(null, OnFullScreenContentChanged));
+        public static DependencyProperty FullScreenContentProperty { get { return fullScreenContentProperty; } }
+        static readonly DependencyProperty fullScreenContentProperty = DependencyProperty.Register("FullScreenContent", typeof(object), typeof(FullScreenButton), new PropertyMetadata(null, OnFullScreenContentChanged));
 
         static void OnFullScreenContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
