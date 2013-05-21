@@ -332,8 +332,8 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Identifies the FullScreenName dependency property.
         /// </summary>
-        public static DependencyProperty FullScreenNameProperty { get { return selectedNameProperty; } }
-        static readonly DependencyProperty selectedNameProperty = DependencyProperty.Register("FullScreenName", typeof(string), typeof(FullScreenButton), new PropertyMetadata(null, OnFullScreenNameChanged));
+        public static DependencyProperty FullScreenNameProperty { get { return fullScreenNameProperty; } }
+        static readonly DependencyProperty fullScreenNameProperty = DependencyProperty.Register("FullScreenName", typeof(string), typeof(FullScreenButton), new PropertyMetadata(null, OnFullScreenNameChanged));
 
         static void OnFullScreenNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
