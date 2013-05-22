@@ -29,11 +29,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates the caption selector view should be closed.
         /// </summary>
-#if SILVERLIGHT
-        public event EventHandler Close;
-#else
-        public event EventHandler<object> Close;
-#endif
+        public event RoutedEventHandler Close;
 
         ListBox AudioList;
         Panel LayoutRoot;
@@ -70,12 +66,12 @@ namespace Microsoft.PlayerFramework
         void LayoutRoot_PointerPressed(object sender, PointerRoutedEventArgs e)
 #endif
         {
-            if (Close != null) Close(this, EventArgs.Empty);
+            if (Close != null) Close(this, e);
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Close != null) Close(this, EventArgs.Empty);
+            if (Close != null) Close(this, e);
         }
     }
 }
