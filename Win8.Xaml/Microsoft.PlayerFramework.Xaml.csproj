@@ -165,7 +165,6 @@
     <Compile Include="Converters\TargetNullValueConverter.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\TimeSpanExtensions.cs" />
-    <Compile Include="Extensions\ToggleButtonExtensions.cs" />
     <Compile Include="Interfaces\IInteractiveViewModel.cs" />
     <Compile Include="Interfaces\IMediaSource.cs" />
     <Compile Include="Interfaces\IPlugin.cs" />
