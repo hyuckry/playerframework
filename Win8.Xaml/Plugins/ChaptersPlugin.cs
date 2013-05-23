@@ -66,7 +66,7 @@ namespace Microsoft.PlayerFramework
             LoadChapters();
         }
 
-        void MediaPlayer_MediaClosed(object sender, object e)
+        void MediaPlayer_MediaClosed(object sender, MediaClosedEventArgs e)
         {
             UnloadChapters();
         }

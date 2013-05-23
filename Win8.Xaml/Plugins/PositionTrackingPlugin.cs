@@ -241,7 +241,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void MediaPlayer_MediaClosed(object sender, object e)
+        void MediaPlayer_MediaClosed(object sender, MediaClosedEventArgs e)
         {
             trackingEventsToInitializeOnStart.Clear();
         }

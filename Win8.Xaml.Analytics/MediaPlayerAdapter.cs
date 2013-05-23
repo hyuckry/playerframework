@@ -228,7 +228,7 @@ namespace Microsoft.PlayerFramework.Analytics
 #endif
         }
 
-        void mediaPlayer_MediaClosed(object sender, object e)
+        void mediaPlayer_MediaClosed(object sender, MediaClosedEventArgs e)
         {
             if (StreamClosed != null) StreamClosed(this, EventArgs.Empty);
         }

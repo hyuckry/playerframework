@@ -247,7 +247,7 @@ namespace Microsoft.PlayerFramework.Advertising
             }
         }
 
-        void MediaPlayer_MediaClosed(object sender, object e)
+        void MediaPlayer_MediaClosed(object sender, MediaClosedEventArgs e)
         {
             // always close all active ads when the media is closed
             var task = CancelActiveAds();

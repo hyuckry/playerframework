@@ -404,7 +404,7 @@ namespace Microsoft.PlayerFramework.Advertising
             ShowCompanions();
         }
 
-        private void mediaPlayer_MediaClosed(object sender, object e)
+        private void mediaPlayer_MediaClosed(object sender, MediaClosedEventArgs e)
         {
             var playTimeTrackingPlugin = MediaPlayer.Plugins.OfType<PlayTimeTrackingPlugin>().FirstOrDefault();
             if (playTimeTrackingPlugin != null)
