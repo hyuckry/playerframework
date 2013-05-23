@@ -170,8 +170,8 @@
     <Compile Include="Interfaces\IPlugin.cs" />
     <Compile Include="Plugins\BufferingPlugin.cs" />
     <Compile Include="Plugins\BufferingView.cs" />
-    <Compile Include="Plugins\CaptionSelectorPlugin.cs" />
-    <Compile Include="Plugins\CaptionSelectorView.cs" />
+    <Compile Include="Plugins\CaptionSelectionPlugin.cs" />
+    <Compile Include="Plugins\CaptionSelectionView.cs" />
     <Compile Include="Plugins\ChaptersPlugin.cs" />
     <Compile Include="Plugins\AudioSelectionPlugin.cs" />
     <Compile Include="Plugins\AudioSelectionView.cs" />

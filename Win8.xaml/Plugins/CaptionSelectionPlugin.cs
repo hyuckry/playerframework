@@ -20,14 +20,14 @@ namespace Microsoft.PlayerFramework
     /// A plugin used to allow the user 
     /// </summary>
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "Correctly named architectural pattern")]
-    public sealed class CaptionSelectorPlugin : IPlugin
+    public sealed class CaptionSelectionPlugin : IPlugin
     {
         /// <summary>
-        /// Gets or sets the style to be used for the CaptionSelectorView
+        /// Gets or sets the style to be used for the CaptionSelectionView
         /// </summary>
-        public Style CaptionSelectorViewStyle { get; set; }
+        public Style CaptionSelectionViewStyle { get; set; }
 
-        CaptionSelectorView captionSelectorView;
+        CaptionSelectionView captionSelectionView;
 
         /// <inheritdoc /> 
         public MediaPlayer MediaPlayer { get; set; }
@@ -35,7 +35,7 @@ namespace Microsoft.PlayerFramework
         /// <inheritdoc /> 
         public void Load()
         {
-            MediaPlayer.CaptionsInvoked += MediaPlayer_CaptionsInvoked;
+            MediaPlayer.CaptionSelectionInvoked += MediaPlayer_CaptionSelectionInvoked;
         }
 
         /// <inheritdoc /> 
@@ -47,7 +47,7 @@ namespace Microsoft.PlayerFramework
         /// <inheritdoc /> 
         public void Unload()
         {
-            MediaPlayer.CaptionsInvoked -= MediaPlayer_CaptionsInvoked;
+            MediaPlayer.CaptionSelectionInvoked -= MediaPlayer_CaptionSelectionInvoked;
             OnClose();
         }
 
@@ -60,36 +60,36 @@ namespace Microsoft.PlayerFramework
         }
 
         InteractionType deactivationMode;
-        void MediaPlayer_CaptionsInvoked(object sender, object e)
+        void MediaPlayer_CaptionSelectionInvoked(object sender, object e)
         {
             if (MediaPlayer.AvailableCaptions.Any())
             {
-                captionSelectorView = new CaptionSelectorView();
-                if (CaptionSelectorViewStyle != null) captionSelectorView.Style = CaptionSelectorViewStyle;
-                captionSelectorView.SetBinding(FrameworkElement.DataContextProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
+                captionSelectionView = new CaptionSelectionView();
+                if (CaptionSelectionViewStyle != null) captionSelectionView.Style = CaptionSelectionViewStyle;
+                captionSelectionView.SetBinding(FrameworkElement.DataContextProperty, new Binding() { Path = new PropertyPath("InteractiveViewModel"), Source = MediaPlayer });
                 SettingsContainer.Visibility = Visibility.Visible;
-                SettingsContainer.Children.Add(captionSelectorView);
-                captionSelectorView.Close += captionSelectorView_Close;
+                SettingsContainer.Children.Add(captionSelectionView);
+                captionSelectionView.Close += captionSelectionView_Close;
                 deactivationMode = MediaPlayer.InteractiveDeactivationMode;
                 MediaPlayer.InteractiveDeactivationMode = InteractionType.None;
             }
         }
 
-        void captionSelectorView_Close(object sender, object e)
+        void captionSelectionView_Close(object sender, object e)
         {
             OnClose();
         }
 
         private void OnClose()
         {
-            if (captionSelectorView != null)
+            if (captionSelectionView != null)
             {
-                captionSelectorView.Close -= captionSelectorView_Close;
-                captionSelectorView.Visibility = Visibility.Collapsed;
-                SettingsContainer.Children.Remove(captionSelectorView);
+                captionSelectionView.Close -= captionSelectionView_Close;
+                captionSelectionView.Visibility = Visibility.Collapsed;
+                SettingsContainer.Children.Remove(captionSelectionView);
                 SettingsContainer.Visibility = Visibility.Collapsed;
                 MediaPlayer.InteractiveDeactivationMode = deactivationMode;
-                captionSelectorView = null;
+                captionSelectionView = null;
             }
         }
     }

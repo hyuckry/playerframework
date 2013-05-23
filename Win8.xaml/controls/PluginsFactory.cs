@@ -28,7 +28,7 @@ namespace Microsoft.PlayerFramework
         {
             Plugins = new List<IPlugin>(new IPlugin[] { 
                 new BufferingPlugin(),
-                new CaptionSelectorPlugin(),
+                new CaptionSelectionPlugin(),
                 new AudioSelectionPlugin(),
                 new ChaptersPlugin(),
                 new ErrorPlugin(),

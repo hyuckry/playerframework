@@ -37,6 +37,11 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
             MarkerType = DefaultMarkerType;
         }
 
+        /// <summary>
+        /// Gets the list of active captions
+        /// </summary>
+        internal ObservableCollection<ActiveCaption> ActiveCaptions { get; private set; }
+
         /// <inheritdoc /> 
         public MediaPlayer MediaPlayer { get; set; }
 
@@ -56,7 +61,7 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
                     captionsContainer.Children.Add(captionsPanel);
                     cts = new CancellationTokenSource();
                     MediaPlayer.MarkerReached += MediaPlayer_MarkerReached;
-                    MediaPlayer.CaptionsInvoked += MediaPlayer_CaptionsInvoked;
+                    MediaPlayer.CaptionSelectionInvoked += MediaPlayer_CaptionSelectionInvoked;
                 }
             }
         }
@@ -71,7 +76,7 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
         public void Unload()
         {
             MediaPlayer.MarkerReached -= MediaPlayer_MarkerReached;
-            MediaPlayer.CaptionsInvoked -= MediaPlayer_CaptionsInvoked;
+            MediaPlayer.CaptionSelectionInvoked -= MediaPlayer_CaptionSelectionInvoked;
             cts.Cancel();
             cts = null;
             captionsContainer.Children.Remove(captionsPanel);
@@ -95,13 +100,8 @@ namespace Microsoft.PlayerFramework.CaptionMarkers
         /// Gets or sets the style to be used for the CaptionsPanel
         /// </summary>
         public Style CaptionsPanelStyle { get; set; }
-
-        /// <summary>
-        /// Gets the list of active captions
-        /// </summary>
-        protected ObservableCollection<ActiveCaption> ActiveCaptions { get; private set; }
         
-        void MediaPlayer_CaptionsInvoked(object sender, object e)
+        void MediaPlayer_CaptionSelectionInvoked(object sender, object e)
         {
             MediaPlayer.IsCaptionsActive = !MediaPlayer.IsCaptionsActive;
         }

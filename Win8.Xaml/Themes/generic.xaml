@@ -1460,11 +1460,11 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:CaptionSelectorView">
+    <Style TargetType="local:CaptionSelectionView">
         <Setter Property="Padding" Value="0,0,0,40"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:CaptionSelectorView">
+                <ControlTemplate TargetType="local:CaptionSelectionView">
                     <Grid x:Name="LayoutRoot" Background="#00000000">
                         <Border BorderThickness="2" BorderBrush="{StaticResource ListBoxForegroundThemeBrush}" Background="{StaticResource ListBoxFocusBackgroundThemeBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{TemplateBinding Padding}">
                             <local:DeselectableListBox x:Name="CaptionsList" MaxWidth="200"  ItemsSource="{Binding AvailableCaptions}" SelectedItem="{Binding SelectedCaption, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center">

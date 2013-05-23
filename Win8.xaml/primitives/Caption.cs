@@ -12,11 +12,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a caption or subtitle track.
     /// </summary>
-#if SILVERLIGHT
-    public sealed class Caption : DependencyObject
-#else
-    public sealed class Caption : FrameworkElement, ICaption
-#endif
+    public sealed class Caption : DependencyObject, ICaption
     {
         /// <inheritdoc /> 
 #if SILVERLIGHT

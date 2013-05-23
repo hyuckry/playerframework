@@ -25,7 +25,7 @@ namespace Microsoft.PlayerFramework.Advertising
         readonly MarkerHelper markerHelper = new MarkerHelper();
         Size? initialDimensions;
         HyperlinkButton clickThroughButton;
-        TaskCompletionSource<object> templateAppliedTask;
+        TaskCompletionSource<object> templateAppliedTask = new TaskCompletionSource<object>();
 
 #if WINDOWS_PHONE
         Microsoft.Phone.Controls.WebBrowser WebView;

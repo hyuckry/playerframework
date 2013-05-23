@@ -619,7 +619,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public void InvokeCaptionSelection()
         {
-            OnInvokeCaptionSelection(new CaptionsInvokedEventArgs());
+            OnInvokeCaptionSelection(new CaptionSelectionInvokedEventArgs());
         }
 
         /// <summary>
@@ -983,7 +983,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Occurs when the InvokeCaptionSelection method is called.
         /// </summary>
-        public event EventHandler<CaptionsInvokedEventArgs> CaptionsInvoked;
+        public event EventHandler<CaptionSelectionInvokedEventArgs> CaptionSelectionInvoked;
 
         /// <summary>
         /// Occurs when the InvokeAudioSelection method is called.
@@ -4568,9 +4568,9 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public bool AllowMediaStartingDeferrals { get; set; }
 
-        void OnInvokeCaptionSelection(CaptionsInvokedEventArgs e)
+        void OnInvokeCaptionSelection(CaptionSelectionInvokedEventArgs e)
         {
-            if (CaptionsInvoked != null) CaptionsInvoked(this, e);
+            if (CaptionSelectionInvoked != null) CaptionSelectionInvoked(this, e);
         }
 
         void OnInvokeAudioSelection(AudioSelectionInvokedEventArgs e)

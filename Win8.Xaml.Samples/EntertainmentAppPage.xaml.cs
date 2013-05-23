@@ -47,9 +47,9 @@ namespace Microsoft.PlayerFramework.Samples
             audioSelectionPlugin.AudioSelectionViewStyle = new Style(typeof(AudioSelectionView));
             audioSelectionPlugin.AudioSelectionViewStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(0, 0, 0, 90)));
 
-            var captionSelectorPlugin = player.Plugins.OfType<CaptionSelectorPlugin>().FirstOrDefault();
-            captionSelectorPlugin.CaptionSelectorViewStyle = new Style(typeof(CaptionSelectorView));
-            captionSelectorPlugin.CaptionSelectorViewStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(0, 0, 0, 90)));
+            var captionSelectionPlugin = player.Plugins.OfType<CaptionSelectionPlugin>().FirstOrDefault();
+            captionSelectionPlugin.CaptionSelectionViewStyle = new Style(typeof(CaptionSelectionView));
+            captionSelectionPlugin.CaptionSelectionViewStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(0, 0, 0, 90)));
         }
 
         void player_InteractiveViewModelChanged(object sender, InteractiveViewModelChangedEventArgs e)

@@ -26,7 +26,7 @@ namespace Microsoft.PlayerFramework
         private AudioSelectionView audioSelectionView;
 
         /// <summary>
-        /// Gets or sets the style to be used for the CaptionSelectorView
+        /// Gets or sets the style to be used for the CaptionSelectionView
         /// </summary>
         public Style AudioSelectionViewStyle { get; set; }
 

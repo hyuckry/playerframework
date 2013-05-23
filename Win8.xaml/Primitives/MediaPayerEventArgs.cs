@@ -159,15 +159,15 @@ namespace Microsoft.PlayerFramework
     }
 
     /// <summary>
-    /// Event arguments for CaptionsInvoked events.
+    /// Event arguments for CaptionSelectionInvoked events.
     /// </summary>
 #if SILVERLIGHT
-    public sealed class CaptionsInvokedEventArgs : EventArgs
+    public sealed class CaptionSelectionInvokedEventArgs : EventArgs
 #else
-    public sealed class CaptionsInvokedEventArgs
+    public sealed class CaptionSelectionInvokedEventArgs
 #endif
     {
-        internal CaptionsInvokedEventArgs() { }
+        internal CaptionSelectionInvokedEventArgs() { }
     }
 
     /// <summary>

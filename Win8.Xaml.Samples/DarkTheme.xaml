@@ -1677,10 +1677,10 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="mmppf:CaptionSelectorView" x:Key="Dark_CaptionSelectorView">
+    <Style TargetType="mmppf:CaptionSelectionView" x:Key="Dark_CaptionSelectionView">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="mmppf:CaptionSelectorView">
+                <ControlTemplate TargetType="mmppf:CaptionSelectionView">
                     <Grid x:Name="LayoutRoot" Background="#00000000">
                         <Border BorderThickness="2" BorderBrush="{StaticResource Dark_ListBoxForegroundThemeBrush}" Background="{StaticResource Dark_ListBoxFocusBackgroundThemeBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,40">
                             <mmppf:DeselectableListBox x:Name="CaptionsList" MaxWidth="200" ItemsSource="{Binding AvailableCaptions}" SelectedItem="{Binding SelectedCaption, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource Dark_DeselectableListBox}">
