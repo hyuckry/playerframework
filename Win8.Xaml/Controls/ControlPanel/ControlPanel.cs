@@ -78,22 +78,7 @@ namespace Microsoft.PlayerFramework
                 }
             }
         }
-
-        /// <summary>
-        /// Identifies the GoLiveButtonVisibility dependency property.
-        /// </summary>
-        public static DependencyProperty GoLiveButtonVisibilityProperty { get { return goLiveButtonVisibilityProperty; } }
-        static readonly DependencyProperty goLiveButtonVisibilityProperty = DependencyProperty.Register("GoLiveButtonVisibility", typeof(Visibility), typeof(ControlPanel), new PropertyMetadata(Visibility.Collapsed));
-
-        /// <summary>
-        /// Gets or sets the Visibility property on the GoLiveButton.
-        /// </summary>
-        public Visibility GoLiveButtonVisibility
-        {
-            get { return (Visibility)GetValue(IsGoLiveButtonVisibleProperty); }
-            set { SetValue(IsGoLiveButtonVisibleProperty, value); }
-        }
-
+        
         /// <summary>
         /// Identifies the IsGoLiveButtonVisible dependency property.
         /// </summary>
