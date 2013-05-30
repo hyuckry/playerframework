@@ -40,7 +40,7 @@ namespace Microsoft.PlayerFramework
             {
                 loaderView = new LoaderView();
                 if (LoaderViewStyle != null) loaderView.Style = LoaderViewStyle;
-                loaderView.Load += loaderViewElement_Load;
+                loaderView.Load += loaderView_Load;
                 loaderViewContainer.Children.Add(loaderView);
             }
         }
@@ -58,7 +58,7 @@ namespace Microsoft.PlayerFramework
             {
                 if (loaderView != null)
                 {
-                    loaderView.Load -= loaderViewElement_Load;
+                    loaderView.Load -= loaderView_Load;
                     loaderViewContainer.Children.Remove(loaderView);
                     loaderView = null;
                 }
@@ -66,7 +66,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void loaderViewElement_Load(object sender, RoutedEventArgs e)
+        void loaderView_Load(object sender, RoutedEventArgs e)
         {
             MediaPlayer.AutoLoad = true;
         }

@@ -159,6 +159,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Converters\IsNullConverter.cs" />
+    <Compile Include="Converters\MulticastConverter.cs" />
+    <Compile Include="Converters\NotConverter.cs" />
     <Compile Include="Extensions\MediaPlayerExtensions.cs" />
     <Compile Include="SuspendResumePage.xaml.cs">
       <DependentUpon>SuspendResumePage.xaml</DependentUpon>

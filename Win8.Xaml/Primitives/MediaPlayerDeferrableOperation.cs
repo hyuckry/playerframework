@@ -20,9 +20,9 @@ namespace Microsoft.PlayerFramework
         readonly CancellationTokenSource cts;
         readonly List<MediaPlayerDeferral> deferrals;
 
-        internal MediaPlayerDeferrableOperation(CancellationTokenSource cancellationTokenSource)
+        internal MediaPlayerDeferrableOperation(CancellationToken cancellationToken)
         {
-            cts = cancellationTokenSource;
+            cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             deferrals = new List<MediaPlayerDeferral>();
         }
 
@@ -46,18 +46,13 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        internal void Cancel()
-        {
-            cts.Cancel();
-        }
-
         /// <summary>
         /// Requests that the deferrable operation be delayed.
         /// </summary>
         /// <returns>The deferral.</returns>
         public MediaPlayerDeferral GetDeferral()
         {
-            var result = new MediaPlayerDeferral(cts.Token);
+            var result = new MediaPlayerDeferral(cts);
             deferrals.Add(result);
             return result;
         }
@@ -68,12 +63,15 @@ namespace Microsoft.PlayerFramework
     /// </summary>
     public sealed class MediaPlayerDeferral
     {
+        readonly CancellationTokenSource cts;
         readonly TaskCompletionSource<bool> tcs;
+        readonly CancellationTokenRegistration ctr;
 
-        internal MediaPlayerDeferral(CancellationToken cancellationToken)
+        internal MediaPlayerDeferral(CancellationTokenSource cancellationTokenSource)
         {
+            cts = cancellationTokenSource;
             tcs = new TaskCompletionSource<bool>();
-            cancellationToken.Register(OnCancel);
+            ctr = cts.Token.Register(OnCancel);
         }
 
         internal Task<bool> Task
@@ -104,6 +102,7 @@ namespace Microsoft.PlayerFramework
         public void Complete()
         {
             tcs.TrySetResult(true);
+            Cleanup();
         }
 
         /// <summary>
@@ -111,7 +110,14 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         public void Cancel()
         {
+            cts.Cancel();
             tcs.TrySetResult(false);
+            Cleanup();
+        }
+
+        void Cleanup()
+        {
+            ctr.Dispose();
         }
     }
 }

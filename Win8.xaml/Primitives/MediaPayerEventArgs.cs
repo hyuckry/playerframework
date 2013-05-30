@@ -411,12 +411,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public AdvertisingState NewValue { get; internal set; }
+        public AdvertisingState NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public AdvertisingState OldValue { get; internal set; }
+        public AdvertisingState OldValue { get; private set; }
     }
 
     /// <summary>
@@ -433,12 +433,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public int? NewValue { get; internal set; }
+        public int? NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public int? OldValue { get; internal set; }
+        public int? OldValue { get; private set; }
     }
 
     /// <summary>
@@ -455,12 +455,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan NewValue { get; internal set; }
+        public TimeSpan NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan OldValue { get; internal set; }
+        public TimeSpan OldValue { get; private set; }
     }
 
     /// <summary>
@@ -477,12 +477,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan NewValue { get; internal set; }
+        public TimeSpan NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan OldValue { get; internal set; }
+        public TimeSpan OldValue { get; private set; }
     }
 
     /// <summary>
@@ -505,12 +505,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public IInteractiveViewModel NewValue { get; internal set; }
+        public IInteractiveViewModel NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public IInteractiveViewModel OldValue { get; internal set; }
+        public IInteractiveViewModel OldValue { get; private set; }
     }
 
     /// <summary>
@@ -527,12 +527,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan? NewValue { get; internal set; }
+        public TimeSpan? NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan? OldValue { get; internal set; }
+        public TimeSpan? OldValue { get; private set; }
     }
 
     /// <summary>
@@ -690,12 +690,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public PlayerState NewValue { get; internal set; }
+        public PlayerState NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public PlayerState OldValue { get; internal set; }
+        public PlayerState OldValue { get; private set; }
     }
 
     /// <summary>
@@ -712,12 +712,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan NewValue { get; internal set; }
+        public TimeSpan NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan OldValue { get; internal set; }
+        public TimeSpan OldValue { get; private set; }
     }
 
     /// <summary>
@@ -740,12 +740,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public IAudioStream NewValue { get; internal set; }
+        public IAudioStream NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public IAudioStream OldValue { get; internal set; }
+        public IAudioStream OldValue { get; private set; }
     }
 
     /// <summary>
@@ -762,12 +762,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public ICaption NewValue { get; internal set; }
+        public ICaption NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public ICaption OldValue { get; internal set; }
+        public ICaption OldValue { get; private set; }
     }
 
     /// <summary>
@@ -784,12 +784,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public double NewValue { get; internal set; }
+        public double NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public double OldValue { get; internal set; }
+        public double OldValue { get; private set; }
     }
 
     /// <summary>
@@ -806,12 +806,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan? NewValue { get; internal set; }
+        public TimeSpan? NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan? OldValue { get; internal set; }
+        public TimeSpan? OldValue { get; private set; }
     }
 
     /// <summary>
@@ -828,12 +828,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan? NewValue { get; internal set; }
+        public TimeSpan? NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan? OldValue { get; internal set; }
+        public TimeSpan? OldValue { get; private set; }
     }
 
     /// <summary>
@@ -850,12 +850,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan NewValue { get; internal set; }
+        public TimeSpan NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan OldValue { get; internal set; }
+        public TimeSpan OldValue { get; private set; }
     }
 
     /// <summary>
@@ -872,12 +872,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public IValueConverter NewValue { get; internal set; }
+        public IValueConverter NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public IValueConverter OldValue { get; internal set; }
+        public IValueConverter OldValue { get; private set; }
     }
 
     /// <summary>
@@ -894,11 +894,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Gets the new value of the property.
         /// </summary>
-        public TimeSpan NewValue { get; internal set; }
+        public TimeSpan NewValue { get; private set; }
 
         /// <summary>
         /// Gets the previous value of the property.
         /// </summary>
-        public TimeSpan OldValue { get; internal set; }
+        public TimeSpan OldValue { get; private set; }
     }
 }

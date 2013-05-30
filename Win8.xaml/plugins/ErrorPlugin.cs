@@ -79,7 +79,7 @@ namespace Microsoft.PlayerFramework
                     ErrorText = ErrorText
                 };
                 if (ErrorViewStyle != null) errorView.Style = ErrorViewStyle;
-                errorView.Retry += errorViewElement_Retry;
+                errorView.Retry += errorView_Retry;
                 errorContainer.Children.Add(errorView);
             }
         }
@@ -97,7 +97,7 @@ namespace Microsoft.PlayerFramework
             {
                 if (errorView != null)
                 {
-                    errorView.Retry -= errorViewElement_Retry;
+                    errorView.Retry -= errorView_Retry;
                     errorContainer.Children.Remove(errorView);
                     errorView = null;
                 }
@@ -105,7 +105,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        void errorViewElement_Retry(object sender, RoutedEventArgs e)
+        void errorView_Retry(object sender, RoutedEventArgs e)
         {
             MediaPlayer.Retry();
         }

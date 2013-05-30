@@ -895,12 +895,12 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Invokes the property changed event.
         /// </summary>
-        /// <param name="PropertyName">The name of the property that changed.</param>
-        void OnPropertyChanged(string PropertyName)
+        /// <param name="propertyName">The name of the property that changed.</param>
+        void OnPropertyChanged(string propertyName)
         {
             try
             {
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
             catch (NullReferenceException)
             {

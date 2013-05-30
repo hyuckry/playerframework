@@ -107,6 +107,12 @@
     <Compile Include="..\Win8.xaml\interfaces\ICaption.cs">
       <Link>Interfaces\ICaption.cs</Link>
     </Compile>
+    <Compile Include="..\Win8.xaml\Plugins\CaptionSelectionPlugin.cs">
+      <Link>Plugins\CaptionSelectionPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\Win8.xaml\Plugins\CaptionSelectionView.cs">
+      <Link>Plugins\CaptionSelectionView.cs</Link>
+    </Compile>
     <Compile Include="..\Win8.xaml\Plugins\PlayTimeTrackingPlugin.Attached.cs">
       <Link>Plugins\PlayTimeTrackingPlugin.Attached.cs</Link>
     </Compile>
@@ -191,12 +197,6 @@
     <Compile Include="..\Win8.xaml\converters\BoolToVisibilityConverter.cs">
       <Link>Converters\BoolToVisibilityConverter.cs</Link>
     </Compile>
-    <Compile Include="..\Win8.Xaml\Converters\IsNullConverter.cs">
-      <Link>Converters\IsNullConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.xaml\converters\NotConverter.cs">
-      <Link>Converters\NotConverter.cs</Link>
-    </Compile>
     <Compile Include="..\Win8.xaml\converters\StringFormatConverter.cs">
       <Link>Converters\StringFormatConverter.cs</Link>
     </Compile>
@@ -208,9 +208,6 @@
     </Compile>
     <Compile Include="..\Win8.xaml\extensions\TimeSpanExtensions.cs">
       <Link>Extensions\TimeSpanExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Extensions\ToggleButtonExtensions.cs">
-      <Link>Extensions\ToggleButtonExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Extensions\VisualTreeExtensions.cs">
       <Link>Extensions\VisualTreeExtensions.cs</Link>
@@ -235,12 +232,6 @@
     </Compile>
     <Compile Include="..\Win8.xaml\plugins\BufferingView.cs">
       <Link>Plugins\BufferingView.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.Xaml\Plugins\CaptionSelectorPlugin.cs">
-      <Link>Plugins\CaptionSelectorPlugin.cs</Link>
-    </Compile>
-    <Compile Include="..\Win8.xaml\plugins\CaptionSelectorView.cs">
-      <Link>Plugins\CaptionSelectorView.cs</Link>
     </Compile>
     <Compile Include="..\Win8.Xaml\Plugins\ChaptersPlugin.cs">
       <Link>Plugins\ChaptersPlugin.cs</Link>
@@ -309,7 +300,6 @@
       <Link>Primitives\PlaylistItem.cs</Link>
     </Compile>
     <Compile Include="Controls\MediaElementWrapper.cs" />
-    <Compile Include="Converters\MulticastConverter.cs" />
     <Compile Include="Interfaces\IMediaElement.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="Resources.Designer.cs">

@@ -158,9 +158,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Converters\IsNullConverter.cs" />
-    <Compile Include="Converters\MulticastConverter.cs" />
-    <Compile Include="Converters\NotConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\TargetNullValueConverter.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />

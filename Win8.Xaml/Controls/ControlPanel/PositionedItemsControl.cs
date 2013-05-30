@@ -332,7 +332,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a new instance of FrameworkElementEventArgs.
         /// </summary>
         /// <param name="element">The element associated with the event args.</param>
-        public FrameworkElementEventArgs(FrameworkElement element)
+        internal FrameworkElementEventArgs(FrameworkElement element)
         {
             Element = element;
         }

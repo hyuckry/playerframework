@@ -212,7 +212,7 @@ namespace Microsoft.PlayerFramework
             {
                 try
                 {
-                    var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+                    var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
                     if (Initializing != null) Initializing(this, new InitializingEventArgs(deferrableOperation));
                     await deferrableOperation.Task;
                     IsTemplateApplied = true;
@@ -4431,7 +4431,7 @@ namespace Microsoft.PlayerFramework
 #if NETFX_CORE
         private async Task<MediaLoadingInstruction> OnMediaLoadingAsync(IRandomAccessStream stream, string mimeType)
         {
-            var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+            var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
             var args = new MediaLoadingEventArgs(deferrableOperation, stream, mimeType);
             return await OnMediaLoadingAsync(args);
         }
@@ -4439,14 +4439,14 @@ namespace Microsoft.PlayerFramework
 #else
         private async Task<MediaLoadingInstruction> OnMediaLoadingAsync(MediaStreamSource mediaStreamSource)
         {
-            var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+            var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
             var args = new MediaLoadingEventArgs(deferrableOperation, mediaStreamSource);
             return await OnMediaLoadingAsync(args);
         }
 
         private async Task<MediaLoadingInstruction> OnMediaLoadingAsync(Stream stream)
         {
-            var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+            var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
             var args = new MediaLoadingEventArgs(deferrableOperation, stream);
             return await OnMediaLoadingAsync(args);
         }
@@ -4454,7 +4454,7 @@ namespace Microsoft.PlayerFramework
 #endif
         private async Task<MediaLoadingInstruction> OnMediaLoadingAsync(Uri source)
         {
-            var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+            var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
             var args = new MediaLoadingEventArgs(deferrableOperation, source);
             return await OnMediaLoadingAsync(args);
         }
@@ -4593,7 +4593,7 @@ namespace Microsoft.PlayerFramework
         async void OnMediaEnded(MediaEndedEventArgs e)
         {
             SetValue(PlayerStateProperty, PlayerState.Ending);
-            var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+            var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
             if (MediaEnding != null)
             {
                 MediaEnding(this, new MediaEndingEventArgs(deferrableOperation));
@@ -4878,7 +4878,7 @@ namespace Microsoft.PlayerFramework
             if (PlayerState != PlayerState.Starting)
             {
                 SetValue(PlayerStateProperty, PlayerState.Starting);
-                var deferrableOperation = new MediaPlayerDeferrableOperation(cts);
+                var deferrableOperation = new MediaPlayerDeferrableOperation(cts.Token);
                 if (MediaStarting != null) MediaStarting(this, new MediaStartingEventArgs(deferrableOperation));
                 bool[] result;
                 try

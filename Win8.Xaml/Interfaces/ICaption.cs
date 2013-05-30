@@ -27,7 +27,11 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Indicates that the Payload property has changed
         /// </summary>
+#if SILVERLIGHT
+        event EventHandler PayloadChanged;
+#else
         event EventHandler<object> PayloadChanged;
+#endif
     }
 
     /// <summary>

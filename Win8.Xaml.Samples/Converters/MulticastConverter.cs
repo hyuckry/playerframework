@@ -10,13 +10,13 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 #endif
 
-namespace Microsoft.PlayerFramework
+namespace Microsoft.PlayerFramework.Samples.Converters
 {
     /// <summary>
     /// IValueConverter impelmentation that converts a value by passing it through a list of other converters.
     /// The result of converter 1 is passed to converter 2 and so on.
     /// </summary>
-    public class MulticastConverter : IValueConverter
+    public sealed class MulticastConverter : IValueConverter
     {
         /// <summary>
         /// Creates a new instance of MulticastConverter while initializing the child converters.
@@ -38,19 +38,19 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// A list of child converters used to convert the value.
         /// </summary>
-        public List<IValueConverter> Converters { get; private set; }
+        public IList<IValueConverter> Converters { get; private set; }
 
         /// <inheritdoc /> 
 #if SILVERLIGHT
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object Convert(object value, Type targetType, object parameter, string culture)
+        public object Convert(object value, Type targetType, object parameter, string language)
 #endif
         {
             object runningValue = value;
             foreach (var converter in Converters)
             {
-                runningValue = converter.Convert(runningValue, targetType, parameter, culture);
+                runningValue = converter.Convert(runningValue, targetType, parameter, language);
             }
             return runningValue;
         }
@@ -59,13 +59,13 @@ namespace Microsoft.PlayerFramework
 #if SILVERLIGHT
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 #else
-        public object ConvertBack(object value, Type targetType, object parameter, string culture)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
 #endif
         {
             object runningValue = value;
             foreach (var converter in Converters.ToArray().Reverse())
             {
-                runningValue = converter.ConvertBack(runningValue, targetType, parameter, culture);
+                runningValue = converter.ConvertBack(runningValue, targetType, parameter, language);
             }
             return runningValue;
         }

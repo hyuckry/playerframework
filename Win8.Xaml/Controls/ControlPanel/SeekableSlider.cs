@@ -357,7 +357,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// The value associated with the event.
         /// </summary>
-        public double Value { get; internal set; }
+        public double Value { get; private set; }
 
         /// <summary>
         /// The value associated with the event.

@@ -8,7 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 #endif
 
-namespace Microsoft.PlayerFramework
+namespace Microsoft.PlayerFramework.Samples.Converters
 {
     /// <summary>
     /// IValueConverter used to help Xaml flip the value when binding a boolean to a boolean.
