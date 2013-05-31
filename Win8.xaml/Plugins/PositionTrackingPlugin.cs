@@ -263,11 +263,11 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        private void MediaPlayer_MediaStarted(object sender, object e)
+        private void MediaPlayer_MediaStarted(object sender, MediaStartedEventArgs e)
         {
             if (!MediaPlayer.StartupPosition.HasValue)
             {
-                foreach (var trackingEvent in TrackingEvents.OfType<PositionTrackingEvent>().Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 0).ToList())
+                foreach (var trackingEvent in TrackingEvents.Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 0).ToList())
                 {
                     OnTrackEvent(new PositionEventTrackedEventArgs(trackingEvent, false));
                 }
@@ -276,7 +276,7 @@ namespace Microsoft.PlayerFramework
 
         private void MediaPlayer_MediaEnded(object sender, MediaEndedEventArgs e)
         {
-            foreach (var trackingEvent in TrackingEvents.OfType<PositionTrackingEvent>().Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 1).ToList())
+            foreach (var trackingEvent in TrackingEvents.Where(t => t.PositionPercentage.HasValue && t.PositionPercentage.Value == 1).ToList())
             {
                 OnTrackEvent(new PositionEventTrackedEventArgs(trackingEvent, false));
             }
@@ -352,7 +352,7 @@ namespace Microsoft.PlayerFramework
         /// <summary>
         /// Creates a new instance of PositionEventTrackedEventArgs
         /// </summary>
-        public PositionEventTrackedEventArgs()
+        internal PositionEventTrackedEventArgs()
         {
             Timestamp = DateTimeOffset.Now;
         }
@@ -361,7 +361,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a new instance of PositionEventTrackedEventArgs
         /// </summary>
         /// <param name="trackingEvent">The event that was tracked</param>
-        public PositionEventTrackedEventArgs(PositionTrackingEvent trackingEvent)
+        internal PositionEventTrackedEventArgs(PositionTrackingEvent trackingEvent)
             : this()
         {
             TrackingEvent = trackingEvent;
@@ -372,7 +372,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <param name="trackingEvent">The event that was tracked</param>
         /// <param name="skippedPast">A flag indicating whether or not the user was seeking when the event occurred</param>
-        public PositionEventTrackedEventArgs(PositionTrackingEvent trackingEvent, bool skippedPast)
+        internal PositionEventTrackedEventArgs(PositionTrackingEvent trackingEvent, bool skippedPast)
             : this(trackingEvent)
         {
             SkippedPast = skippedPast;

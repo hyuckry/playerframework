@@ -92,7 +92,7 @@ namespace Microsoft.PlayerFramework
             {
                 child.DataContext = null;
                 Children.Remove(child);
-                if (ItemUnloaded != null) ItemLoaded(this, new FrameworkElementEventArgs(child));
+                if (ItemUnloaded != null) ItemUnloaded(this, new FrameworkElementEventArgs(child));
             }
         }
 
