@@ -19,11 +19,7 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a media item in a playlist.
     /// </summary>
-#if SILVERLIGHT
     public sealed class PlaylistItem : DependencyObject, IMediaSource
-#else
-    public sealed class PlaylistItem : DependencyObject, IMediaSource
-#endif
     {
         /// <summary>
         /// Creates a new instance of the PlaylistItem class.

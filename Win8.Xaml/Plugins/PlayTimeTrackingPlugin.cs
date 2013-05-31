@@ -126,7 +126,7 @@ namespace Microsoft.PlayerFramework
             }
         }
 
-        private void MediaPlayer_Updated(object sender, object e)
+        private void MediaPlayer_Updated(object sender, UpdatedEventArgs e)
         {
             EvaluteTrackingEvents();
         }
@@ -137,9 +137,9 @@ namespace Microsoft.PlayerFramework
             {
                 PlayTime = DateTime.Now.Subtract(startTime.Value);
                 PlayTimePercentage = PlayTime.TotalSeconds / MediaPlayer.Duration.TotalSeconds;
-                foreach (var playTimeTrackingEvent in TrackingEvents.OfType<PlayTimeTrackingEvent>().Except(spentPlayTimeEvents).ToList())
+                foreach (var playTimeTrackingEvent in TrackingEvents.Except(spentPlayTimeEvents).ToList())
                 {
-                    if ((!playTimeTrackingEvent.PlayTimePercentage.HasValue && playTimeTrackingEvent.PlayTime <= PlayTime) || (playTimeTrackingEvent.PlayTimePercentage.HasValue && playTimeTrackingEvent.PlayTimePercentage <= PlayTimePercentage))
+                    if ((!playTimeTrackingEvent.PlayTimePercentage.HasValue && playTimeTrackingEvent.PlayTime <= PlayTime) || (playTimeTrackingEvent.PlayTimePercentage.HasValue && playTimeTrackingEvent.PlayTimePercentage.Value <= PlayTimePercentage))
                     {
                         spentPlayTimeEvents.Add(playTimeTrackingEvent);
                         OnTrackEvent(new EventTrackedEventArgs(playTimeTrackingEvent));
