@@ -163,7 +163,7 @@
                 });
 
                 if (impression) {
-                    var urls = impression.getUrls();
+                    var urls = PlayerFramework.Utilities.getArray(impression.getUrls());
                     for (var i = 0; i < urls.length; i++) {
                         var url = urls[i];
                         Microsoft.VideoAdvertising.AdTracking.current.fireTracking(url);
@@ -192,7 +192,7 @@
         _getTrackingUrl: function (url, currentPlayTime, start, end) {
             var init = start ? 1 : 0;
             var last = end ? 1 : 0;
-            var ct = this._lastTrackingTime ? Math.round((currentPlayTime - this._lastTrackingTime) / 1000) : 0;
+            var ct = this._lastTrackingTime !== null ? Math.round(currentPlayTime - this._lastTrackingTime) : 0;
 
             // save for next time
             this._lastTrackingTime = currentPlayTime;

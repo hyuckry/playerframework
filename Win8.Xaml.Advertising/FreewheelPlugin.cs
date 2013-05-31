@@ -259,7 +259,7 @@ namespace Microsoft.PlayerFramework.Advertising
                     var positionTrackingEvent = (PositionTrackingEvent)e.TrackingEvent;
                     if (!positionTrackingEvent.PositionPercentage.HasValue || positionTrackingEvent.PositionPercentage.Value != 1) throw new Exception("Invalid tracking event was registered for FreeWheelPlugin");
                     isStart = false;
-                    isEnd = false;
+                    isEnd = true;
                     currentPlayTime = playTimeTrackingPlugin.PlayTime;
                     trackingEnded = true; // set this flag to prevent further tracking
                 }
@@ -284,6 +284,7 @@ namespace Microsoft.PlayerFramework.Advertising
                 {
                     delta = currentPlayTime;
                 }
+                lastTrackingEvent = e.TrackingEvent as PlayTimeTrackingEvent;
 
                 var newUrl = url + string.Format("{3}init={0}&ct={1}&last={2}", isStart ? 1 : 0, (int)Math.Round(delta.TotalSeconds), isEnd ? 1 : 0, url.Contains("?") ? "&" : "?");
                 AdTracking.Current.FireTracking(newUrl);
