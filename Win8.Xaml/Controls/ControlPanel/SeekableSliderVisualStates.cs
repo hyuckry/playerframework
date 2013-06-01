@@ -1,6 +1,6 @@
 namespace Microsoft.PlayerFramework
 {
-    internal static class TimelineVisualStates
+    internal static class SeekableSliderVisualStates
     {
         internal static class GroupNames
         {

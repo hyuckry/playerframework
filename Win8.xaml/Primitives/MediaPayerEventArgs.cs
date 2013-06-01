@@ -239,9 +239,9 @@ namespace Microsoft.PlayerFramework
     public sealed class SeekingEventArgs
 #endif
     {
-        internal SeekingEventArgs(TimeSpan previousPosition, TimeSpan newPosition)
+        internal SeekingEventArgs(TimeSpan previousPosition, TimeSpan position)
         {
-            this.Position = newPosition;
+            this.Position = position;
             this.PreviousPosition = previousPosition;
         }
 

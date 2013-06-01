@@ -25,8 +25,8 @@ namespace Microsoft.PlayerFramework
     [TemplatePart(Name = SeekableSliderTemplateParts.VerticalTemplate, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = SeekableSliderTemplateParts.VerticalThumb, Type = typeof(Thumb))]
     [TemplatePart(Name = SeekableSliderTemplateParts.VerticalAvailableBar, Type = typeof(FrameworkElement))]
-    [TemplateVisualState(Name = TimelineVisualStates.ScrubbingStates.IsScrubbing, GroupName = TimelineVisualStates.GroupNames.ScrubbingStates)]
-    [TemplateVisualState(Name = TimelineVisualStates.ScrubbingStates.IsNotScrubbing, GroupName = TimelineVisualStates.GroupNames.ScrubbingStates)]
+    [TemplateVisualState(Name = SeekableSliderVisualStates.ScrubbingStates.IsScrubbing, GroupName = SeekableSliderVisualStates.GroupNames.ScrubbingStates)]
+    [TemplateVisualState(Name = SeekableSliderVisualStates.ScrubbingStates.IsNotScrubbing, GroupName = SeekableSliderVisualStates.GroupNames.ScrubbingStates)]
     public partial class SeekableSlider
     {
         FrameworkElement availableBar;
@@ -642,7 +642,7 @@ namespace Microsoft.PlayerFramework
         #region Misc
         private void UpdateScrubbingVisualState()
         {
-            var state = IsScrubbing ? TimelineVisualStates.ScrubbingStates.IsScrubbing : TimelineVisualStates.ScrubbingStates.IsNotScrubbing;
+            var state = IsScrubbing ? SeekableSliderVisualStates.ScrubbingStates.IsScrubbing : SeekableSliderVisualStates.ScrubbingStates.IsNotScrubbing;
             this.GoToVisualState(state);
         }
 
