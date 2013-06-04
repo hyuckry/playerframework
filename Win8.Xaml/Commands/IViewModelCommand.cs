@@ -12,5 +12,10 @@ namespace Microsoft.PlayerFramework
         /// Gets or sets the ViewModel associated with the command
         /// </summary>
         IInteractiveViewModel ViewModel { get; set; }
+
+        /// <summary>
+        /// Supports an opportunity to cancel or intercept a command that is about to execute.
+        /// </summary>
+        event EventHandler<ViewModelCommandExecutingEventArgs> Executing;
     }
 }

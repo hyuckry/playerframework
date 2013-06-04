@@ -70,10 +70,10 @@ namespace Microsoft.PlayerFramework
             positionedItemsControl = GetTemplateChild(TimelineTemplateParts.PositionedItemsControl) as PositionedItemsControl;
             downloadProgressBarElement = GetTemplateChild(TimelineTemplateParts.DownloadProgressBarElement) as ProgressBar;
             progressSliderElement = GetTemplateChild(TimelineTemplateParts.ProgressSliderElement) as SeekableSlider;
-            
+
             if (progressSliderElement != null)
             {
-                progressSliderElement.Style = SliderStyle;
+                if (SliderStyle != null) progressSliderElement.Style = SliderStyle;
                 // wire up events to bubble
                 WireProgressSliderEvents();
             }
@@ -121,9 +121,12 @@ namespace Microsoft.PlayerFramework
 
         void Timeline_Click(object sender, RoutedEventArgs e)
         {
-            var marker = ((ButtonBase)sender).DataContext as VisualMarker;
-            bool canceled = false;
-            ViewModel.Seek(marker.Time, out canceled);
+            if (ViewModel != null)
+            {
+                var marker = ((ButtonBase)sender).DataContext as VisualMarker;
+                bool canceled = false;
+                ViewModel.Seek(marker.Time, out canceled);
+            }
         }
 
         void ProgressSliderElement_Seeked(object sender, SeekableSliderManipulatedEventArgs e)

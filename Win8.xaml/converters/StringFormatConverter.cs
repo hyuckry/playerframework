@@ -65,7 +65,7 @@ namespace Microsoft.PlayerFramework
             }
             else if (value is long)
             {
-                return ((double)value).ToString(stringFormat, CultureInfo.CurrentCulture);
+                return ((long)value).ToString(stringFormat, CultureInfo.CurrentCulture);
             }
             else if (value is double)
             {
@@ -73,7 +73,7 @@ namespace Microsoft.PlayerFramework
             }
             else if (value is float)
             {
-                return ((double)value).ToString(stringFormat, CultureInfo.CurrentCulture);
+                return ((float)value).ToString(stringFormat, CultureInfo.CurrentCulture);
             }
             else
             {

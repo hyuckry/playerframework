@@ -224,9 +224,9 @@ namespace Microsoft.PlayerFramework
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
         public static IViewModelCommand CreateSkipPreviousCommand()
         {
-            return new TypedViewModelCommand<VisualMarker>(
-                (vm, position) => vm.SkipPrevious(),
-                (vm, position) => vm.IsSkipPreviousEnabled,
+            return new ViewModelCommand(
+                (vm) => vm.SkipPrevious(),
+                (vm) => vm.IsSkipPreviousEnabled,
 #if SILVERLIGHT
                 new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSkipPreviousEnabledChanged -= eh, (vm, eh) => vm.IsSkipPreviousEnabledChanged += eh)
 #else
@@ -241,9 +241,9 @@ namespace Microsoft.PlayerFramework
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
         public static IViewModelCommand CreateSkipNextCommand()
         {
-            return new TypedViewModelCommand<VisualMarker>(
-                (vm, position) => vm.SkipNext(),
-                (vm, position) => vm.IsSkipNextEnabled,
+            return new ViewModelCommand(
+                (vm) => vm.SkipNext(),
+                (vm) => vm.IsSkipNextEnabled,
 #if SILVERLIGHT
                 new HandlerReference<IInteractiveViewModel, EventHandler>((vm, eh) => vm.IsSkipNextEnabledChanged -= eh, (vm, eh) => vm.IsSkipNextEnabledChanged += eh)
 #else

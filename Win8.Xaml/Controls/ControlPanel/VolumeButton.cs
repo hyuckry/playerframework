@@ -24,17 +24,20 @@ using System.Windows.Input;
 
 namespace Microsoft.PlayerFramework
 {
-    internal static class VolumeVisibilityStates
+    internal static class VolumeVisualStates
     {
-        internal const string Requested = "VolumeRequested";
-        internal const string Dismissed = "VolumeDismissed";
-        internal const string Hidden = "VolumeHidden";
-        internal const string Visible = "VolumeVisible";
-    }
+        internal static class VisibilityStates
+        {
+            internal const string Requested = "VolumeRequested";
+            internal const string Dismissed = "VolumeDismissed";
+            internal const string Hidden = "VolumeHidden";
+            internal const string Visible = "VolumeVisible";
+        }
 
-    internal static class VolumeGroupNames
-    {
-        internal const string VolumeVisibilityStates = "VolumeVisibilityStates";
+        internal static class GroupNames
+        {
+            internal const string VisibilityStates = "VolumeVisibilityStates";
+        }
     }
 
     internal static class VolumeTemplateParts
@@ -50,10 +53,10 @@ namespace Microsoft.PlayerFramework
     [TemplatePart(Name = VolumeTemplateParts.VolumeSliderContainer, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = VolumeTemplateParts.VolumeSlider, Type = typeof(VolumeSlider))]
     [TemplatePart(Name = VolumeTemplateParts.MuteButton, Type = typeof(Button))]
-    [TemplateVisualState(Name = VolumeVisibilityStates.Requested, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
-    [TemplateVisualState(Name = VolumeVisibilityStates.Dismissed, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
-    [TemplateVisualState(Name = VolumeVisibilityStates.Hidden, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
-    [TemplateVisualState(Name = VolumeVisibilityStates.Visible, GroupName = VolumeGroupNames.VolumeVisibilityStates)]
+    [TemplateVisualState(Name = VolumeVisualStates.VisibilityStates.Requested, GroupName = VolumeVisualStates.GroupNames.VisibilityStates)]
+    [TemplateVisualState(Name = VolumeVisualStates.VisibilityStates.Dismissed, GroupName = VolumeVisualStates.GroupNames.VisibilityStates)]
+    [TemplateVisualState(Name = VolumeVisualStates.VisibilityStates.Hidden, GroupName = VolumeVisualStates.GroupNames.VisibilityStates)]
+    [TemplateVisualState(Name = VolumeVisualStates.VisibilityStates.Visible, GroupName = VolumeVisualStates.GroupNames.VisibilityStates)]
     public sealed class VolumeButton : Control
     {
         FrameworkElement volumeSliderContainerElement;
@@ -84,7 +87,6 @@ namespace Microsoft.PlayerFramework
             SetDefaultVisualStates();
         }
 
-        /// <inheritdoc /> 
         void GetTemplateChildren()
         {
             volumeSliderContainerElement = GetTemplateChild(VolumeTemplateParts.VolumeSliderContainer) as FrameworkElement;
@@ -102,11 +104,11 @@ namespace Microsoft.PlayerFramework
         {
             if (IsVolumeVisible)
             {
-                this.GoToVisualState(VolumeVisibilityStates.Visible);
+                this.GoToVisualState(VolumeVisualStates.VisibilityStates.Visible);
             }
             else
             {
-                this.GoToVisualState(VolumeVisibilityStates.Hidden);
+                this.GoToVisualState(VolumeVisualStates.VisibilityStates.Hidden);
             }
         }
 
@@ -130,7 +132,7 @@ namespace Microsoft.PlayerFramework
             if (muteButtonElement != null)
             {
                 muteButtonElement.GotFocus += VolumeButtonElement_GotFocus;
-                var vmCommand = muteButtonElement.Command as ViewModelCommand;
+                var vmCommand = muteButtonElement.Command as IViewModelCommand;
                 if (vmCommand != null) vmCommand.Executing += vmCommand_Executing;
             }
 
@@ -153,7 +155,7 @@ namespace Microsoft.PlayerFramework
             if (muteButtonElement != null)
             {
                 muteButtonElement.GotFocus -= VolumeButtonElement_GotFocus;
-                var vmCommand = muteButtonElement.Command as ViewModelCommand;
+                var vmCommand = muteButtonElement.Command as IViewModelCommand;
                 if (vmCommand != null) vmCommand.Executing -= vmCommand_Executing;
             }
 
@@ -189,17 +191,17 @@ namespace Microsoft.PlayerFramework
             if (volumeCollapseTimer.IsEnabled) volumeCollapseTimer.Stop();
         }
 
-        void vmCommand_Executing(object sender, ExecutingEventArgs e)
+        void vmCommand_Executing(object sender, ViewModelCommandExecutingEventArgs e)
         {
             if (!IsVolumeVisible)
             {
                 e.Cancel = e.Cancel || !ViewModel.IsMuted;
-                this.GoToVisualState(VolumeVisibilityStates.Requested);
+                this.GoToVisualState(VolumeVisualStates.VisibilityStates.Requested);
                 IsVolumeVisible = true;
             }
             else
             {
-                this.GoToVisualState(VolumeVisibilityStates.Dismissed);
+                this.GoToVisualState(VolumeVisualStates.VisibilityStates.Dismissed);
                 IsVolumeVisible = false;
             }
         }
@@ -254,7 +256,7 @@ namespace Microsoft.PlayerFramework
             if (IsVolumeVisible)
             {
                 IsVolumeVisible = false;
-                this.GoToVisualState(VolumeVisibilityStates.Dismissed);
+                this.GoToVisualState(VolumeVisualStates.VisibilityStates.Dismissed);
             }
         }
 
@@ -275,7 +277,7 @@ namespace Microsoft.PlayerFramework
         {
             if (!IsVolumeVisible)
             {
-                this.GoToVisualState(VolumeVisibilityStates.Requested);
+                this.GoToVisualState(VolumeVisualStates.VisibilityStates.Requested);
                 IsVolumeVisible = true;
             }
         }
