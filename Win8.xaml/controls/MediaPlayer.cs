@@ -4465,7 +4465,7 @@ namespace Microsoft.PlayerFramework
 #if NETFX_CORE
             if (TestForMediaPack)
             {
-                if (!await MediaPackHelper.TestForMediaPack())
+                if (!await MediaPackHelper.TestForMediaPackAsync())
                 {
                     return null;
                 }
@@ -5166,7 +5166,7 @@ namespace Microsoft.PlayerFramework
             string result = null;
             if (ResourceLoader != null)
             {
-                result = ResourceLoader.GetString(string.Format("{0}", resourceId));
+                result = ResourceLoader.GetString(resourceId);
             }
             if (string.IsNullOrEmpty(result))
             {

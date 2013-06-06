@@ -500,7 +500,7 @@ namespace Microsoft.PlayerFramework
         /// Gets the colleciton of UIElement in the player.
         /// This is useful for programmatically adding UIElements to the player without having to template the control.
         /// </summary>
-        public IList<UIElement> Containers { get; set; }
+        public IList<UIElement> Containers { get; private set; }
         #endregion
 
         #region InteractiveViewModel
@@ -515,60 +515,60 @@ namespace Microsoft.PlayerFramework
             if (oldValue != null)
             {
                 oldValue.Interacting -= InteractiveViewModel_Interacting;
-                oldValue.ScrubRequested -= InteractiveViewModel_Scrubbing;
-                oldValue.ScrubStartRequested -= InteractiveViewModel_StartingScrub;
-                oldValue.ScrubCompleteRequested -= InteractiveViewModel_CompletingScrub;
-                oldValue.SeekRequested -= InteractiveViewModel_Seeking;
-                oldValue.SkipAheadRequested -= InteractiveViewModel_SkippingAhead;
-                oldValue.SkipBackRequested -= InteractiveViewModel_SkippingBack;
+                oldValue.ScrubRequested -= InteractiveViewModel_ScrubRequested;
+                oldValue.ScrubStartRequested -= InteractiveViewModel_ScrubStartRequested;
+                oldValue.ScrubCompleteRequested -= InteractiveViewModel_ScrubCompleteRequested;
+                oldValue.SeekRequested -= InteractiveViewModel_SeekRequested;
+                oldValue.SkipAheadRequested -= InteractiveViewModel_SkipAheadRequested;
+                oldValue.SkipBackRequested -= InteractiveViewModel_SkipBackRequested;
             }
 
             if (newValue != null)
             {
                 newValue.Interacting += InteractiveViewModel_Interacting;
-                newValue.ScrubRequested += InteractiveViewModel_Scrubbing;
-                newValue.ScrubStartRequested += InteractiveViewModel_StartingScrub;
-                newValue.ScrubCompleteRequested += InteractiveViewModel_CompletingScrub;
-                newValue.SeekRequested += InteractiveViewModel_Seeking;
-                newValue.SkipAheadRequested += InteractiveViewModel_SkippingAhead;
-                newValue.SkipBackRequested += InteractiveViewModel_SkippingBack;
+                newValue.ScrubRequested += InteractiveViewModel_ScrubRequested;
+                newValue.ScrubStartRequested += InteractiveViewModel_ScrubStartRequested;
+                newValue.ScrubCompleteRequested += InteractiveViewModel_ScrubCompleteRequested;
+                newValue.SeekRequested += InteractiveViewModel_SeekRequested;
+                newValue.SkipAheadRequested += InteractiveViewModel_SkipAheadRequested;
+                newValue.SkipBackRequested += InteractiveViewModel_SkipBackRequested;
             }
 
             if (InteractiveViewModelChanged != null) InteractiveViewModelChanged(this, new InteractiveViewModelChangedEventArgs(oldValue, newValue));
         }
 
-        void InteractiveViewModel_SkippingBack(object sender, SkipRequestedEventArgs e)
+        void InteractiveViewModel_SkipBackRequested(object sender, SkipRequestedEventArgs e)
         {
             SkipBack(e.Position);
         }
 
-        void InteractiveViewModel_SkippingAhead(object sender, SkipRequestedEventArgs e)
+        void InteractiveViewModel_SkipAheadRequested(object sender, SkipRequestedEventArgs e)
         {
             SkipAhead(e.Position);
         }
 
-        void InteractiveViewModel_Seeking(object sender, SeekRequestedEventArgs e)
+        void InteractiveViewModel_SeekRequested(object sender, SeekRequestedEventArgs e)
         {
             bool cancel;
             Seek(e.Position, out cancel);
             e.Cancel = cancel;
         }
 
-        void InteractiveViewModel_CompletingScrub(object sender, ScrubCompleteRequestedEventArgs e)
+        void InteractiveViewModel_ScrubCompleteRequested(object sender, ScrubCompleteRequestedEventArgs e)
         {
             bool cancel;
             CompleteScrub(e.Position, e.Canceled, out cancel);
             e.Cancel = cancel;
         }
 
-        void InteractiveViewModel_StartingScrub(object sender, ScrubStartRequestedEventArgs e)
+        void InteractiveViewModel_ScrubStartRequested(object sender, ScrubStartRequestedEventArgs e)
         {
             bool cancel;
             StartScrub(e.Position, out cancel);
             e.Cancel = cancel;
         }
 
-        void InteractiveViewModel_Scrubbing(object sender, ScrubRequestedEventArgs e)
+        void InteractiveViewModel_ScrubRequested(object sender, ScrubRequestedEventArgs e)
         {
             bool cancel;
             Scrub(e.Position, out cancel);
@@ -1381,10 +1381,7 @@ namespace Microsoft.PlayerFramework
 
         static bool DefaultAutoPlay
         {
-            get
-            {
-                return GetDefaultValue<bool>(MediaElement.AutoPlayProperty);
-            }
+            get { return GetDefaultValue<bool>(MediaElement.AutoPlayProperty); }
         }
 
         #endregion

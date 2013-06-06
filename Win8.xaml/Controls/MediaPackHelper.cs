@@ -45,7 +45,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <returns>An awaitable task that returns true if the media feature pack is installed, false if not.</returns>
 #if NETFX_CORE
-        public static IAsyncOperation<bool> TestForMediaPack()
+        public static IAsyncOperation<bool> TestForMediaPackAsync()
         {
             return AsyncInfo.Run(c => testForMediaPack());
         }
@@ -57,7 +57,7 @@ namespace Microsoft.PlayerFramework
         {
             if (IsMediaPackRequired())
             {
-                await PromptForMediaPack();
+                await PromptForMediaPackAsync();
                 return false;
             }
             return true;
@@ -68,7 +68,7 @@ namespace Microsoft.PlayerFramework
         /// </summary>
         /// <returns>An awaitable task that returns when the prompt has completed.</returns>
 #if NETFX_CORE
-        public static IAsyncAction PromptForMediaPack()
+        public static IAsyncAction PromptForMediaPackAsync()
         {
             return AsyncInfo.Run(c => promptForMediaPack());
         }
