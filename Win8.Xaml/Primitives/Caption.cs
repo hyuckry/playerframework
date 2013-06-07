@@ -12,7 +12,11 @@ namespace Microsoft.PlayerFramework
     /// <summary>
     /// Represents a caption or subtitle track.
     /// </summary>
+#if SILVERLIGHT
     public sealed class Caption : DependencyObject, ICaption
+#else
+    public sealed class Caption : FrameworkElement, ICaption // HACK: FrameworkElement is used to be able to bind to Source Uri property
+#endif
     {
         /// <inheritdoc /> 
 #if SILVERLIGHT
