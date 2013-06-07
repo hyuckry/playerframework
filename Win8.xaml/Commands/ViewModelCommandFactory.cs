@@ -159,7 +159,7 @@ namespace Microsoft.PlayerFramework
         /// Creates a command used to bind to a caption selection button.
         /// </summary>
         /// <returns>A special ICommand object expected to be wired to a ViewModel.</returns>
-        public static IViewModelCommand CreateCaptionsCommand()
+        public static IViewModelCommand CreateCaptionSelectionCommand()
         {
             return new ViewModelCommand(
                 vm => vm.InvokeCaptionSelection(),

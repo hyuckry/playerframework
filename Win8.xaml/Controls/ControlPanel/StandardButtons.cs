@@ -691,7 +691,7 @@ namespace Microsoft.PlayerFramework
             this.DefaultStyleKey = typeof(CaptionSelectionButton);
 
             AutomationProperties.SetName(this, MediaPlayer.GetResourceString("CaptionSelectionButtonLabel"));
-            Command = ViewModelCommandFactory.CreateCaptionsCommand();
+            Command = ViewModelCommandFactory.CreateCaptionSelectionCommand();
         }
 
         /// <summary>

@@ -44,8 +44,8 @@ namespace Microsoft.PlayerFramework
         protected override void OnApplyTemplate()
 #endif
         {
-            base.OnApplyTemplate();
             UninitializeTemplateChildren();
+            base.OnApplyTemplate();
             GetTemplateChildren();
             InitializeTemplateChildren();
         }
